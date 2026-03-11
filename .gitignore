@@ -1,0 +1,22 @@
+# Java
+**/target/
+**.jar
+**.war
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Angular / Node
+**/node_modules/
+**/dist/
+.npm/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Docker
+.env

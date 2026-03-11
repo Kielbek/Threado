@@ -1,0 +1,14 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8888
+    fail-fast: true
+    retry:
+      initial-interval: 3000
+      max-attempts: 6
+
+  application:
+    name: user-service
+
+  threads:
+    virtual:
+      enabled: true

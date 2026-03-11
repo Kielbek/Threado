@@ -1,0 +1,107 @@
+services:
+  # --- FRONTEND ---
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: threado-frontend
+    ports:
+      - "4200:80"
+    networks:
+      - threado-network
+    depends_on:
+      - user-service
+
+  # --- BAZA DANYCH ---
+  user-db:
+    image: postgres:15-alpine
+    container_name: threado-user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - threado-network
+
+  # --- CONFIG SERVER ---
+  config-server:
+    build: 
+      context: ./core/config-server
+    container_name: threado-config-server
+    ports:
+      - "8888:8888" # Zostawiamy 8888:8888, bo tak Ci wstał w logach
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    depends_on:
+      user-db:
+        condition: service_healthy
+    networks:
+      - threado-network
+
+  # --- DISCOVERY SERVER (EUREKA) ---
+  discovery-server:
+    build: 
+      context: ./core/discovery
+    container_name: threado-discovery-server
+    ports:
+      - "8761:8761" # Mapujemy zewnętrzny 8761 na 8080 (gdzie realnie działa Spring)
+    environment:
+      # POPRAWIONE: Eureka szuka szefa na 8888
+      - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
+    depends_on:
+      - config-server
+    networks:
+      - threado-network
+
+  # --- USER SERVICE ---
+  user-service:
+    build: 
+      context: ./core/user
+    container_name: threado-user-service
+    ports:
+      - "8090:8090"
+    environment:
+      # POPRAWIONE: Tutaj miałeś 8080, musi być 8888!
+      - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://threado-user-db:5432/user_db
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+    depends_on:
+      user-db:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    networks:
+      - threado-network
+
+  # --- KEYCLOAK ---
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: threado-keycloak # Poprawiłem literówkę (było treado)
+    command: start-dev --http-enabled=true --hostname-strict=false --http-host=0.0.0.0
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8180:8080"
+    networks:
+      - threado-network
+
+networks:
+  threado-network:
+    driver: bridge
+
+volumes:
+  user_data:

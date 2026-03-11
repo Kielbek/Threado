@@ -1,0 +1,102 @@
+/* --- NOWOCZESNY SPLIT SCREEN (POPRAWIONY) --- */
+:root {
+    --primary-purple: #7c3aed;
+    --bg-page: #f8f9fa;
+    --text-main: #111827;
+}
+
+/* 1. RESET - Wymuszamy widoczność body */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100vh !important;
+    display: block !important; /* Ważne! */
+    background: var(--bg-page) !important;
+}
+
+/* Ukrywamy tylko to, co zbędne */
+#kc-header, .login-pf-header, .sr-only, #kc-info {
+    display: none !important;
+}
+
+/* Czyścimy kartę Keycloaka, żeby nie blokowała widoku */
+.card-pf {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+/* 2. KONTENER SPLIT SCREEN */
+.split-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* LEWA STRONA (FORMULARZ) */
+.form-side {
+    flex: 1;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.form-content {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Stylizacja tekstu */
+.welcome-text h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+/* 3. POLA INPUT I PRZYCISK */
+.modern-input {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 15px;
+    padding: 0 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.modern-submit-btn {
+    width: 100%;
+    height: 50px;
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 4. PRAWA STRONA (ILUSTRACJA) */
+.illustration-side {
+    flex: 1.2;
+    background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.illustration-wrapper {
+    width: 100%;
+    height: 100%;
+    /* Ścieżka do Twojego zdjęcia */
+    background-image: url('../img/login-illustration.png'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
