@@ -70,7 +70,6 @@ services:
     ports:
       - "8090:8090"
     environment:
-      # POPRAWIONE: Tutaj miałeś 8080, musi być 8888!
       - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://threado-user-db:5432/user_db
       - SPRING_THREADS_VIRTUAL_ENABLED=true
@@ -84,18 +83,21 @@ services:
     networks:
       - threado-network
 
-  # --- KEYCLOAK ---
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: threado-keycloak # Poprawiłem literówkę (było treado)
+    container_name: threado-keycloak
     command: start-dev --http-enabled=true --hostname-strict=false --http-host=0.0.0.0
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
+      KC_CACHE_THEMES: "false"
+      KC_CACHE_TEMPLATES: "false"
     ports:
       - "8180:8080"
+    volumes:
+      - ./themes/threado-theme:/opt/keycloak/themes/threao-theme
     networks:
       - threado-network
 
