@@ -2,7 +2,7 @@ import {Component, input, output} from '@angular/core';
 import {LucideAngularModule} from 'lucide-angular';
 
 @Component({
-  selector: 'app-thread-button',
+  selector: 'app-threado-button',
   imports: [
     LucideAngularModule
   ],
