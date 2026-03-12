@@ -1,0 +1,10 @@
+<button (click)="clicked.emit()"
+        [class]="defaultClasses + ' ' + customClasses()">
+
+  @if (showText()) {
+    <span class="hidden xl:block text-lg">Thread</span>
+  }
+
+  <lucide-icon [img]="PostIcon" [class.xl:hidden]="showText()" class="w-6 h-6"></lucide-icon>
+
+</button>
