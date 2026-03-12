@@ -60,10 +60,16 @@ cd Threado
 docker compose up -d
 ```
 Dashboardy:
+
 Eureka Server: http://localhost:8761
+
 Keycloak Admin: http://localhost:8180
+
 Config Server: http://localhost:8888
 
 👤 Autor
+
 Mateusz Kiełbasa - GitHub
+
 Portfolio: mateuszkielbasa.dev
+
