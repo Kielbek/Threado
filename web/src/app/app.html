@@ -1,5 +1,26 @@
-<div class="h-full w-full flex justify-center items-center">
-  <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
+<div class="flex min-h-screen w-full bg-[#0F1112] text-white">
+
+  <header class="hidden lg:block w-60 xl:w-72 border-r border-[#32cd32]/20 px-2 shadow-[2px_0_10px_rgba(50,205,50,0.02)]">
+    <app-navbar></app-navbar>
+  </header>
+
+  <main class="flex-grow border-r border-[#32cd32]/20 relative">
+
+    <div class="lg:hidden flex items-center p-4 border-b border-[#32cd32]/40 bg-[#0F1112]/90 backdrop-blur-md sticky top-0 z-50">
+      <div class="w-8 h-8 rounded-full bg-[#32cd32] mr-4 shadow-[0_0_10px_rgba(50,205,50,0.4)]"></div>
+      <span class="font-bold text-xl tracking-wide text-[#32cd32]">Threado</span>
+    </div>
+
+    <div class="max-w-3xl mx-auto w-full pb-20 lg:pb-0">
+      <router-outlet></router-outlet>
+    </div>
+
+    <div class="lg:hidden fixed bottom-0 left-0 w-full h-16 bg-[#0F1112]/95 backdrop-blur-md border-t border-[#32cd32]/40 flex justify-around items-center z-50 shadow-[0_-5px_15px_rgba(50,205,50,0.05)]">
+    </div>
+  </main>
+
+  <aside class="hidden lg:block w-80 xl:w-96 p-4">
+
+  </aside>
+
 </div>
