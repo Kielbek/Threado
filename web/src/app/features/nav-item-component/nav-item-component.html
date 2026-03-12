@@ -1,0 +1,22 @@
+<a [routerLink]="item().route"
+   routerLinkActive #rla="routerLinkActive"
+   (click)="clicked.emit()"
+   class="group flex items-center justify-center xl:justify-start gap-5 px-4 py-3 rounded-full transition-all hover:bg-white/5 w-full cursor-pointer">
+
+  <lucide-icon
+    [img]="item().icon"
+    [class.text-[#32cd32]]="rla.isActive"
+    [class.text-white]="!rla.isActive"
+    [strokeWidth]="rla.isActive ? 3 : 2"
+    class="w-7 h-7 transition-all group-hover:text-[#32cd32] flex-shrink-0">
+  </lucide-icon>
+
+  @if (showLabel()) {
+    <span class="text-xl transition-all lg:hidden xl:block group-hover:text-white"
+          [class.font-bold]="rla.isActive"
+          [class.text-[#32cd32]]="rla.isActive"
+          [class.text-gray-300]="!rla.isActive">
+          {{ item().label }}
+        </span>
+  }
+</a>
