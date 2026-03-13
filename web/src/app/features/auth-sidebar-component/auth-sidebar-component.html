@@ -1,0 +1,26 @@
+@if (!isLoggedIn) {
+  <div class="flex flex-col gap-6 py-6 px-4">
+    <div class="space-y-1">
+      <h2 class="text-xl font-bold text-white tracking-tight">New to Threado?</h2>
+      <p class="text-[13px] text-gray-500 leading-relaxed">
+        Sign up now to get your own personalized timeline!
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <app-threado-button
+        text="Create account"
+        variant="primary"
+        (clicked)="register()"
+      >
+      </app-threado-button>
+
+      <app-threado-button
+        text="Sign in"
+        variant="outline"
+        (clicked)="login()"
+      >
+      </app-threado-button>
+    </div>
+  </div>
+}
