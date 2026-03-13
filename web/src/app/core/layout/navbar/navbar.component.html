@@ -2,7 +2,7 @@
 
   <div class="flex justify-between items-center mb-6 lg:mb-8 px-4">
     <a routerLink="/home" class="inline-block hover:opacity-80 transition">
-      <img src="threado_logo.png" class="w-10 h-10 object-contain" alt="Logo">
+      <img src="threado-full-logo.png" class="h-14 object-contain" alt="Logo">
     </a>
   </div>
 
@@ -19,14 +19,22 @@
     </div>
   </div>
 
-  <div class="mt-auto mb-4">
-    <button class="w-full flex items-center justify-center xl:justify-start gap-3 p-3 rounded-full hover:bg-white/10 transition">
-      <app-threado-avatar size="3rem"></app-threado-avatar>
+  <div class="mt-auto mb-4 relative group">
+    <button class="w-full flex items-center justify-between p-3 rounded-full hover:bg-white/10 transition group-active:scale-95">
 
-      <div class="hidden xl:flex flex-col text-left">
-        <span class="font-bold text-sm text-white">Mateusz</span>
-        <span class="text-xs text-gray-500">&#64;mateusz_dev</span>
+      <div class="flex items-center gap-3 overflow-hidden">
+        <app-threado-avatar size="2.5rem"></app-threado-avatar>
+
+        <div class="hidden xl:flex flex-col text-left overflow-hidden">
+          <span class="font-bold text-sm text-white truncate">Mateusz</span>
+          <span class="text-xs text-gray-500 truncate">&#64;mateusz_dev</span>
+        </div>
       </div>
+
+      <app-threado-action-button
+        [icon]="EllipsisIcon"
+        variant="accent">
+      </app-threado-action-button>
     </button>
   </div>
 </nav>
