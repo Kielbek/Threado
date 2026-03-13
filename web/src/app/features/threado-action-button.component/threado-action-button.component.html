@@ -1,0 +1,12 @@
+<button
+  class="threado-action-btn"
+  [ngClass]="[variantClass(), customClass()]">
+
+  <div class="icon-wrapper">
+    <lucide-icon [img]="icon()" class="w-5 h-5"></lucide-icon>
+  </div>
+
+  @if (count()) {
+    <span class="text-xs font-medium">{{ count() }}</span>
+  }
+</button>
