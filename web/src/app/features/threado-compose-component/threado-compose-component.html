@@ -3,16 +3,16 @@
 }
 
 <div
-  class="mx-auto w-full pb-20 lg:pb-0 relative transition-all duration-300"
+  class="mx-auto w-full relative transition-all duration-300"
   [ngClass]="{'z-50': isDraggingAnywhere}"
 >
   <div
     class="p-4 transition-all duration-300 relative"
     [ngClass]="{
-      'border-2 border-dashed border-[#32cd32]/60': isDraggingAnywhere && !isDraggingOverComponent,
-      'border-2 border-dashed border-[#32cd32] outline outline-2 outline-offset-4 outline-[#32cd32] bg-[#32cd32]/10 shadow-[0_0_20px_rgba(50,205,50,0.2)]': isDraggingOverComponent,
-      'border-b border-[#32cd32]/20': !isDraggingAnywhere
-    }"
+    'border-2 border-dashed border-threado/60': isDraggingAnywhere && !isDraggingOverComponent,
+    'border-2 border-dashed border-threado outline outline-2 outline-offset-4 outline-threado bg-threado/10 shadow-threado-glow': isDraggingOverComponent,
+    'border-b threado-border': !isDraggingAnywhere
+  }"
   >
 
     @if (isDraggingAnywhere) {
@@ -79,24 +79,22 @@
             >
               <div class="flex space-x-1 relative">
 
-                <button
+                <app-threado-action-button
+                  [icon]="PaperclipIcon"
+                  variant="accent"
                   (click)="fileInput.click()"
-                  type="button"
-                  class="rounded-full p-2 text-white hover:text-[#32cd32] hover:bg-[#32cd32]/10 transition cursor-pointer"
                   title="Dodaj zdjęcie">
-                  <lucide-icon [img]="PaperclipIcon" class="h-5 w-5"></lucide-icon>
-                </button>
+                </app-threado-action-button>
 
                 <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
 
                 <div class="relative">
-                  <button
+                  <app-threado-action-button
+                    [icon]="SmileIcon"
+                    variant="accent"
                     (click)="toggleEmojiPicker($event)"
-                    type="button"
-                    class="rounded-full p-2 text-white hover:text-[#32cd32] hover:bg-[#32cd32]/10 transition cursor-pointer"
                     title="Emoji">
-                    <lucide-icon [img]="SmileIcon" class="h-5 w-5"></lucide-icon>
-                  </button>
+                  </app-threado-action-button>
 
                   @if (isEmojiPickerVisible) {
                     <div class="absolute top-full mt-2 left-0 z-[100] shadow-2xl rounded-xl border border-[#32cd32]/30 bg-black">

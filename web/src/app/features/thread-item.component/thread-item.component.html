@@ -1,4 +1,4 @@
-<div class="border-b border-[#32cd32]/30 p-4 hover:bg-white/[0.01] transition-colors cursor-pointer group/thread">
+<div class="border-b threado-border p-4 hover:bg-white/[0.01] transition-colors cursor-pointer group/thread">
   <div class="flex flex-col space-x-3">
 
     <div class="flex gap-3">
@@ -24,33 +24,28 @@
       </div>
 
       <div class="mt-4 flex justify-around -ml-2 text-gray-500">
-        <button class="flex items-center space-x-2 group/btn hover:text-[#32cd32] transition cursor-pointer">
-          <div class="p-2 group-hover/btn:bg-[#32cd32]/10 rounded-full transition">
-            <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
-          </div>
-          <span class="text-xs font-medium">59</span>
-        </button>
+        <app-threado-action-button
+          [icon]="MessageCircleIcon"
+          variant="accent"
+          count="59">
+        </app-threado-action-button>
 
-        <button class="flex items-center space-x-2 group/btn hover:text-green-500 transition cursor-pointer">
-          <div class="p-2 group-hover/btn:bg-green-500/10 rounded-full transition">
-            <lucide-icon [img]="RepeatIcon" class="w-5 h-5"></lucide-icon>
-          </div>
-          <span class="text-xs font-medium">101</span>
-        </button>
+        <app-threado-action-button
+          [icon]="RepeatIcon"
+          variant="green"
+          count="101">
+        </app-threado-action-button>
 
-        <button class="flex items-center space-x-2 group/btn hover:text-red-500 transition cursor-pointer">
-          <div class="p-2 group-hover/btn:bg-red-500/10 rounded-full transition">
-            <lucide-icon [img]="HeartIcon" class="w-5 h-5"></lucide-icon>
-          </div>
-          <span class="text-xs font-medium">792</span>
-        </button>
+        <app-threado-action-button
+          [icon]="HeartIcon"
+          variant="red"
+          count="792">
+        </app-threado-action-button>
 
-        <button class="flex items-center space-x-2 group/btn hover:text-blue-500 transition cursor-pointer">
-          <div class="p-2 group-hover/btn:bg-blue-500/10 rounded-full transition">
-            <lucide-icon [img]="BookmarkIcon" class="w-5 h-5"></lucide-icon>
-          </div>
-          <span class="text-xs font-medium">792</span>
-        </button>
+        <app-threado-action-button
+          [icon]="BookmarkIcon"
+          variant="blue">
+        </app-threado-action-button>
       </div>
     </div>
   </div>
