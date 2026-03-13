@@ -6,15 +6,14 @@
   class="mx-auto w-full relative transition-all duration-300"
   [ngClass]="{'z-50': isDraggingAnywhere}"
 >
-  <div
-    class="p-4 transition-all duration-300 relative"
-    [ngClass]="{
-    'border-2 border-dashed border-threado/60': isDraggingAnywhere && !isDraggingOverComponent,
-    'border-2 border-dashed border-threado outline outline-2 outline-offset-4 outline-threado bg-threado/10 shadow-threado-glow': isDraggingOverComponent,
-    'border-b threado-border': !isDraggingAnywhere
-  }"
-  >
-
+    <div
+      class="p-4 transition-all duration-300 relative"
+      [ngClass]="{
+        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': isDraggingAnywhere && !isDraggingOverComponent,
+        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
+        'border-b threado-border': !isDraggingAnywhere
+      }"
+    >
     @if (isDraggingAnywhere) {
       <div
         class="absolute inset-0 z-50 rounded-xl"
@@ -25,7 +24,7 @@
       >
         @if (isDraggingOverComponent) {
           <div class="w-full h-full flex items-center justify-center pointer-events-none rounded-xl">
-            <div class="bg-black/80 text-[#32cd32] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-[#32cd32]/50 scale-105 transition-transform">
+            <div class="bg-black/80 text-[#32cd32] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-threado scale-105 transition-transform">
               Upuść zdjęcie tutaj
             </div>
           </div>
