@@ -1,12 +1,13 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Bell, Bookmark, BookmarkIcon, EllipsisIcon, Home, LucideAngularModule, User, XIcon} from 'lucide-angular';
+import {Bell, Bookmark, EllipsisIcon, Home, LucideAngularModule, User} from 'lucide-angular';
 import {NavItemComponent} from '../../../features/nav-item-component/nav-item-component';
 import {ThreadoButtonComponent} from '../../../features/threado-button-component/threado-button.component';
 import {ThreadoAvatarComponent} from '../../../features/threado-avatar-component/threado-avatar-component';
 import {
   ThreadoActionButtonComponent
 } from '../../../features/threado-action-button.component/threado-action-button.component';
+import {KeycloakService} from '../../services/keycloak-service';
 
 @Component({
   selector: 'app-navbar',
@@ -23,11 +24,13 @@ import {
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
+  readonly ksService = inject(KeycloakService);
+
   readonly HomeIcon = Home;
   readonly BellIcon = Bell;
   readonly BookmarkIcon = Bookmark;
   readonly UserIcon = User;
-  readonly XIcon = XIcon;
+  readonly EllipsisIcon = EllipsisIcon;
 
   readonly menuItems = [
     { label: 'Home', route: '/home', icon: this.HomeIcon },
@@ -35,5 +38,5 @@ export class NavbarComponent {
     { label: 'Bookmarks', route: '/bookmarks', icon: this.BookmarkIcon },
     { label: 'Profile', route: '/profile', icon: this.UserIcon },
   ];
-  protected readonly EllipsisIcon = EllipsisIcon;
+
 }
