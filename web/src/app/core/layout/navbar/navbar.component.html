@@ -1,48 +1,40 @@
-@if (isMobileMenuOpen()) {
-  <div (click)="closeMenu()"
-       class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity">
-  </div>
-}
-
-<nav [class.-translate-x-full]="!isMobileMenuOpen()"
-     class="fixed inset-y-0 left-0 z-50 w-72 bg-[#151718] p-4 flex flex-col border-r border-gray-800 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:w-full lg:h-screen lg:bg-transparent lg:border-none">
+<nav class="p-4 flex flex-col h-screen">
 
   <div class="flex justify-between items-center mb-6 lg:mb-8 px-4">
-    <a routerLink="/home" (click)="closeMenu()" class="inline-block hover:opacity-80 transition">
-      <img src="threado_logo.png" class="w-10 h-10 object-contain" alt="Logo">
+    <a routerLink="/home" class="inline-block hover:opacity-80 transition">
+      <img src="threado-full-logo.png" class="h-14 object-contain" alt="Logo">
     </a>
-
-    <button (click)="closeMenu()" class="lg:hidden p-2 text-gray-400 hover:text-white transition rounded-full hover:bg-white/10">
-      <lucide-icon [img]="XIcon" class="w-6 h-6"></lucide-icon>
-    </button>
   </div>
 
   <div class="flex flex-col gap-2 flex-grow">
     @for (item of menuItems; track item.route) {
-      <app-nav-item
-        [item]="item"
-        (clicked)="closeMenu()">
-      </app-nav-item>
+      <app-nav-item [item]="item"></app-nav-item>
     }
 
-    <app-thread-button
-      customClasses="mt-4 w-full py-3"
-      (clicked)="open()">
-    </app-thread-button>
+    <div class="mt-4 px-2">
+      <app-threado-button
+        text="Thread"
+        customClasses="w-full py-3 text-lg font-bold">
+      </app-threado-button>
+    </div>
   </div>
 
-  <div class="mt-auto mb-4">
-    <button class="w-full flex items-center justify-center xl:justify-start gap-3 p-3 rounded-full hover:bg-white/10 transition">
-      <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden flex-shrink-0">
-        <img src="assets/avatar-placeholder.png" class="w-full h-full object-cover" alt="User">
+  <div class="mt-auto mb-4 relative group">
+    <button class="w-full flex items-center justify-between p-3 rounded-full hover:bg-white/10 transition group-active:scale-95">
+
+      <div class="flex items-center gap-3 overflow-hidden">
+        <app-threado-avatar size="2.5rem"></app-threado-avatar>
+
+        <div class="hidden xl:flex flex-col text-left overflow-hidden">
+          <span class="font-bold text-sm text-white truncate">Mateusz</span>
+          <span class="text-xs text-gray-500 truncate">&#64;mateusz_dev</span>
+        </div>
       </div>
 
-      <div class="hidden xl:flex flex-col text-left">
-        <span class="font-bold text-sm text-white">Mateusz</span>
-        <span class="text-xs text-gray-500">&#64;mateusz_dev</span>
-      </div>
-
-<!--      <lucide-icon name="more-horizontal" class="hidden xl:block w-5 h-5 ml-auto text-gray-500"></lucide-icon>-->
+      <app-threado-action-button
+        [icon]="EllipsisIcon"
+        variant="accent">
+      </app-threado-action-button>
     </button>
   </div>
 </nav>

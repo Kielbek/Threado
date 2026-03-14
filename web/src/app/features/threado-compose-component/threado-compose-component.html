@@ -3,18 +3,17 @@
 }
 
 <div
-  class="mx-auto w-full pb-20 lg:pb-0 relative transition-all duration-300"
+  class="mx-auto w-full relative transition-all duration-300"
   [ngClass]="{'z-50': isDraggingAnywhere}"
 >
-  <div
-    class="p-4 transition-all duration-300 relative"
-    [ngClass]="{
-      'border-2 border-dashed border-[#32cd32]/60': isDraggingAnywhere && !isDraggingOverComponent,
-      'border-2 border-dashed border-[#32cd32] outline outline-2 outline-offset-4 outline-[#32cd32] bg-[#32cd32]/10 shadow-[0_0_20px_rgba(50,205,50,0.2)]': isDraggingOverComponent,
-      'border-b border-[#32cd32]/20': !isDraggingAnywhere
-    }"
-  >
-
+    <div
+      class="p-4 transition-all duration-300 relative"
+      [ngClass]="{
+        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': isDraggingAnywhere && !isDraggingOverComponent,
+        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
+        'border-b threado-border': !isDraggingAnywhere
+      }"
+    >
     @if (isDraggingAnywhere) {
       <div
         class="absolute inset-0 z-50 rounded-xl"
@@ -25,7 +24,7 @@
       >
         @if (isDraggingOverComponent) {
           <div class="w-full h-full flex items-center justify-center pointer-events-none rounded-xl">
-            <div class="bg-black/80 text-[#32cd32] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-[#32cd32]/50 scale-105 transition-transform">
+            <div class="bg-black/80 text-[#32cd32] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-threado scale-105 transition-transform">
               Upuść zdjęcie tutaj
             </div>
           </div>
@@ -79,24 +78,22 @@
             >
               <div class="flex space-x-1 relative">
 
-                <button
+                <app-threado-action-button
+                  [icon]="PaperclipIcon"
+                  variant="accent"
                   (click)="fileInput.click()"
-                  type="button"
-                  class="rounded-full p-2 text-white hover:text-[#32cd32] hover:bg-[#32cd32]/10 transition cursor-pointer"
                   title="Dodaj zdjęcie">
-                  <lucide-icon [img]="PaperclipIcon" class="h-5 w-5"></lucide-icon>
-                </button>
+                </app-threado-action-button>
 
                 <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
 
                 <div class="relative">
-                  <button
+                  <app-threado-action-button
+                    [icon]="SmileIcon"
+                    variant="accent"
                     (click)="toggleEmojiPicker($event)"
-                    type="button"
-                    class="rounded-full p-2 text-white hover:text-[#32cd32] hover:bg-[#32cd32]/10 transition cursor-pointer"
                     title="Emoji">
-                    <lucide-icon [img]="SmileIcon" class="h-5 w-5"></lucide-icon>
-                  </button>
+                  </app-threado-action-button>
 
                   @if (isEmojiPickerVisible) {
                     <div class="absolute top-full mt-2 left-0 z-[100] shadow-2xl rounded-xl border border-[#32cd32]/30 bg-black">
@@ -131,13 +128,13 @@
                   </svg>
                 </div>
 
-                <app-thread-button
+                <app-threado-button
                   (click)="submitPost()"
                   [disabled]="(characterCount() === 0 && !selectedImage()) || isOverLimit()"
                   text="Thread"
                   customClasses="py-1.5 !text-sm !w-27"
                 >
-                </app-thread-button>
+                </app-threado-button>
               </div>
             </div>
           </div>

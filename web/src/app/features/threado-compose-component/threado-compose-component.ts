@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ThreadoButtonComponent } from '../threado-button-component/threado-button.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avatar-component';
+import {ThreadoActionButtonComponent} from '../threado-action-button.component/threado-action-button.component';
 
 @Component({
   selector: 'app-threado-compose',
@@ -14,7 +15,8 @@ import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avat
     FormsModule,
     ThreadoButtonComponent,
     PickerComponent,
-    ThreadoAvatarComponent
+    ThreadoAvatarComponent,
+    ThreadoActionButtonComponent
   ],
   templateUrl: './threado-compose-component.html',
   styleUrl: './threado-compose-component.css',
