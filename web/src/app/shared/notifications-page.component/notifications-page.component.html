@@ -1,0 +1,27 @@
+<div class="w-full text-white pb-safe min-h-screen bg-black">
+
+  <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-xl p-4 border-b threado-border flex items-center justify-between">
+    <h1 class="text-xl font-bold tracking-tight">Powiadomienia</h1>
+  </header>
+
+  <div class="flex flex-col">
+    @for (item of notifications(); track item.id) {
+
+      <app-notification-item [notif]="item" />
+
+    } @empty {
+
+      <div class="px-8 py-16 text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh]">
+        <div class="bg-white/5 p-4 rounded-full mb-4 ring-1 ring-white/10">
+          <lucide-icon [img]="MessageIcon" class="w-8 h-8 opacity-50"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Brak powiadomień</h3>
+        <p class="text-[15px] text-gray-400 max-w-sm mx-auto">
+          Tutaj pojawią się powiadomienia o polubieniach, odpowiedziach i nowych obserwujących.
+        </p>
+      </div>
+
+    }
+  </div>
+
+</div>
