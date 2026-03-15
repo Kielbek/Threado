@@ -6,6 +6,11 @@ import {BookmarksPageComponent} from './shared/bookmarks-page.component/bookmark
 
 export const routes: Routes = [
   {
+    path: '',
+    component: HomePageComponent,
+    title: 'Główna / Threado'
+  },
+  {
     path: 'home',
     component: HomePageComponent,
     title: 'Główna / Threado'
