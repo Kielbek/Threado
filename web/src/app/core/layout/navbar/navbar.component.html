@@ -1,4 +1,4 @@
-<nav class="p-4 flex flex-col h-screen">
+<nav class="p-4 flex flex-col h-screen transition-colors duration-300">
 
   <div class="flex justify-between items-center mb-6 lg:mb-8 px-4">
     <a routerLink="/home" class="inline-block hover:opacity-80 transition">
@@ -9,7 +9,6 @@
   @if (ksService.isLoggedIn()) {
 
     <div class="flex flex-col gap-2 flex-grow">
-
       @for (item of menuItems; track item.route) {
         <app-nav-item [item]="item"></app-nav-item>
       }
@@ -25,46 +24,51 @@
     <div class="mt-auto mb-4 relative">
 
       @if (isDropdownOpen()) {
-        <div class="absolute bottom-full right-0 mb-3 w-[260px] bg-[#0a0a0a] border border-[color-mix(in_srgb,var(--color-threado-accent),transparent_50%)] rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.6)] p-1.5 z-50">
+        <div class="absolute bottom-full right-0 mb-3 w-[260px] bg-white dark:bg-black border threado-border rounded-lg shadow-xl p-1.5 z-50 transition-all">
           <ul class="flex flex-col">
 
             <li class="flex items-center justify-between px-3 py-2">
-              <span class="text-sm font-medium text-white">Theme</span>
+              <span class="text-sm font-medium text-black dark:text-white">Theme</span>
 
               <div class="relative">
-                <lucide-icon [img]="SunIcon" class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></lucide-icon>
+                <lucide-icon [img]="SunIcon" class="w-4 h-4 absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></lucide-icon>
 
-                <select class="appearance-none bg-transparent border border-zinc-700 hover:border-zinc-500 transition-colors text-white text-sm rounded-md pl-8 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-[var(--color-threado-accent)] cursor-pointer w-[110px]">
+                <select
+                  [value]="themeService.currentTheme()"
+                  (change)="onThemeChange($event)"
+                  class="appearance-none bg-zinc-100 dark:bg-zinc-900 border threado-border text-black dark:text-white text-sm rounded-md pl-7 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-[var(--color-threado-accent)] cursor-pointer w-[120px]">
                   <option value="system">System</option>
                   <option value="light">Light</option>
-                  <option value="dark" selected>Dark</option>
+                  <option value="dark">Dark</option>
                 </select>
 
-                <lucide-icon [img]="ChevronDownIcon" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></lucide-icon>
+                <lucide-icon [img]="ChevronDownIcon" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></lucide-icon>
               </div>
             </li>
 
-            <li class="mx-2 my-1.5 h-px bg-zinc-800"></li>
+            <li class="mx-2 my-1.5 h-px border-b threado-border"></li>
 
             <li>
-              <button class="w-full text-left px-3 py-2 text-sm font-medium text-white rounded-md hover:bg-white/10 transition-colors">
+              <button class="w-full text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-black dark:text-white"
+                      (click)="ksService.keycloak.logout()">
                 Log out &#64;kielbek
               </button>
             </li>
+
           </ul>
         </div>
       }
 
       <button
         (click)="toggleDropdown()"
-        class="w-full flex items-center justify-between p-3 rounded-full hover:bg-white/10 transition active:scale-95"
-        [ngClass]="{'bg-white/10': isDropdownOpen()}">
+        class="w-full flex items-center justify-between p-3 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition active:scale-95"
+        [ngClass]="{'bg-gray-100 dark:bg-white/10': isDropdownOpen()}">
 
         <div class="flex items-center gap-3 overflow-hidden">
           <app-threado-avatar size="2.5rem"></app-threado-avatar>
 
           <div class="hidden xl:flex flex-col text-left overflow-hidden">
-            <span class="font-bold text-sm text-white truncate">Mateusz</span>
+            <span class="font-bold text-sm text-black dark:text-white truncate">Mateusz</span>
             <span class="text-xs text-gray-500 truncate">&#64;kielbek</span>
           </div>
         </div>

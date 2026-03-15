@@ -1,52 +1,54 @@
-<div class="border-b threado-border p-4 hover:bg-white/[0.01] transition-colors cursor-pointer group/thread">
-  <div class="flex flex-col space-x-3">
+<div class="border-b threado-border p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer group/thread">
 
-    <div class="flex gap-3">
+  <div class="flex items-center gap-3">
+    <div class="flex-shrink-0">
       <app-threado-avatar
         size="3rem"
         avatarUrl="https://static-assets-1.truthsocial.com/tmtg:prime-ts-assets/accounts/avatars/107/841/586/977/713/410/original/abcd2c1aff2a6323.jpeg"
       ></app-threado-avatar>
+    </div>
 
-      <div class="flex flex-col items-center overflow-hidden">
-        <span class="font-bold text-white hover:underline truncate">Marco Rubio</span>
+      <div class="flex flex-col overflow-hidden">
+        <span class="font-bold text-black dark:text-white hover:underline truncate">Marco Rubio</span>
         <span class="text-gray-500 text-sm truncate">@marcorubio</span>
       </div>
+  </div>
+
+  <div class="mt-2">
+    <div class="text-black dark:text-white text-[15px] leading-relaxed">
+      Vote! Every single vote counts in this election. Let's make it happen. 🗳️
     </div>
 
-    <div class="flex-grow min-w-0">
-      <div class="mt-1 text-white text-[15px] leading-relaxed">
-        Vote! Every single vote counts in this election. Let's make it happen. 🗳️
-      </div>
+    <div class="mt-3 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900/50">
+      <img src="https://static-assets-1.truthsocial.com/tmtg:prime-ts-assets/media_attachments/files/113/430/734/770/050/915/small/647039c47eac7c86.jpg"
+           alt="Thread image"
+           class="w-full h-auto object-cover max-h-[512px] hover:scale-[1.01] transition-transform duration-500">
+    </div>
 
-      <div class="mt-3 rounded-2xl overflow-hidden border border-gray-800 bg-gray-900/50">
-        <img src="https://static-assets-1.truthsocial.com/tmtg:prime-ts-assets/media_attachments/files/113/430/734/770/050/915/small/647039c47eac7c86.jpg"
-             alt="Thread image" class="w-full h-auto object-cover max-h-[512px] hover:scale-[1.01] transition-transform duration-500">
-      </div>
+    <div class="mt-3 w-full flex justify-around -ml-2 text-gray-500">
+      <app-threado-action-button
+        [icon]="MessageCircleIcon"
+        variant="accent"
+        count="59">
+      </app-threado-action-button>
 
-      <div class="mt-4 flex justify-around -ml-2 text-gray-500">
-        <app-threado-action-button
-          [icon]="MessageCircleIcon"
-          variant="accent"
-          count="59">
-        </app-threado-action-button>
+      <app-threado-action-button
+        [icon]="RepeatIcon"
+        variant="green"
+        count="101">
+      </app-threado-action-button>
 
-        <app-threado-action-button
-          [icon]="RepeatIcon"
-          variant="green"
-          count="101">
-        </app-threado-action-button>
+      <app-threado-action-button
+        [icon]="HeartIcon"
+        variant="red"
+        count="792">
+      </app-threado-action-button>
 
-        <app-threado-action-button
-          [icon]="HeartIcon"
-          variant="red"
-          count="792">
-        </app-threado-action-button>
-
-        <app-threado-action-button
-          [icon]="BookmarkIcon"
-          variant="blue">
-        </app-threado-action-button>
-      </div>
+      <app-threado-action-button
+        [icon]="BookmarkIcon"
+        variant="blue">
+      </app-threado-action-button>
     </div>
   </div>
+
 </div>

@@ -2,12 +2,14 @@ import {Component, signal} from '@angular/core';
 import {LucideAngularModule, MessageCircle} from "lucide-angular";
 import {Notification} from '../../core/model/notification';
 import {NotificationItemComponent} from '../../features/notification-item.component/notification-item.component';
+import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 
 @Component({
   selector: 'app-notifications-page.component',
   imports: [
     LucideAngularModule,
-    NotificationItemComponent
+    NotificationItemComponent,
+    PageHeaderComponent
   ],
   templateUrl: './notifications-page.component.html',
   styleUrl: './notifications-page.component.css',

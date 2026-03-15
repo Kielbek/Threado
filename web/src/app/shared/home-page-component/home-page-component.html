@@ -1,15 +1,15 @@
-<div class="min-h-screen text-white">
+<div class="min-h-screen pb-safe">
 
-  <header class="sticky top-0 z-30 border-b threado-border p-4 w-full bg-transparent overflow-hidden">
-    <div class="absolute inset-0 -z-10 bg-black/80 backdrop-blur-xl"></div>
-
-    <h1 class="text-xl font-bold text-white relative">Główna</h1>
-  </header>
+  <app-page-header title="Powiadomienia"></app-page-header>
 
   <app-threado-compose></app-threado-compose>
+
   <app-feed-tabs></app-feed-tabs>
-  <app-thread-item></app-thread-item>
-  <app-thread-item></app-thread-item>
-  <app-thread-item></app-thread-item>
+
+  <div class="flex flex-col">
+    <app-thread-item></app-thread-item>
+    <app-thread-item></app-thread-item>
+    <app-thread-item></app-thread-item>
+  </div>
 
 </div>

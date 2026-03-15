@@ -4,6 +4,7 @@ import {ArrowLeftIcon, CalendarIcon, LucideAngularModule, MapPinIcon, UserIcon} 
 import {ThreadoButtonComponent} from '../../features/threado-button-component/threado-button.component';
 import {DatePipe} from '@angular/common';
 import {ThreadItemComponent} from '../../features/thread-item.component/thread-item.component';
+import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 
 @Component({
   selector: 'app-user-profile-page-component',
@@ -11,7 +12,8 @@ import {ThreadItemComponent} from '../../features/thread-item.component/thread-i
     LucideAngularModule,
     ThreadoButtonComponent,
     DatePipe,
-    ThreadItemComponent
+    ThreadItemComponent,
+    PageHeaderComponent
   ],
   templateUrl: './user-profile-page-component.html',
   styleUrl: './user-profile-page-component.css',

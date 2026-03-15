@@ -32,8 +32,8 @@ export class ThreadoButtonComponent {
         disabled:hover:bg-threado
       `,
       outline: `
-        border border-threado text-white
-        hover:bg-white/5
+        border border-threado text-black dark:text-white
+        hover:bg-black/5 dark:hover:bg-white/5
       `
     };
 

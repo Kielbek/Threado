@@ -1,7 +1,7 @@
 import {Component, signal} from '@angular/core';
-import {Bookmark, Heart, LucideAngularModule, MessageCircle, MoreHorizontal, Repeat2, Share} from "lucide-angular";
-import {NgClass} from '@angular/common';
+import {Bookmark, Heart, LucideAngularModule, Repeat2, Share} from "lucide-angular";
 import {ThreadItemComponent} from '../../features/thread-item.component/thread-item.component';
+import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 
 export interface BookmarkedPost {
   id: string;
@@ -16,8 +16,8 @@ export interface BookmarkedPost {
   selector: 'app-bookmarks-page.component',
   imports: [
     LucideAngularModule,
-    NgClass,
-    ThreadItemComponent
+    ThreadItemComponent,
+    PageHeaderComponent
   ],
   templateUrl: './bookmarks-page.component.html',
   styleUrl: './bookmarks-page.component.css',
@@ -25,7 +25,6 @@ export interface BookmarkedPost {
 export class BookmarksPageComponent {
   readonly BookmarkIcon = Bookmark;
   readonly HeartIcon = Heart;
-  readonly ReplyIcon = MessageCircle;
   readonly RepostIcon = Repeat2;
   readonly ShareIcon = Share;
 
