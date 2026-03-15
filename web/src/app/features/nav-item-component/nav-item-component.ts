@@ -1,16 +1,18 @@
-import {Component, input, output} from '@angular/core';
-import {LucideAngularModule} from 'lucide-angular';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {NgClass} from '@angular/common';
+import { Component, input, output } from '@angular/core';
+import { LucideAngularModule } from 'lucide-angular';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 export type NavItem = {
   label: string;
   route: string;
   icon: any;
+  showDot?: boolean;
 };
 
 @Component({
   selector: 'app-nav-item',
+  standalone: true,
   imports: [
     LucideAngularModule,
     RouterLink,

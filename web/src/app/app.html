@@ -4,7 +4,12 @@
     <app-navbar></app-navbar>
   </aside>
 
-  <main class="flex-1 min-w-0 border-x threado-border">
+  <main class="flex-1 min-w-0 border-x threado-border relative">
+
+    <div class="sticky top-0 z-50 lg:hidden">
+      <app-header></app-header>
+    </div>
+
     <router-outlet></router-outlet>
   </main>
 
@@ -14,6 +19,4 @@
 
 </div>
 
-<div class="block lg:hidden">
-  <app-mobile-nav></app-mobile-nav>
-</div>
+<app-mobile-nav></app-mobile-nav>
