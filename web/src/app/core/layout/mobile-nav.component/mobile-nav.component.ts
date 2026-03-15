@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 import {Bell, Bookmark, Home, LucideAngularModule, Plus, User} from "lucide-angular";
 import {RouterLink, RouterLinkActive} from '@angular/router';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-mobile-nav',
   imports: [
     RouterLink,
     RouterLinkActive,
-    LucideAngularModule
+    LucideAngularModule,
+    NgClass
   ],
   templateUrl: './mobile-nav.component.html',
   styleUrl: './mobile-nav.component.css',
