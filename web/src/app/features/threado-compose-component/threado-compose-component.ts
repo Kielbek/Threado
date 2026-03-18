@@ -1,12 +1,13 @@
 import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { LucideAngularModule, PaperclipIcon, SmileIcon, XIcon } from 'lucide-angular';
-import {AsyncPipe, NgClass} from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThreadoButtonComponent } from '../threado-button-component/threado-button.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avatar-component';
-import {ThreadoActionButtonComponent} from '../threado-action-button.component/threado-action-button.component';
-import {UserService} from '../../core/services/user.service';
+import { ThreadoActionButtonComponent } from '../threado-action-button.component/threado-action-button.component';
+import { UserService } from '../../core/services/user.service';
+import {ThreadService} from '../../core/services/thread.service';
 
 @Component({
   selector: 'app-threado-compose',
@@ -26,6 +27,7 @@ import {UserService} from '../../core/services/user.service';
 export class ThreadoComposeComponent {
   private elementRef = inject(ElementRef);
   userService = inject(UserService);
+  private threadService = inject(ThreadService);
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
@@ -33,6 +35,8 @@ export class ThreadoComposeComponent {
   content = signal('');
   isExpanded = signal(false);
   selectedImage = signal<string | null>(null);
+  selectedFile = signal<File | null>(null);
+  isSubmitting = signal(false);
 
   isEmojiPickerVisible: boolean = false;
 
@@ -56,7 +60,6 @@ export class ThreadoComposeComponent {
     if (!this.isExpanded()) return;
 
     const clickedInsideComponent = this.elementRef.nativeElement.contains(event.target);
-
     const targetElement = event.target as HTMLElement;
     const clickedInsidePicker = !!targetElement.closest('emoji-mart');
 
@@ -149,6 +152,7 @@ export class ThreadoComposeComponent {
   }
 
   private handleFile(file: File) {
+    this.selectedFile.set(file);
     const reader = new FileReader();
     reader.onload = () => {
       this.selectedImage.set(reader.result as string);
@@ -158,6 +162,7 @@ export class ThreadoComposeComponent {
 
   removeImage() {
     this.selectedImage.set(null);
+    this.selectedFile.set(null);
   }
 
   toggleEmojiPicker(event: MouseEvent) {
@@ -170,21 +175,8 @@ export class ThreadoComposeComponent {
     this.isEmojiPickerVisible = false;
   }
 
-  submitPost() {
-    if ((this.characterCount() === 0 && !this.selectedImage()) || this.isOverLimit()) {
-      return;
-    }
-
-    // TODO: Tutaj w przyszłości dodasz wywołanie serwisu zapisującego do bazy/Keycloaka
-
-    this.content.set('');
-    this.selectedImage.set(null);
-    this.isExpanded.set(false);
-  }
-
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-
     textarea.style.height = 'auto';
 
     const maxHeight = 200;
@@ -194,6 +186,27 @@ export class ThreadoComposeComponent {
     } else {
       textarea.style.height = maxHeight + 'px';
       textarea.style.overflowY = 'scroll';
+    }
+  }
+
+  async submitPost() {
+    if ((this.characterCount() === 0 && !this.selectedImage()) || this.isOverLimit() || this.isSubmitting()) {
+      return;
+    }
+
+    this.isSubmitting.set(true);
+
+    try {
+      await this.threadService.createThread(this.content(), this.selectedFile());
+
+      this.content.set('');
+      this.selectedImage.set(null);
+      this.selectedFile.set(null);
+      this.isExpanded.set(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isSubmitting.set(false);
     }
   }
 
