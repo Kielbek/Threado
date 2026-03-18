@@ -15,11 +15,12 @@ import {
   ThreadoActionButtonComponent
 } from '../../../features/threado-action-button.component/threado-action-button.component';
 import {KeycloakService} from '../../services/keycloak-service';
-import {NgClass} from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 import {ThreadoButtonComponent} from '../../../features/threado-button-component/threado-button.component';
 import {NavItemComponent} from '../../../features/nav-item-component/nav-item-component';
 import {RouterLink} from '@angular/router';
 import {ThemeMode, ThemeService} from '../../services/theme.service';
+import {UserService} from '../../services/user.service';
 import {UiService} from '../../services/ui.service';
 
 @Component({
@@ -33,12 +34,14 @@ import {UiService} from '../../services/ui.service';
     ThreadoAvatarComponent,
     ThreadoActionButtonComponent,
     NgClass,
+    AsyncPipe,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
   readonly ksService = inject(KeycloakService);
+  userService = inject(UserService);
   private elementRef = inject(ElementRef);
   themeService = inject(ThemeService);
 

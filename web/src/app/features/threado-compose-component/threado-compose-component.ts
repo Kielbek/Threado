@@ -1,11 +1,12 @@
 import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { LucideAngularModule, PaperclipIcon, SmileIcon, XIcon } from 'lucide-angular';
-import { NgClass } from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThreadoButtonComponent } from '../threado-button-component/threado-button.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avatar-component';
 import {ThreadoActionButtonComponent} from '../threado-action-button.component/threado-action-button.component';
+import {UserService} from '../../core/services/user.service';
 
 @Component({
   selector: 'app-threado-compose',
@@ -16,13 +17,15 @@ import {ThreadoActionButtonComponent} from '../threado-action-button.component/t
     ThreadoButtonComponent,
     PickerComponent,
     ThreadoAvatarComponent,
-    ThreadoActionButtonComponent
+    ThreadoActionButtonComponent,
+    AsyncPipe
   ],
   templateUrl: './threado-compose-component.html',
   styleUrl: './threado-compose-component.css',
 })
 export class ThreadoComposeComponent {
   private elementRef = inject(ElementRef);
+  userService = inject(UserService);
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
