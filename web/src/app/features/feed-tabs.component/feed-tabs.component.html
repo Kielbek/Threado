@@ -1,15 +1,14 @@
 <div class="sticky top-[59px] z-20 w-full border-b-[3px] threado-border">
-
   <div class="absolute inset-0 -z-10 bg-white/80 dark:bg-black/80 backdrop-blur-xl"></div>
 
   <div class="relative flex" role="tablist">
     @for (tab of tabs; track tab) {
       <button
         (click)="selectTab(tab)"
-        class="flex-1 py-4 text-sm font-medium transition-colors duration-200 relative z-10"
+        class="flex-1 py-4 text-sm font-bold transition-colors duration-200 relative z-10"
         [ngClass]="activeTab === tab
           ? 'text-black dark:text-white'
-          : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-300'">
+          : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'">
         {{ tab }}
       </button>
     }
@@ -19,6 +18,5 @@
       [style.width.%]="100 / tabs.length"
       [style.transform]="'translateX(' + (tabs.indexOf(activeTab) * 100) + '%)'">
     </div>
-
   </div>
 </div>

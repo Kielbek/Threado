@@ -21,6 +21,7 @@ import {NavItemComponent} from '../../../features/nav-item-component/nav-item-co
 import {RouterLink} from '@angular/router';
 import {ThemeMode, ThemeService} from '../../services/theme.service';
 import {UserService} from '../../services/user.service';
+import {UiService} from '../../services/ui.service';
 
 @Component({
   selector: 'app-navbar',
