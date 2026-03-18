@@ -28,7 +28,7 @@ export class BookmarksPageComponent {
   readonly RepostIcon = Repeat2;
   readonly ShareIcon = Share;
 
-  bookmarks = signal<BookmarkedPost[]>([
+  bookmarks = signal<any[]>([
     {
       id: '101',
       user: { name: 'Kamil', username: 'kamil_tworzy', avatarUrl: 'https://i.pravatar.cc/150?img=11' },

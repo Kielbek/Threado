@@ -9,8 +9,13 @@ spring:
           enabled: true
       server:
         webmvc:
-          routes-map:
-            user-service-route:
+          routes:
+            - id: user_service_route
               uri: lb://user-service
               predicates:
                 - Path=/api/users/**
+
+            - id: thread_service_route
+              uri: lb://thread-service
+              predicates:
+                - Path=/api/threads/**
