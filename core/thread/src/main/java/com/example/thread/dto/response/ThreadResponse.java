@@ -12,5 +12,6 @@ public record ThreadResponse(
         PublicMetricsResponse publicMetrics,
         List<HashtagResponse> hashtags,
         List<UrlEntityResponse> urls,
+        List<MediaResponse> media,
         UserResponse author
 ) {}

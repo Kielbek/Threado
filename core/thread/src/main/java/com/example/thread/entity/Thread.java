@@ -46,6 +46,10 @@ public class Thread {
     @CollectionTable(name = "tweet_urls", joinColumns = @JoinColumn(name = "tweet_id"))
     private List<UrlEntity> urls = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "thread_media", joinColumns = @JoinColumn(name = "thread_id"))
+    private List<Media> media = new ArrayList<>();
+
     @ManyToOne
     private AuthorCache authorCache;
 }
