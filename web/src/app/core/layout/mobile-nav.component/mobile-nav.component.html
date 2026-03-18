@@ -17,8 +17,8 @@
         <app-threado-avatar size="4rem"></app-threado-avatar>
 
         <div class="mt-3">
-          <h2 class="text-xl font-bold leading-tight">Mateusz</h2>
-          <p class="text-[15px] text-gray-500">@kielbek</p>
+          <h2 class="text-xl font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guest' }}</h2>
+          <p class="text-[15px] text-gray-500">@{{ (userService.currentUser$ | async)?.username || 'unknown' }}</p>
         </div>
 
         <div class="flex gap-5 mt-4 text-[15px]">
