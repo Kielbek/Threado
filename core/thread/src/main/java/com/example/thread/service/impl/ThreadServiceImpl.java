@@ -1,10 +1,12 @@
 package com.example.thread.service.impl;
 
 import com.example.thread.dto.request.CreateThreadRequest;
+import com.example.thread.dto.request.MediaRequest;
 import com.example.thread.dto.response.PageResponse;
 import com.example.thread.dto.response.ThreadResponse;
 import com.example.thread.entity.*;
 import com.example.thread.entity.Thread;
+import com.example.thread.enusm.MediaType;
 import com.example.thread.exeption.BusinessException;
 import com.example.thread.exeption.ErrorCode;
 import com.example.thread.mapper.ThreadMapper;
@@ -48,6 +50,8 @@ public class ThreadServiceImpl implements ThreadService {
                         "Author cache miss for ID: " + authorId
                 ));
 
+        List<Media> mediaEntities = mapMediaRequestToEntity(request.media());
+
         Thread thread = Thread.builder()
                 .text(request.content())
                 .createdAt(Instant.now())
@@ -57,6 +61,7 @@ public class ThreadServiceImpl implements ThreadService {
                 .author(author)
                 .hashtags(hashtags)
                 .urls(urls)
+                .media(mediaEntities)
                 .build();
 
         Thread savedThread = threadRepository.save(thread);
@@ -161,5 +166,19 @@ public class ThreadServiceImpl implements ThreadService {
 
     private String simplifyUrl(String url) {
         return url.replaceFirst("https?://", "").replaceAll("\\?.*", "");
+    }
+
+    private List<Media> mapMediaRequestToEntity(List<MediaRequest> requests) {
+        if (requests == null) return new ArrayList<>();
+
+        return requests.stream()
+                .map(req -> Media.builder()
+                        .url(req.url())
+                        .type(MediaType.valueOf(req.type().toUpperCase()))
+                        .width(req.width())
+                        .height(req.height())
+                        .altText(req.altText())
+                        .build())
+                .toList();
     }
 }

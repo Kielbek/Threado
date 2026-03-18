@@ -1,10 +1,8 @@
 package com.example.thread.mapper;
 
 import com.example.thread.dto.response.*;
-import com.example.thread.entity.AuthorCache;
-import com.example.thread.entity.Hashtag;
+import com.example.thread.entity.*;
 import com.example.thread.entity.Thread;
-import com.example.thread.entity.UrlEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -26,8 +24,25 @@ public class ThreadMapper {
                 mapPublicMetrics(thread),
                 mapHashtags(thread.getHashtags()),
                 mapUrls(thread.getUrls()),
+                mapMedia(thread.getMedia()),
                 mapAuthor(thread.getAuthor())
         );
+    }
+
+    private List<MediaResponse> mapMedia(List<Media> media) {
+        if (media == null || media.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return media.stream()
+                .map(m -> new MediaResponse(
+                        m.getUrl(),
+                        m.getType().name(),
+                        m.getWidth(),
+                        m.getHeight(),
+                        m.getAltText()
+                ))
+                .collect(Collectors.toList());
     }
 
     private PublicMetricsResponse mapPublicMetrics(Thread thread) {

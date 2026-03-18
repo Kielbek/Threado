@@ -1,4 +1,4 @@
-import {Component, input, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {BookmarkIcon, HeartIcon, LucideAngularModule, MessageCircleIcon, RepeatIcon, ShareIcon} from 'lucide-angular';
 import {ThreadoAvatarComponent} from '../threado-avatar-component/threado-avatar-component';
 import {ThreadoActionButtonComponent} from '../threado-action-button.component/threado-action-button.component';
@@ -24,4 +24,5 @@ export class ThreadItemComponent {
   protected readonly MessageCircleIcon = MessageCircleIcon;
 
  thread = input<ThreadResponse>();
+
 }

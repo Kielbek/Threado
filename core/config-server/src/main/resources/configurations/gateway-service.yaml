@@ -19,3 +19,8 @@ spring:
               uri: lb://thread-service
               predicates:
                 - Path=/api/threads/**
+
+            - id: media_service_route
+              uri: lb://media-service
+              predicates:
+                - Path=/api/media/**
