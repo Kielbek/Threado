@@ -17,6 +17,8 @@ import {KeycloakService} from '../../services/keycloak-service';
 import {UiService} from '../../services/ui.service';
 import {NavItemComponent} from '../../../features/nav-item-component/nav-item-component';
 import {AuthSidebarComponent} from '../../../features/auth-sidebar-component/auth-sidebar-component';
+import {UserService} from '../../services/user.service';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-mobile-nav',
@@ -25,7 +27,8 @@ import {AuthSidebarComponent} from '../../../features/auth-sidebar-component/aut
     LucideAngularModule,
     ThreadoAvatarComponent,
     NavItemComponent,
-    AuthSidebarComponent
+    AuthSidebarComponent,
+    AsyncPipe
   ],
   templateUrl: './mobile-nav.component.html',
   styleUrl: './mobile-nav.component.css',
@@ -42,6 +45,7 @@ export class MobileNavComponent {
 
   protected ksService = inject(KeycloakService);
   protected uiService = inject(UiService);
+  protected userService = inject(UserService)
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
 
