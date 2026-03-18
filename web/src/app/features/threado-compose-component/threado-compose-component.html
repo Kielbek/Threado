@@ -36,8 +36,8 @@
       <div class="flex items-center gap-2.5">
         <app-threado-avatar></app-threado-avatar>
         <div class="flex flex-col mb-1">
-          <span class="text-black dark:text-white font-bold leading-tight">Mateusz</span>
-          <span class="text-gray-500 text-sm">@mateusz_dev</span>
+          <span class="text-black dark:text-white font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guset' }}</span>
+          <span class="text-gray-500 text-sm">@{{ (userService.currentUser$ | async)?.username || 'unknown' }}</span>
         </div>
       </div>
 

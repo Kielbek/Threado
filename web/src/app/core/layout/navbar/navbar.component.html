@@ -51,7 +51,7 @@
             <li>
               <button class="w-full text-left px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-black dark:text-white"
                       (click)="ksService.keycloak.logout()">
-                Log out &#64;kielbek
+                Log out &#64;{{ (userService.currentUser$ | async)?.username || 'unknown' }}
               </button>
             </li>
 
@@ -65,11 +65,18 @@
         [ngClass]="{'bg-gray-100 dark:bg-white/10': isDropdownOpen()}">
 
         <div class="flex items-center gap-3 overflow-hidden">
-          <app-threado-avatar size="2.5rem"></app-threado-avatar>
+          <app-threado-avatar
+            [avatarUrl]="(userService.currentUser$ | async)?.avatarUrl"
+            size="2.5rem">
+          </app-threado-avatar>
 
           <div class="hidden xl:flex flex-col text-left overflow-hidden">
-            <span class="font-bold text-sm text-black dark:text-white truncate">Mateusz</span>
-            <span class="text-xs text-gray-500 truncate">&#64;kielbek</span>
+            <span class="font-bold text-sm text-black dark:text-white truncate">
+              {{ (userService.currentUser$ | async)?.firstName || 'Guest' }}
+            </span>
+            <span class="text-xs text-gray-500 truncate">
+            &#64;{{ (userService.currentUser$ | async)?.username || 'unknown' }}
+            </span>
           </div>
         </div>
 
