@@ -4,5 +4,5 @@ export interface Page<T> {
   pageSize: number;
   totalElements: number;
   totalPages: number;
-  last: boolean;
+  isLast: boolean;
 }

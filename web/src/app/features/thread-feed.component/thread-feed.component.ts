@@ -77,8 +77,9 @@ export class ThreadFeedComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          console.log(response)
           this.threads.update(current => [...current, ...response.content]);
-          this.isLastPage.set(response.last);
+          this.isLastPage.set(response.isLast);
           this.currentPage.update(page => page + 1);
         },
         error: (err) => {
