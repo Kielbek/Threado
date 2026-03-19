@@ -14,7 +14,6 @@ public class UserMapper {
         }
 
         return new UserResponse(
-                user.getId(),
                 user.getKeycloakId(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -30,7 +29,7 @@ public class UserMapper {
         }
 
         return new UserProfileResponse(
-                user.getId(),
+                user.getKeycloakId(),
                 user.getUsername(),
                 user.getFirstName(),
                 user.getLastName(),

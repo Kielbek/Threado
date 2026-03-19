@@ -1,10 +1,9 @@
 package com.example.user.dto.response;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record UserProfileResponse(
-        UUID id,
+        String id,
         String username,
         String firstName,
         String lastName,
