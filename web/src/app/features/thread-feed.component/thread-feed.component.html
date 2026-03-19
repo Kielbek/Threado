@@ -1,0 +1,39 @@
+<div class="w-full pb-safe flex flex-col">
+
+  @for (thread of threads(); track thread.id) {
+    <app-thread [thread]="thread"></app-thread>
+  } @empty {
+    @if (!isLoading() && !isError()) {
+      <div class="p-8 text-center text-gray-500">
+        Brak postów do wyświetlenia.
+      </div>
+    }
+  }
+
+  @if (isLoading()) {
+    <app-thread-skeleton></app-thread-skeleton>
+    <app-thread-skeleton></app-thread-skeleton>
+    <app-thread-skeleton></app-thread-skeleton>
+  }
+
+  @if (isError()) {
+    <div class="p-6 text-center">
+      <p class="text-red-500 mb-2">Ups, coś poszło nie tak.</p>
+      <button
+        (click)="loadMore()"
+        class="px-4 py-2 bg-[var(--color-threado-accent)] text-white rounded-full font-bold hover:opacity-90 transition">
+        Spróbuj ponownie
+      </button>
+    </div>
+  }
+
+  @if (isLastPage() && threads().length > 0) {
+    <div class="p-8 text-center text-gray-400 text-sm flex flex-col items-center gap-2">
+      <div class="w-1 h-1 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+      Dotarłeś do końca
+    </div>
+  }
+
+  <div #scrollAnchor class="h-4 w-full opacity-0 pointer-events-none"></div>
+
+</div>
