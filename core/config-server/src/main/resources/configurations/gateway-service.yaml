@@ -24,3 +24,8 @@ spring:
               uri: lb://media-service
               predicates:
                 - Path=/api/media/**
+
+            - id: interactions_service_route
+              uri: lb://interactions-service
+              predicates:
+                - Path=/api/interactions/**
