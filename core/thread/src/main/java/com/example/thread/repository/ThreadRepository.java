@@ -14,6 +14,6 @@ public interface ThreadRepository extends JpaRepository<Thread, String> {
     Page<Thread> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"author"})
-    Page<Thread> findAllByAuthorOrderByCreatedAtDesc(String userId, Pageable pageable);
+    Page<Thread> findAllByAuthor_IdOrderByCreatedAtDesc(String userId, Pageable pageable);
 
 }

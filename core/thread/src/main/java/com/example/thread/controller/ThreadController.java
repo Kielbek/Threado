@@ -77,4 +77,29 @@ public class ThreadController {
         PageResponse<ThreadResponse> response = threadService.getGlobalTimeline(page, size);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = "Get threads by user",
+            description = "Retrieves a paginated list of threads created by a specific user (author)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved user's threads",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found (optional, depends on your service logic)"
+            )
+    })
+    @GetMapping("/user/{authorId}")
+    public ResponseEntity<PageResponse<ThreadResponse>> getThreadsByUser(
+            @PathVariable String authorId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<ThreadResponse> response = threadService.getThreadsByAuthor(authorId, page, size);
+        return ResponseEntity.ok(response);
+    }
 }
