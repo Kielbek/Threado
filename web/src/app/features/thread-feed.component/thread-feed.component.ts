@@ -14,13 +14,15 @@ import { finalize, Observable } from "rxjs";
 import { Page } from "../../core/model/page";
 import {ThreadSkeletonComponent} from '../thread-skeleton.component/thread-skeleton.component';
 import {ThreadComponent} from '../thread.component/thread.component';
+import {EmptyStateComponent} from '../empty-state.component/empty-state.component';
 
 
 @Component({
   selector: 'app-thread-feed',
   imports: [
     ThreadSkeletonComponent,
-    ThreadComponent
+    ThreadComponent,
+    EmptyStateComponent
   ],
   templateUrl: './thread-feed.component.html',
   styleUrl: './thread-feed.component.css',
@@ -29,6 +31,9 @@ export class ThreadFeedComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly fetchStrategy = input.required<(page: number, size: number) => Observable<Page<any>>>();
+  emptyTitle = input<string>('');
+  emptyDescription = input<string>('');
+  emptyIcon = input<any>(null);
 
   readonly scrollAnchor = viewChild<ElementRef>('scrollAnchor');
 

@@ -1,4 +1,4 @@
-<div class="min-h-screen pb-safe">
+<div class="w-full pb-safe">
 
   <app-page-header title="Home"></app-page-header>
 
@@ -6,6 +6,10 @@
 
   <app-feed-tabs></app-feed-tabs>
 
-  <app-thread-feed [fetchStrategy]="globalFeedFetcher"></app-thread-feed>
+  <app-thread-feed
+    [fetchStrategy]="globalFeedFetcher"
+    emptyTitle="Witaj na Threado!"
+    emptyDescription="Bądź pierwszą osobą, która podzieli się swoimi myślami.">
+  </app-thread-feed>
 
 </div>
