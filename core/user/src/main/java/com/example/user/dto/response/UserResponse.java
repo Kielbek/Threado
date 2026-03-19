@@ -1,10 +1,7 @@
 package com.example.user.dto.response;
 
-import java.util.UUID;
-
 public record UserResponse(
-        UUID id,
-        String keycloakId,
+        String id,
         String firstName,
         String lastName,
         String username,
