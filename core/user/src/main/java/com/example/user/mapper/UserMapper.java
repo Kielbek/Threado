@@ -15,6 +15,7 @@ public class UserMapper {
 
         return new UserResponse(
                 user.getId(),
+                user.getKeycloakId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getUsername(),
