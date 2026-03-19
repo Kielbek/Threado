@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +27,9 @@ public class InteractionController {
     @Operation(summary = "Toggle Like", description = "Like or unlike a thread.")
     public ResponseEntity<Void> toggleLike(
             @PathVariable UUID threadId,
-            @RequestHeader("X-User-Id") UUID userId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        interactionService.toggleLike(threadId, userId);
+        interactionService.toggleLike(threadId, getUserId(jwt));
         return ResponseEntity.noContent().build();
     }
 
@@ -35,27 +37,31 @@ public class InteractionController {
     @Operation(summary = "Toggle Bookmark", description = "Bookmark or unbookmark a thread.")
     public ResponseEntity<Void> toggleBookmark(
             @PathVariable UUID threadId,
-            @RequestHeader("X-User-Id") UUID userId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        interactionService.toggleBookmark(threadId, userId);
+        interactionService.toggleBookmark(threadId, getUserId(jwt));
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/bookmarks")
     @Operation(summary = "Get bookmarked threads", description = "Returns a paginated list of thread IDs saved by the user.")
     public ResponseEntity<Page<UUID>> getMyBookmarks(
-            @RequestHeader("X-User-Id") UUID userId,
+            @AuthenticationPrincipal Jwt jwt,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(interactionService.getUserBookmarkedThreadIds(userId, pageable));
+        return ResponseEntity.ok(interactionService.getUserBookmarkedThreadIds(getUserId(jwt), pageable));
     }
 
     @GetMapping("/status")
     @Operation(summary = "Get Multiple Statuses", description = "Check if posts are liked/bookmarked by the user.")
     public ResponseEntity<List<InteractionStatusResponse>> getStatuses(
-            @RequestHeader("X-User-Id") UUID userId,
+            @AuthenticationPrincipal Jwt jwt,
             @RequestParam List<UUID> threadIds
     ) {
-        return ResponseEntity.ok(interactionService.getStatusesForUser(userId, threadIds));
+        return ResponseEntity.ok(interactionService.getStatusesForUser(getUserId(jwt), threadIds));
+    }
+
+    private UUID getUserId(Jwt jwt) {
+        return UUID.fromString(jwt.getSubject());
     }
 }
