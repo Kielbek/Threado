@@ -49,6 +49,25 @@ services:
     networks:
       - threado-network
 
+  interactions-db:
+    image: postgres:15-alpine
+    container_name: threado-interactions-db
+    environment:
+      POSTGRES_DB: interactions_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d interactions_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - interactions_data:/var/lib/postgresql/data
+    networks:
+      - threado-network
+
   # --- CONFIG SERVER ---
   config-server:
     build: 
@@ -91,6 +110,69 @@ services:
       - SPRING_THREADS_VIRTUAL_ENABLED=true
     depends_on:
       user-db:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      kafka:
+        condition: service_started
+    networks:
+      - threado-network
+
+  thread-service:
+    build: 
+      context: ./core/thread
+    container_name: threado-thread-service
+    ports:
+      - "8091:8091"
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://thread-db:5432/thread_db
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093 
+    depends_on:
+      thread-db:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      kafka:
+        condition: service_started
+    networks:
+      - threado-network
+  
+  # --- MEDIA SERVICE ---
+  media-service:
+    build: 
+      context: ./core/media 
+    container_name: threado-media-service
+    ports:
+      - "8093:8093" 
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    networks:
+      - threado-network
+
+  interactions-service:
+    build: 
+      context: ./core/interactions
+    container_name: threado-interactions-service
+    ports:
+      - "8094:8094"
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://threado-config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://interactions-db:5432/interactions_db
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+    depends_on:
+      interactions-db:
         condition: service_healthy
       config-server:
         condition: service_started
@@ -158,3 +240,4 @@ networks:
 volumes:
   user_data:
   thread_data:
+  interactions_data:
