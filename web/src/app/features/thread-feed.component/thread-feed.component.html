@@ -2,8 +2,9 @@
 
   @for (thread of threads(); track thread.id) {
     <app-thread [thread]="thread"></app-thread>
-  } @empty {
-    @if (!isLoading()) {
+  }
+  @empty {
+    @if (!isLoading() && !isError()) {
       <app-empty-state
         [title]="emptyTitle()"
         [description]="emptyDescription()"
@@ -19,13 +20,13 @@
   }
 
   @if (isError()) {
-    <div class="p-6 text-center">
-      <p class="text-red-500 mb-2">Ups, coś poszło nie tak.</p>
-      <button
-        (click)="loadMore()"
-        class="px-4 py-2 bg-[var(--color-threado-accent)] text-white rounded-full font-bold hover:opacity-90 transition">
-        Spróbuj ponownie
-      </button>
+    <div class="py-8"> <app-empty-state
+      [icon]="AlertTriangleIcon"
+      title="Błąd ładowania"
+      description="Nie udało się pobrać postów. Sprawdź połączenie i spróbuj ponownie."
+      actionText="Spróbuj ponownie"
+      (actionClick)="retry()">
+    </app-empty-state>
     </div>
   }
 

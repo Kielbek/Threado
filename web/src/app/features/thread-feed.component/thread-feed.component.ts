@@ -15,6 +15,7 @@ import { Page } from "../../core/model/page";
 import {ThreadSkeletonComponent} from '../thread-skeleton.component/thread-skeleton.component';
 import {ThreadComponent} from '../thread.component/thread.component';
 import {EmptyStateComponent} from '../empty-state.component/empty-state.component';
+import {AlertTriangleIcon} from 'lucide-angular';
 
 
 @Component({
@@ -71,7 +72,7 @@ export class ThreadFeedComponent implements OnInit {
   }
 
   loadMore() {
-    if (this.isLoading() || this.isLastPage()) return;
+    if (this.isLoading() || this.isLastPage() || this.isError()) return;
 
     this.isLoading.set(true);
     this.isError.set(false);
@@ -88,7 +89,6 @@ export class ThreadFeedComponent implements OnInit {
           this.currentPage.update(page => page + 1);
         },
         error: (err) => {
-          console.error('Błąd pobierania postów:', err);
           this.isError.set(true);
         }
       });
@@ -106,4 +106,11 @@ export class ThreadFeedComponent implements OnInit {
 
     this.observer.observe(anchorElement);
   }
+
+  retry() {
+    this.isError.set(false);
+    this.loadMore();
+  }
+
+  protected readonly AlertTriangleIcon = AlertTriangleIcon;
 }
