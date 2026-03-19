@@ -62,4 +62,12 @@ export class ThreadService {
     return await firstValueFrom(this.http.post<ThreadResponse>(this.apiUrl, requestPayload));
   }
 
+  getUserThreads(authorId: string, page: number, size: number): Observable<Page<ThreadResponse>> {
+    return this.http.get<Page<ThreadResponse>>(`${this.apiUrl}/user/${authorId}`, {
+      params: {
+        page: page.toString(),
+        size: size.toString()
+      }
+    });
+  }
 }

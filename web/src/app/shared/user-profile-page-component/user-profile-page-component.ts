@@ -6,6 +6,9 @@ import {PageHeaderComponent} from '../../features/page-header.component/page-hea
 import {KeycloakService} from '../../core/services/keycloak-service';
 import {UserService} from '../../core/services/user.service';
 import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/threado-avatar-component';
+import {ThreadService} from '../../core/services/thread.service';
+import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-feed.component';
+import {EMPTY} from 'rxjs';
 
 @Component({
   selector: 'app-user-profile-page-component',
@@ -14,7 +17,8 @@ import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/th
     ThreadoButtonComponent,
     DatePipe,
     PageHeaderComponent,
-    ThreadoAvatarComponent
+    ThreadoAvatarComponent,
+    ThreadFeedComponent
   ],
   templateUrl: './user-profile-page-component.html',
   styleUrl: './user-profile-page-component.css',
@@ -22,6 +26,7 @@ import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/th
 export class UserProfilePageComponent {
   private keycloakService = inject(KeycloakService);
   private userService = inject(UserService);
+  private threadService = inject(ThreadService);
 
   readonly usernameFromRoute = input.required<string>({ alias: 'username' });
 
@@ -65,9 +70,16 @@ export class UserProfilePageComponent {
     });
   }
 
+  userThreadsFetcher = (page: number, size: number) => {
+    const authorId = this.user()?.id;
+
+    if (!authorId) {
+      return EMPTY;
+    }
+
+    return this.threadService.getUserThreads(authorId, page, size);
+  };
+
   protected readonly CalendarIcon = CalendarIcon;
-  protected readonly MapPinIcon = MapPinIcon;
-  protected readonly UserIcon = UserIcon;
-  protected readonly ArrowLeftIcon = ArrowLeftIcon;
   protected readonly LinkIcon = LinkIcon;
 }
