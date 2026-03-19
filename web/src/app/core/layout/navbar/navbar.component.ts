@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, inject, signal} from '@angular/core';
+import {Component, computed, ElementRef, HostListener, inject, signal} from '@angular/core';
 import {
   Bell,
   Bookmark,
@@ -22,6 +22,7 @@ import {RouterLink} from '@angular/router';
 import {ThemeMode, ThemeService} from '../../services/theme.service';
 import {UserService} from '../../services/user.service';
 import {UiService} from '../../services/ui.service';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-navbar',
@@ -45,20 +46,26 @@ export class NavbarComponent {
   private elementRef = inject(ElementRef);
   themeService = inject(ThemeService);
 
-  readonly HomeIcon = Home;
-  readonly BellIcon = Bell;
-  readonly BookmarkIcon = Bookmark;
-  readonly UserIcon = User;
+  currentUser = toSignal(this.userService.currentUser$);
+
   readonly EllipsisIcon = EllipsisIcon;
   readonly ChevronDownIcon = ChevronDownIcon;
   readonly SunIcon = SunIcon;
 
-  readonly menuItems = [
-    { label: 'Home', route: '/home', icon: this.HomeIcon },
-    { label: 'Notifications', route: '/notifications', icon: this.BellIcon },
-    { label: 'Bookmarks', route: '/bookmarks', icon: this.BookmarkIcon },
-    { label: 'Profile', route: '/profile', icon: this.UserIcon },
-  ];
+  readonly menuItems = computed(() => {
+    const username = this.currentUser()?.username;
+
+    return [
+      { label: 'Home', route: '/home', icon: Home },
+      { label: 'Notifications', route: '/notifications', icon: Bell },
+      { label: 'Bookmarks', route: '/bookmarks', icon: Bookmark },
+      {
+        label: 'Profile',
+        route: username ? `/@${username}` : '/profile',
+        icon: User
+      },
+    ];
+  });
 
   isDropdownOpen = signal(false);
 

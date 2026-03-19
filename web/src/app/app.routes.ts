@@ -8,22 +8,13 @@ export const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
+    pathMatch: 'full',
     title: 'Główna / Threado'
   },
   {
     path: 'home',
     component: HomePageComponent,
     title: 'Główna / Threado'
-  },
-  {
-    path: 'user/:username',
-    component: UserProfilePageComponent,
-    title: 'Profil / Threado'
-  },
-  {
-    path: 'profile/:username',
-    component: UserProfilePageComponent,
-    title: 'Profil / Threado'
   },
   {
     path: 'notifications',
@@ -34,6 +25,11 @@ export const routes: Routes = [
     path: 'bookmarks',
     component: BookmarksPageComponent,
     title: 'Główna / Threado'
+  },
+  {
+    path: ':username',
+    component: UserProfilePageComponent,
+    title: 'Profil / Threado'
   },
   {
     path: '**',

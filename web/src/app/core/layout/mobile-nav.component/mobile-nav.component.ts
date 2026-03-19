@@ -1,4 +1,4 @@
-import {Component, DOCUMENT, effect, HostListener, inject, Renderer2} from '@angular/core';
+import {Component, computed, DOCUMENT, effect, HostListener, inject, Renderer2} from '@angular/core';
 import {
   Bookmark,
   ChevronDown, Home,
@@ -19,6 +19,8 @@ import {NavItemComponent} from '../../../features/nav-item-component/nav-item-co
 import {AuthSidebarComponent} from '../../../features/auth-sidebar-component/auth-sidebar-component';
 import {UserService} from '../../services/user.service';
 import {AsyncPipe} from '@angular/common';
+import {toSignal} from '@angular/core/rxjs-interop';
+
 
 @Component({
   selector: 'app-mobile-nav',
@@ -45,18 +47,27 @@ export class MobileNavComponent {
 
   protected ksService = inject(KeycloakService);
   protected uiService = inject(UiService);
-  protected userService = inject(UserService)
+  protected userService = inject(UserService);
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
 
+  currentUser = toSignal(this.userService.currentUser$);
 
-  readonly menuItems = [
-    { label: 'Home', route: '/home', icon: this.HomeIcon },
-    { label: 'Profile', route: '/profile', icon: this.UserIcon },
-    { label: 'Messages', route: '/messages', icon: this.MessageSquareIcon },
-    { label: 'Bookmarks', route: '/bookmarks', icon: this.BookmarkIcon },
-    { label: 'Settings', route: '/settings', icon: this.SettingsIcon, showDot: true },
-  ];
+  readonly menuItems = computed(() => {
+    const username = this.currentUser()?.username;
+
+    return [
+      { label: 'Home', route: '/home', icon: this.HomeIcon },
+      {
+        label: 'Profile',
+        route: username ? `/@${username}` : '/profile',
+        icon: this.UserIcon
+      },
+      { label: 'Messages', route: '/messages', icon: this.MessageSquareIcon },
+      { label: 'Bookmarks', route: '/bookmarks', icon: this.BookmarkIcon },
+      { label: 'Settings', route: '/settings', icon: this.SettingsIcon, showDot: true },
+    ];
+  });
 
   constructor() {
     effect(() => {
@@ -74,5 +85,4 @@ export class MobileNavComponent {
       this.uiService.closeMobileMenu();
     }
   }
-
 }

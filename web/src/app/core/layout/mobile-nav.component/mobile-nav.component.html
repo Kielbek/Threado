@@ -34,7 +34,7 @@
       <div class="h-px w-full bg-zinc-200 dark:bg-zinc-800 my-2"></div>
 
       <nav class="flex flex-col gap-1 mt-2">
-        @for (item of menuItems; track item.route) {
+        @for (item of menuItems(); track item.route) {
           <app-nav-item [item]="item" (clicked)="uiService.closeMobileMenu()"></app-nav-item>
         }
       </nav>
