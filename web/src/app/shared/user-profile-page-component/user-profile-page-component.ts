@@ -1,15 +1,8 @@
 import {Component, computed, effect, inject, input, signal} from '@angular/core';
-import {
-  ArrowLeftIcon,
-  CalendarIcon, LinkIcon,
-  LucideAngularModule,
-  MapPinIcon,
-  UserIcon
-} from 'lucide-angular';
-import { ThreadoButtonComponent } from '../../features/threado-button-component/threado-button.component';
-import { DatePipe } from '@angular/common';
-import { ThreadItemComponent } from '../../features/thread-item.component/thread-item.component';
-import { PageHeaderComponent } from '../../features/page-header.component/page-header.component';
+import {ArrowLeftIcon, CalendarIcon, LinkIcon, LucideAngularModule, MapPinIcon, UserIcon} from 'lucide-angular';
+import {ThreadoButtonComponent} from '../../features/threado-button-component/threado-button.component';
+import {DatePipe} from '@angular/common';
+import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 import {KeycloakService} from '../../core/services/keycloak-service';
 import {UserService} from '../../core/services/user.service';
 import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/threado-avatar-component';
@@ -20,7 +13,6 @@ import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/th
     LucideAngularModule,
     ThreadoButtonComponent,
     DatePipe,
-    ThreadItemComponent,
     PageHeaderComponent,
     ThreadoAvatarComponent
   ],

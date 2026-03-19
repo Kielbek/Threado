@@ -6,10 +6,6 @@
 
   <app-feed-tabs></app-feed-tabs>
 
-  <div class="flex flex-col">
-    @for (thread of threads(); track thread) {
-      <app-thread-item [thread]="thread"></app-thread-item>
-    }
-  </div>
+  <app-thread-feed [fetchStrategy]="globalFeedFetcher"></app-thread-feed>
 
 </div>
