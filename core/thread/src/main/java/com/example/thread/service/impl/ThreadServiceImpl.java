@@ -103,7 +103,22 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public PageResponse<ThreadResponse> getThreadsByAuthor(String authorId, int page, int size) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Thread> threadPage = threadRepository.findAllByAuthorOrderByCreatedAtDesc(authorId, pageable);
+
+        List<ThreadResponse> content = threadPage.getContent().stream()
+                .map(threadMapper::toResponse)
+                .toList();
+
+        return PageResponse.<ThreadResponse>builder()
+                .content(content)
+                .pageNumber(threadPage.getNumber())
+                .pageSize(threadPage.getSize())
+                .totalElements(threadPage.getTotalElements())
+                .totalPages(threadPage.getTotalPages())
+                .isLast(threadPage.isLast())
+                .build();
     }
 
     @Override

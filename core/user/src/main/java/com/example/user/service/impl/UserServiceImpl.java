@@ -1,5 +1,6 @@
 package com.example.user.service.impl;
 
+import com.example.user.dto.response.UserProfileResponse;
 import com.example.user.dto.response.UserResponse;
 import com.example.user.exception.BusinessException;
 import com.example.user.exception.ErrorCode;
@@ -22,6 +23,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserByKeycloakId(String keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
                 .map(userMapper::toResponse)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public UserProfileResponse getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(userMapper::toUserProfileResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }
