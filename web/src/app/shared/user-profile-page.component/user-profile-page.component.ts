@@ -1,27 +1,25 @@
 import {Component, computed, effect, inject, input, signal} from '@angular/core';
-import {ArrowLeftIcon, CalendarIcon, LinkIcon, LucideAngularModule, MapPinIcon, UserIcon} from 'lucide-angular';
-import {ThreadoButtonComponent} from '../../features/threado-button-component/threado-button.component';
-import {DatePipe} from '@angular/common';
-import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
+import {LucideAngularModule} from 'lucide-angular';
 import {KeycloakService} from '../../core/services/keycloak-service';
 import {UserService} from '../../core/services/user.service';
-import {ThreadoAvatarComponent} from '../../features/threado-avatar-component/threado-avatar-component';
 import {ThreadService} from '../../core/services/thread.service';
 import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-feed.component';
 import {EMPTY} from 'rxjs';
+import {UserProfileSkeletonComponent} from './user-profile-skeleton.component/user-profile-skeleton.component';
+import {UserProfileNotFoundComponent} from './user-profile-not-found.component/user-profile-not-found.component';
+import {UserProfileHeaderComponent} from './user-profile-header.component/user-profile-header.component';
 
 @Component({
-  selector: 'app-user-profile-page-component',
+  selector: 'app-user-profile-page',
   imports: [
     LucideAngularModule,
-    ThreadoButtonComponent,
-    DatePipe,
-    PageHeaderComponent,
-    ThreadoAvatarComponent,
-    ThreadFeedComponent
+    ThreadFeedComponent,
+    UserProfileSkeletonComponent,
+    UserProfileNotFoundComponent,
+    UserProfileHeaderComponent
   ],
-  templateUrl: './user-profile-page-component.html',
-  styleUrl: './user-profile-page-component.css',
+  templateUrl: './user-profile-page.component.html',
+  styleUrl: './user-profile-page.component.css',
 })
 export class UserProfilePageComponent {
   private keycloakService = inject(KeycloakService);
@@ -79,7 +77,4 @@ export class UserProfilePageComponent {
 
     return this.threadService.getUserThreads(authorId, page, size);
   };
-
-  protected readonly CalendarIcon = CalendarIcon;
-  protected readonly LinkIcon = LinkIcon;
 }

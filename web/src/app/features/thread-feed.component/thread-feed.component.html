@@ -3,10 +3,12 @@
   @for (thread of threads(); track thread.id) {
     <app-thread [thread]="thread"></app-thread>
   } @empty {
-    @if (!isLoading() && !isError()) {
-      <div class="p-8 text-center text-gray-500">
-        Brak postów do wyświetlenia.
-      </div>
+    @if (!isLoading()) {
+      <app-empty-state
+        [title]="emptyTitle()"
+        [description]="emptyDescription()"
+        [icon]="emptyIcon()">
+      </app-empty-state>
     }
   }
 

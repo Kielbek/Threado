@@ -1,0 +1,19 @@
+<div class="w-full">
+  <app-page-header title="Profil" [showBackButton]="true"></app-page-header>
+
+  <div class="relative w-full h-32 sm:h-48 bg-gray-100 dark:bg-zinc-800"></div>
+
+  <div class="px-4 flex justify-between items-start relative">
+    <div class="absolute -top-12 sm:-top-16 p-1 bg-white dark:bg-black rounded-full">
+      <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-200 dark:bg-zinc-700 border-4 border-white dark:border-black"></div>
+    </div>
+  </div>
+
+  <app-empty-state
+    [icon]="AlertTriangleIcon"
+    title="Not found"
+    description="This resource could not be found"
+    actionText="Go back"
+    actionLink="/">
+  </app-empty-state>
+</div>
