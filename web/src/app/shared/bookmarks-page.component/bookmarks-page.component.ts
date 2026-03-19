@@ -1,6 +1,6 @@
 import {Component, signal} from '@angular/core';
 import {Bookmark, Heart, LucideAngularModule, Repeat2, Share} from "lucide-angular";
-import {ThreadItemComponent} from '../../features/thread-item.component/thread-item.component';
+import {ThreadComponent} from '../../features/thread.component/thread.component';
 import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 
 export interface BookmarkedPost {
@@ -16,7 +16,7 @@ export interface BookmarkedPost {
   selector: 'app-bookmarks-page.component',
   imports: [
     LucideAngularModule,
-    ThreadItemComponent,
+    ThreadComponent,
     PageHeaderComponent
   ],
   templateUrl: './bookmarks-page.component.html',

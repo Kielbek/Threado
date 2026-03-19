@@ -7,7 +7,7 @@ import {LinkifyPipe} from '../../core/pipes/linkify-pipe';
 import {RouterLink} from '@angular/router';
 
 @Component({
-  selector: 'app-thread-item',
+  selector: 'app-thread',
   imports: [
     LucideAngularModule,
     ThreadoAvatarComponent,
@@ -15,10 +15,10 @@ import {RouterLink} from '@angular/router';
     LinkifyPipe,
     RouterLink
   ],
-  templateUrl: './thread-item.component.html',
-  styleUrl: './thread-item.component.css',
+  templateUrl: './thread.component.html',
+  styleUrl: './thread.component.css',
 })
-export class ThreadItemComponent {
+export class ThreadComponent {
   protected readonly RepeatIcon = RepeatIcon;
   protected readonly HeartIcon = HeartIcon;
   protected readonly ShareIcon = ShareIcon;
