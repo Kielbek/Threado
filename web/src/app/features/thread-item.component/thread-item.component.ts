@@ -4,6 +4,7 @@ import {ThreadoAvatarComponent} from '../threado-avatar-component/threado-avatar
 import {ThreadoActionButtonComponent} from '../threado-action-button.component/threado-action-button.component';
 import {ThreadResponse} from '../../core/model/thread/thread-response';
 import {LinkifyPipe} from '../../core/pipes/linkify-pipe';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-thread-item',
@@ -11,7 +12,8 @@ import {LinkifyPipe} from '../../core/pipes/linkify-pipe';
     LucideAngularModule,
     ThreadoAvatarComponent,
     ThreadoActionButtonComponent,
-    LinkifyPipe
+    LinkifyPipe,
+    RouterLink
   ],
   templateUrl: './thread-item.component.html',
   styleUrl: './thread-item.component.css',

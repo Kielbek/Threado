@@ -1,5 +1,5 @@
 import {APP_INITIALIZER, ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withComponentInputBinding, withDebugTracing} from '@angular/router';
 import {routes} from './app.routes';
 import {KeycloakService} from './core/services/keycloak-service';
 import {UserService} from "./core/services/user.service";
@@ -11,7 +11,7 @@ import {httpTokenInterceptor} from './core/interceptor/http-token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding(), withDebugTracing()),
     provideHttpClient(withInterceptors([
       apiUrlInterceptor,
       httpTokenInterceptor

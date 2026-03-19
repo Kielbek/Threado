@@ -9,7 +9,7 @@
   @if (ksService.isLoggedIn()) {
 
     <div class="flex flex-col gap-2 flex-grow">
-      @for (item of menuItems; track item.route) {
+      @for (item of menuItems(); track item.route) {
         <app-nav-item [item]="item"></app-nav-item>
       }
 
