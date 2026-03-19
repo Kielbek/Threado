@@ -7,6 +7,8 @@
   --color-threado-text: var(--theme-text);
   --color-threado-surface: var(--theme-surface);
 
+  --color-threado-skeleton: var(--theme-skeleton);
+
   /*--color-threado-accent: rgb(29, 155, 240);*/
   --color-threado-accent: rgb(50, 205, 50);
   --color-threado-red: rgb(239, 68, 68);
@@ -19,11 +21,13 @@
     --theme-bg: #f8f9fa;
     --theme-text: #171717;
     --theme-surface: #ffffff;
+    --theme-skeleton: #d1d5db;
   }
   .dark {
     --theme-bg: #000000;
     --theme-text: #f3f4f6;
     --theme-surface: #0a0a0a;
+    --theme-skeleton: #27272a;
   }
   html, body {
     margin: 0;

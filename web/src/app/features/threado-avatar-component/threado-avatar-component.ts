@@ -8,7 +8,7 @@ import {Component, computed, input} from '@angular/core';
 })
 export class ThreadoAvatarComponent {
   avatarUrl = input<string | null | undefined>('');
-  size = input<string>('3.5rem');
+  sizeClasses = input<string>('w-14 h-14');
 
   displayUrl = computed(() => this.avatarUrl() || 'user-image.png');
 }
