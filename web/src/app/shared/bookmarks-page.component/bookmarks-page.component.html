@@ -1,0 +1,32 @@
+<div class="w-full pb-safe min-h-screen">
+
+  <app-page-header
+    title="Zapisane"
+    subtitle="@mateusz_dev">
+  </app-page-header>
+
+  <div class="flex flex-col">
+    @for (post of bookmarks(); track post.id) {
+
+      <app-thread-item [thread]="post"></app-thread-item>
+
+    } @empty {
+
+      <div class="px-8 py-20 text-center flex flex-col items-center justify-center min-h-[60vh]">
+
+        <div class="bg-black/5 dark:bg-white/5 p-5 rounded-full mb-5 ring-1 ring-black/10 dark:ring-white/10">
+          <lucide-icon [img]="BookmarkIcon" class="w-10 h-10 opacity-60 text-[var(--color-threado-accent)]"></lucide-icon>
+        </div>
+
+        <h3 class="text-2xl font-extrabold text-black dark:text-white mb-2">Zapisuj posty na później</h3>
+
+        <p class="text-[15px] text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+          Nie trać z oczu ciekawych wątków. Kliknij ikonę zakładki przy poście, aby dodać go do swojej kolekcji.
+        </p>
+
+      </div>
+
+    }
+  </div>
+
+</div>

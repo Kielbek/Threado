@@ -2,8 +2,14 @@ server:
   port: 8090
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/Threado
+
   datasource:
-    url: jdbc:postgresql://threado-user-db:5432/user_db
+    url: jdbc:postgresql://localhost:5432/user_db
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
@@ -16,9 +22,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: threado-user-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://discovery-server:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true

@@ -1,22 +1,23 @@
-# Java
+# --- Java ---
 **/target/
-**.jar
-**.war
+*.jar
+*.war
 
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
-
-# Angular / Node
+# --- Angular / Node ---
 **/node_modules/
 **/dist/
+**/.angular/
 .npm/
 
-# IDE
+# --- IDE (WebStorm, IntelliJ, VS Code) ---
 .idea/
 .vscode/
 *.iml
 
-# Docker
+# --- Docker & Środowisko ---
 .env
+docker-compose.override.yml
+
+# --- Systemowe śmieci (opcjonalnie, ale warto) ---
+.DS_Store
+Thumbs.db

@@ -1,19 +1,19 @@
 @if (isDraggingAnywhere) {
-  <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"></div>
+  <div class="fixed inset-0 z-40 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"></div>
 }
 
 <div
   class="mx-auto w-full relative transition-all duration-300"
   [ngClass]="{'z-50': isDraggingAnywhere}"
 >
-    <div
-      class="p-4 transition-all duration-300 relative"
-      [ngClass]="{
+  <div
+    class="p-4 transition-all duration-300 relative"
+    [ngClass]="{
         'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': isDraggingAnywhere && !isDraggingOverComponent,
-        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
+        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
         'border-b threado-border': !isDraggingAnywhere
       }"
-    >
+  >
     @if (isDraggingAnywhere) {
       <div
         class="absolute inset-0 z-50 rounded-xl"
@@ -24,7 +24,7 @@
       >
         @if (isDraggingOverComponent) {
           <div class="w-full h-full flex items-center justify-center pointer-events-none rounded-xl">
-            <div class="bg-black/80 text-[#32cd32] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-threado scale-105 transition-transform">
+            <div class="bg-white/90 dark:bg-black/80 text-threado font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-threado scale-105 transition-transform shadow-xl">
               Upuść zdjęcie tutaj
             </div>
           </div>
@@ -36,8 +36,8 @@
       <div class="flex items-center gap-2.5">
         <app-threado-avatar></app-threado-avatar>
         <div class="flex flex-col mb-1">
-          <span class="text-white font-bold leading-tight">Mateusz</span>
-          <span class="text-gray-500 text-sm">@mateusz_dev</span>
+          <span class="text-black dark:text-white font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guset' }}</span>
+          <span class="text-gray-500 text-sm">@{{ (userService.currentUser$ | async)?.username || 'unknown' }}</span>
         </div>
       </div>
 
@@ -47,14 +47,14 @@
            [(ngModel)]="content"
            (input)="autoResize($event)"
            (focus)="expandForm()"
-           class="w-full resize-none border-0 bg-transparent p-0 text-lg text-white focus:ring-0 outline-none overflow-hidden relative z-10"
+           class="w-full resize-none border-0 bg-transparent p-0 text-lg text-black dark:text-white placeholder-gray-400 focus:ring-0 outline-none overflow-hidden relative z-10"
            placeholder="Co tam na Twoim Threadzie?"
            rows="2"
            id="compose-textarea"></textarea>
         </div>
 
         @if (selectedImage()) {
-          <div class="relative mt-2 group overflow-hidden rounded-2xl border border-[#32cd32]/30 shadow-lg">
+          <div class="relative mt-2 group overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg">
             <button
               (click)="removeImage()"
               type="button"
@@ -96,7 +96,7 @@
                   </app-threado-action-button>
 
                   @if (isEmojiPickerVisible) {
-                    <div class="absolute top-full mt-2 left-0 z-[100] shadow-2xl rounded-xl border border-[#32cd32]/30 bg-black">
+                    <div class="absolute top-full mt-2 left-0 z-[100] shadow-2xl rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
                       <emoji-mart
                         (emojiClick)="addEmoji($event)"
                         [darkMode]="true"
@@ -114,13 +114,14 @@
 
               <div class="flex items-center space-x-4">
                 <div class="flex items-center space-x-2">
-          <span class="text-xs transition-colors" [ngClass]="isOverLimit() ? 'text-red-500' : 'text-gray-500'">
-            {{ characterCount() }} / {{ MAX_CHARS }}
-          </span>
+                  <span class="text-xs transition-colors" [ngClass]="isOverLimit() ? 'text-red-500' : 'text-gray-500'">
+                    {{ characterCount() }} / {{ MAX_CHARS }}
+                  </span>
+
                   <svg width="20" height="20" viewBox="0 0 20 20" class="transform -rotate-90">
-                    <circle class="stroke-gray-800" cx="10" cy="10" r="8" fill="none" stroke-width="2"></circle>
+                    <circle class="stroke-zinc-200 dark:stroke-zinc-800" cx="10" cy="10" r="8" fill="none" stroke-width="2"></circle>
                     <circle
-                      [ngClass]="isNearLimit() ? (isOverLimit() ? 'stroke-red-500' : 'stroke-yellow-500') : 'stroke-[#32cd32]'"
+                      [ngClass]="isNearLimit() ? (isOverLimit() ? 'stroke-red-500' : 'stroke-yellow-500') : 'stroke-[var(--color-threado-accent)]'"
                       cx="10" cy="10" r="8" fill="none" stroke-width="2"
                       style="stroke-dasharray: 50.26; transition: stroke-dashoffset 0.2s ease, stroke 0.2s ease;"
                       [style.stroke-dashoffset]="progressOffset()">

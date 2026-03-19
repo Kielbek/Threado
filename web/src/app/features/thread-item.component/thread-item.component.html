@@ -1,52 +1,85 @@
-<div class="border-b threado-border p-4 hover:bg-white/[0.01] transition-colors cursor-pointer group/thread">
-  <div class="flex flex-col space-x-3">
+@if (thread(); as t) {
+  <div class="border-b threado-border p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer group/thread">
+    <div class="flex items-center gap-3">
+      <div class="flex-shrink-0">
+        <app-threado-avatar
+          size="3rem"
+          [avatarUrl]="t.author.avatarUrl"
+        ></app-threado-avatar>
+      </div>
 
-    <div class="flex gap-3">
-      <app-threado-avatar
-        size="3rem"
-        avatarUrl="https://static-assets-1.truthsocial.com/tmtg:prime-ts-assets/accounts/avatars/107/841/586/977/713/410/original/abcd2c1aff2a6323.jpeg"
-      ></app-threado-avatar>
+      <div class="flex flex-col overflow-hidden">
+        <div class="flex items-center gap-1 truncate">
+          <a [routerLink]="['/@' + t.author.username]" class="flex items-center gap-1 truncate hover:underline">
+          <span class="font-bold text-black dark:text-white">
+            {{ t.author.name }}
+          </span>
+            @if (t.author.verified) {
+              <svg class="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 24 24">
+                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.79-4-4-4-.495 0-.965.084-1.4.238C14.55 2.465 13.18 1.59 11.6 1.59c-1.58 0-2.95.875-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.21 0-4 1.79-4 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.79 4 4 4 .495 0 .965-.084 1.4-.238.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.154.905.238 1.4.238 2.21 0 4-1.79 4-4 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-10.65 4.88l-4.14-4.14 1.41-1.41 2.73 2.73 6.13-6.13 1.41 1.41-7.54 7.54z"></path>
+              </svg>
+            }
+          </a>
+        </div>
 
-      <div class="flex flex-col items-center overflow-hidden">
-        <span class="font-bold text-white hover:underline truncate">Marco Rubio</span>
-        <span class="text-gray-500 text-sm truncate">@marcorubio</span>
+        <a [routerLink]="['/@' + t.author.username]" class="text-gray-500 text-sm truncate">
+          @{{ t.author.username }}
+        </a>
       </div>
     </div>
 
-    <div class="flex-grow min-w-0">
-      <div class="mt-1 text-white text-[15px] leading-relaxed">
-        Vote! Every single vote counts in this election. Let's make it happen. 🗳️
+    <div class="mt-2">
+
+      <div
+        class="text-black dark:text-white text-[15px] leading-relaxed whitespace-pre-wrap transition-all"
+        [class.line-clamp-4]="t.text.length > maxLength && !isExpanded()"
+        [innerHTML]="t.text | linkify">
       </div>
 
-      <div class="mt-3 rounded-2xl overflow-hidden border border-gray-800 bg-gray-900/50">
-        <img src="https://static-assets-1.truthsocial.com/tmtg:prime-ts-assets/media_attachments/files/113/430/734/770/050/915/small/647039c47eac7c86.jpg"
-             alt="Thread image" class="w-full h-auto object-cover max-h-[512px] hover:scale-[1.01] transition-transform duration-500">
-      </div>
+      @if (t.text.length > maxLength) {
+        <button
+          (click)="toggleText($event)"
+          class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-semibold mt-1">
+          {{ isExpanded() ? 'Pokaż mniej' : 'Pokaż więcej' }}
+        </button>
+      }
 
-      <div class="mt-4 flex justify-around -ml-2 text-gray-500">
+      @if (t.media && t.media.length > 0) {
+        <div class="mt-3 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900/50">
+          <img [src]="t.media[0].url"
+               alt="Thread image"
+               class="w-full h-auto object-cover max-h-[512px] hover:scale-[1.01] transition-transform duration-500">
+        </div>
+      }
+
+      <div class="mt-3 w-full flex justify-around -ml-2 text-gray-500">
+
         <app-threado-action-button
           [icon]="MessageCircleIcon"
           variant="accent"
-          count="59">
+          [count]="t.publicMetrics.replyCount">
         </app-threado-action-button>
 
         <app-threado-action-button
           [icon]="RepeatIcon"
           variant="green"
-          count="101">
+          [count]="t.publicMetrics.retweetCount">
         </app-threado-action-button>
 
         <app-threado-action-button
           [icon]="HeartIcon"
           variant="red"
-          count="792">
+          [count]="t.publicMetrics.likeCount">
         </app-threado-action-button>
 
         <app-threado-action-button
           [icon]="BookmarkIcon"
-          variant="blue">
+          variant="blue"
+          [count]="t.publicMetrics.bookmarkCount">
         </app-threado-action-button>
+
       </div>
     </div>
+
   </div>
-</div>
+}

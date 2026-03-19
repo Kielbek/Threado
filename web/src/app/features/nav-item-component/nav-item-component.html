@@ -1,23 +1,23 @@
 <a [routerLink]="item().route"
    routerLinkActive #rla="routerLinkActive"
    (click)="clicked.emit()"
-   class="group flex items-center gap-5 px-4 py-3 rounded-full transition-all hover:bg-white/5 w-full cursor-pointer">
+   class="group flex items-center gap-4 px-4 py-3 rounded-full transition-all w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10"
+   [ngClass]="rla.isActive
+     ? 'text-[var(--color-threado-accent)] font-bold'
+     : 'text-black dark:text-white  font-medium'">
 
-  <lucide-icon
-    [img]="item().icon"
-    [strokeWidth]="rla.isActive ? 3 : 2"
-    class="w-7 h-7 transition-all flex-shrink-0"
-    [ngClass]="{
-    'text-threado': rla.isActive,
-    'text-white group-hover:text-threado': !rla.isActive
-  }"
-  >
-  </lucide-icon>
+  <div class="relative flex-shrink-0">
+    <lucide-icon
+      [img]="item().icon"
+      class="w-6 h-6 transition-transform group-active:scale-95 group-hover:scale-105">
+    </lucide-icon>
 
-  <span class="text-xl transition-all group-hover:text-white"
-        [class.font-bold]="rla.isActive"
-        [class.text-[#32cd32]]="rla.isActive"
-        [class.text-gray-300]="!rla.isActive">
-        {{ item().label }}
+    @if (item().showDot) {
+      <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--color-threado-accent)] ring-2 ring-white dark:ring-black"></div>
+    }
+  </div>
+
+  <span class="text-lg truncate">
+    {{ item().label }}
   </span>
 </a>

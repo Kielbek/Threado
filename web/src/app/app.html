@@ -1,16 +1,19 @@
 <div class="flex min-h-screen max-w-[1450px] mx-auto">
 
-  <aside class="sticky top-0 h-screen overflow-y-auto hidden lg:block w-70 xl:w-90 px-2">
+  <aside class="sticky top-0 h-screen hidden lg:block w-70 xl:w-75 flex-shrink-0">
     <app-navbar></app-navbar>
   </aside>
 
-  <main class="flex-grow">
-    <div class="mx-auto max-w-3xl border-r border-l threado-border min-h-screen">
-      <router-outlet></router-outlet>
+  <main class="flex-1 min-w-0 border-x threado-border relative">
+
+    <div class="sticky top-0 z-50 lg:hidden">
+      <app-header></app-header>
     </div>
+
+    <router-outlet></router-outlet>
   </main>
 
-  <aside class="sticky top-0 h-screen overflow-y-auto hidden lg:block w-70 xl:w-90 px-2">
+  <aside class="sticky top-0 h-screen hidden xl:block w-70 xl:w-75 flex-shrink-0">
     <app-auth-sidebar></app-auth-sidebar>
   </aside>
 

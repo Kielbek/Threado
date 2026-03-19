@@ -1,0 +1,14 @@
+server:
+  port: 8083
+
+spring:
+  dotenv:
+    directory: ../../
+
+aws:
+  s3:
+    bucket-name: threado-app-storage
+    region: eu-north-1
+  credentials:
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}

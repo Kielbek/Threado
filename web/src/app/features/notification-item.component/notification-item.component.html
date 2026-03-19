@@ -1,0 +1,43 @@
+<article
+  class="px-4 py-4 sm:py-5 border-b threado-border hover:bg-black/5 dark:hover:bg-white/[0.03] transition-colors duration-200 flex gap-3 sm:gap-4 cursor-pointer relative group"
+  [ngClass]="{'bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_92%)]': !notif().isRead}">
+
+  <div class="flex flex-col items-end pt-0.5 w-8 shrink-0">
+    @switch (notif().type) {
+      @case ('LIKE') { <lucide-icon [img]="HeartIcon" class="w-6 h-6 text-[#f91880] fill-[#f91880]"></lucide-icon> }
+      @case ('REPOST') { <lucide-icon [img]="RepostIcon" class="w-6 h-6 text-[#00ba7c]"></lucide-icon> }
+      @case ('REPLY') { <lucide-icon [img]="MessageIcon" class="w-6 h-6 text-[#1d9bf0] fill-[#1d9bf0]"></lucide-icon> }
+      @case ('FOLLOW') { <lucide-icon [img]="FollowIcon" class="w-6 h-6 text-[var(--color-threado-accent)] fill-[var(--color-threado-accent)]"></lucide-icon> }
+    }
+  </div>
+
+  <div class="flex-1 min-w-0 pb-1">
+
+    <img [src]="notif().user.avatarUrl" class="w-8 h-8 rounded-full bg-gray-200 dark:bg-zinc-800 object-cover mb-2 ring-1 ring-black/10 dark:ring-white/10" alt="Avatar">
+
+    <div class="text-[15px] leading-snug break-words pr-4">
+      <span class="font-bold text-black dark:text-white hover:underline decoration-black/30 dark:decoration-white/30 underline-offset-2">
+        {{ notif().user.name }}
+      </span>
+
+      @switch (notif().type) {
+        @case ('LIKE') { <span class="text-gray-600 dark:text-gray-400"> polubił(a) Twój post</span> }
+        @case ('REPOST') { <span class="text-gray-600 dark:text-gray-400"> podał(a) dalej Twój post</span> }
+        @case ('REPLY') { <span class="text-gray-600 dark:text-gray-400"> odpowiedział(a) na Twój post</span> }
+        @case ('FOLLOW') { <span class="text-gray-600 dark:text-gray-400"> zaczął/zaczęła Cię obserwować</span> }
+      }
+
+      @if (notif().timeAgo) {
+        <span class="text-gray-500 text-sm ml-1.5 whitespace-nowrap">· {{ notif().timeAgo }}</span>
+      }
+    </div>
+
+    @if (notif().content) {
+      <p class="text-gray-700 dark:text-gray-400 mt-2 text-[15px] leading-relaxed line-clamp-3">{{ notif().content }}</p>
+    }
+  </div>
+
+  @if (!notif().isRead) {
+    <div class="absolute top-5 right-4 w-2 h-2 rounded-full bg-[var(--color-threado-accent)] shadow-[0_0_8px_var(--color-threado-accent)]"></div>
+  }
+</article>

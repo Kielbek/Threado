@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, computed, input} from '@angular/core';
 
 @Component({
   selector: 'app-threado-avatar',
@@ -7,6 +7,8 @@ import {Component, input} from '@angular/core';
   styleUrl: './threado-avatar-component.css',
 })
 export class ThreadoAvatarComponent {
-  avatarUrl = input<string>('');
+  avatarUrl = input<string | null | undefined>('');
   size = input<string>('3.5rem');
+
+  displayUrl = computed(() => this.avatarUrl() || 'user-image.png');
 }

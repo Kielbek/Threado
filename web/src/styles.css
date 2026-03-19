@@ -1,21 +1,36 @@
 @import "tailwindcss";
 
-@theme {
-  --color-threado-bg: #000000;
-  --color-threado-accent: rgb(50, 205, 50);
+@custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-threado-bg: var(--theme-bg);
+  --color-threado-text: var(--theme-text);
+  --color-threado-surface: var(--theme-surface);
+
+  /*--color-threado-accent: rgb(29, 155, 240);*/
+  --color-threado-accent: rgb(50, 205, 50);
   --color-threado-red: rgb(239, 68, 68);
   --color-threado-blue: rgb(59, 130, 246);
   --color-threado-green: rgb(34, 197, 94);
 }
 
 @layer base {
+  :root {
+    --theme-bg: #f8f9fa;
+    --theme-text: #171717;
+    --theme-surface: #ffffff;
+  }
+  .dark {
+    --theme-bg: #000000;
+    --theme-text: #f3f4f6;
+    --theme-surface: #0a0a0a;
+  }
   html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     background-color: var(--color-threado-bg);
-    color: #ffffff;
+    color: var(--color-threado-text);
     -webkit-font-smoothing: antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
@@ -31,7 +46,7 @@
   }
 
   .border-threado {
-    border-color: var(--color-threado-accent);
+    border-color: var(--color-threado-accent) !important;
   }
 
   .threado-border {
@@ -46,6 +61,7 @@
     color: var(--color-threado-accent) !important;
   }
 
+  /* Style dla przycisków akcji */
   .threado-action-btn {
     @apply flex items-center space-x-2 transition cursor-pointer text-gray-500;
   }
@@ -58,14 +74,17 @@
     --action-color: var(--color-threado-accent);
     --action-bg: color-mix(in srgb, var(--color-threado-accent), transparent 90%);
   }
+
   .btn-red {
     --action-color: var(--color-threado-red);
     --action-bg: color-mix(in srgb, var(--color-threado-red), transparent 90%);
   }
+
   .btn-blue {
     --action-color: var(--color-threado-blue);
     --action-bg: color-mix(in srgb, var(--color-threado-blue), transparent 90%);
   }
+
   .btn-green {
     --action-color: var(--color-threado-green);
     --action-bg: color-mix(in srgb, var(--color-threado-green), transparent 90%);
@@ -82,6 +101,10 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar {
