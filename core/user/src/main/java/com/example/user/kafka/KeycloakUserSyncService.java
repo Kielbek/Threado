@@ -18,6 +18,7 @@ public class KeycloakUserSyncService {
 
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final UserEventProducer userEventProducer;
 
     @Transactional
     @KafkaListener(topics = "threado.user.events", groupId = "threado-user-group")
@@ -63,6 +64,8 @@ public class KeycloakUserSyncService {
 
         userRepository.save(newUser);
         log.info("Successfully synchronized new user: {}", username);
+
+        userEventProducer.sendProfileSyncEvent(newUser);
     }
 
     private void updateExistingUser(KeycloakEventDto event) {
@@ -74,6 +77,9 @@ public class KeycloakUserSyncService {
             String newEmail = event.details().get("email");
             String newUsername = event.details().get("username");
 
+            String newFirstName = event.details().get("first_name");
+            String newLastName = event.details().get("last_name");
+
             if (newEmail != null && !newEmail.equals(user.getEmail())) {
                 user.setEmail(newEmail);
                 isUpdated = true;
@@ -84,10 +90,22 @@ public class KeycloakUserSyncService {
                 isUpdated = true;
                 log.info("Updated username for user ID {}: {}", keycloakId, newUsername);
             }
+            if (newFirstName != null && !newFirstName.equals(user.getFirstName())) {
+                user.setFirstName(newFirstName);
+                isUpdated = true;
+                log.info("Updated first name for user ID {}: {}", keycloakId, newFirstName);
+            }
+            if (newLastName != null && !newLastName.equals(user.getLastName())) {
+                user.setLastName(newLastName);
+                isUpdated = true;
+                log.info("Updated last name for user ID {}: {}", keycloakId, newLastName);
+            }
 
             if (isUpdated) {
                 userRepository.save(user);
                 log.info("Successfully synchronized updates for user ID: {}", keycloakId);
+
+                userEventProducer.sendProfileSyncEvent(user);
             }
 
         }, () -> log.warn("Received update event for unknown user with Keycloak ID: {}. Skipping.", keycloakId));
