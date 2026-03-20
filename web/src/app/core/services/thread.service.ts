@@ -63,7 +63,7 @@ export class ThreadService {
   }
 
   getUserThreads(authorId: string, page: number, size: number): Observable<Page<ThreadResponse>> {
-    return this.http.get<Page<ThreadResponse>>(`${this.apiUrl}/user/${authorId}`, {
+    return this.http.get<Page<ThreadResponse>>(`${this.apiUrl}/public/user/${authorId}`, {
       params: {
         page: page.toString(),
         size: size.toString()

@@ -42,12 +42,12 @@ public class Thread {
     private AuthorCache author;
 
     @ElementCollection
-    @CollectionTable(name = "tweet_hashtags", joinColumns = @JoinColumn(name = "tweet_id"))
+    @CollectionTable(name = "thread_hashtags", joinColumns = @JoinColumn(name = "thread_id"))
     @Fetch(FetchMode.SUBSELECT)
     private List<Hashtag> hashtags = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "tweet_urls", joinColumns = @JoinColumn(name = "tweet_id"))
+    @CollectionTable(name = "thread_urls", joinColumns = @JoinColumn(name = "thread_id"))
     @Fetch(FetchMode.SUBSELECT)
     private List<UrlEntity> urls = new ArrayList<>();
 
