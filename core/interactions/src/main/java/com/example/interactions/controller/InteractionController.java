@@ -1,11 +1,11 @@
 package com.example.interactions.controller;
 
 import com.example.interactions.dto.InteractionStatusResponse;
+import com.example.interactions.dto.PageResponse;
 import com.example.interactions.service.InteractionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,7 +45,7 @@ public class InteractionController {
 
     @GetMapping("/bookmarks")
     @Operation(summary = "Get bookmarked threads", description = "Returns a paginated list of thread IDs saved by the user.")
-    public ResponseEntity<Page<UUID>> getMyBookmarks(
+    public ResponseEntity<PageResponse<UUID>> getMyBookmarks(
             @AuthenticationPrincipal Jwt jwt,
             Pageable pageable
     ) {

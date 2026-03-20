@@ -1,7 +1,7 @@
 package com.example.interactions.service;
 
 import com.example.interactions.dto.InteractionStatusResponse;
-import org.springframework.data.domain.Page;
+import com.example.interactions.dto.PageResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface InteractionService {
 
     void toggleBookmark(UUID threadId, UUID userId);
 
-    Page<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable);
+    PageResponse<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable);
 
     List<InteractionStatusResponse> getStatusesForUser(UUID userId, List<UUID> threadIds);
 }
