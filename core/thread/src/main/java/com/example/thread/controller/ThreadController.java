@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -100,6 +101,24 @@ public class ThreadController {
             @RequestParam(defaultValue = "10") int size
     ) {
         PageResponse<ThreadResponse> response = threadService.getThreadsByAuthor(authorId, page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Get multiple threads by IDs",
+            description = "Retrieves a list of threads in bulk based on a provided list of UUIDs."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved threads"
+            )
+    })
+    @PostMapping("/bulk")
+    public ResponseEntity<List<ThreadResponse>> getThreadsByIds(
+            @RequestBody List<UUID> threadIds
+    ) {
+        List<ThreadResponse> response = threadService.getThreadsByIds(threadIds);
         return ResponseEntity.ok(response);
     }
 

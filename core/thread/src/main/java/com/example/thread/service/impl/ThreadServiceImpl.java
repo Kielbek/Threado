@@ -38,17 +38,23 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public ThreadResponse createThread(CreateThreadRequest request, UUID authorId) {
-        log.info("Creating new thread for author: {}", authorId);
+        log.info("Initiating creation of a new thread for authorId: {}", authorId);
 
         List<Hashtag> hashtags = extractHashtags(request.content());
         List<UrlEntity> urls = extractUrls(request.content());
         String lang = languageDetector.detectLanguage(request.content());
 
+        log.debug("Extracted {} hashtags and {} URLs. Detected language: {}",
+                hashtags.size(), urls.size(), lang);
+
         AuthorCache author = authorCacheRepository.findById(authorId)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorCode.AUTHOR_NOT_FOUND_IN_CACHE,
-                        "Author cache miss for ID: " + authorId
-                ));
+                .orElseThrow(() -> {
+                    log.error("Failed to create thread: Author cache miss for ID {}", authorId);
+                    return new BusinessException(
+                            ErrorCode.AUTHOR_NOT_FOUND_IN_CACHE,
+                            "Author cache miss for ID: " + authorId
+                    );
+                });
 
         List<Media> mediaEntities = mapMediaRequestToEntity(request.media());
 
@@ -65,8 +71,10 @@ public class ThreadServiceImpl implements ThreadService {
                 .build();
 
         Thread savedThread = threadRepository.save(thread);
+        log.info("Successfully created and saved thread with ID: {}", savedThread.getId());
 
         //TODO Powiadomienie innych serwisów przez Kafkę
+        log.debug("TODO: Kafka event to be emitted for new thread ID: {}", savedThread.getId());
 
         return threadMapper.toResponse(savedThread);
     }
@@ -83,9 +91,12 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public PageResponse<ThreadResponse> getGlobalTimeline(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        log.debug("Fetching global timeline: page {}, size {}", page, size);
 
+        Pageable pageable = PageRequest.of(page, size);
         Page<Thread> threadPage = threadRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        log.info("Retrieved {} threads for global timeline (page {})", threadPage.getNumberOfElements(), page);
 
         List<ThreadResponse> content = threadPage.getContent().stream()
                 .map(threadMapper::toResponse)
@@ -103,9 +114,12 @@ public class ThreadServiceImpl implements ThreadService {
 
     @Override
     public PageResponse<ThreadResponse> getThreadsByAuthor(UUID authorId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        log.debug("Fetching threads for authorId {}: page {}, size {}", authorId, page, size);
 
+        Pageable pageable = PageRequest.of(page, size);
         Page<Thread> threadPage = threadRepository.findAllByAuthor_IdOrderByCreatedAtDesc(authorId, pageable);
+
+        log.info("Retrieved {} threads for authorId {} (page {})", threadPage.getNumberOfElements(), authorId, page);
 
         List<ThreadResponse> content = threadPage.getContent().stream()
                 .map(threadMapper::toResponse)
@@ -122,42 +136,50 @@ public class ThreadServiceImpl implements ThreadService {
     }
 
     @Override
-    public void likeThread(String threadId, String userId) {
-
-    }
-
-    @Override
-    public void unlikeThread(String threadId, String userId) {
-
-    }
-
-    private List<Hashtag> extractHashtags(String text) {
-        if (text == null || text.isBlank()) {
+    public List<ThreadResponse> getThreadsByIds(List<UUID> threadIds) {
+        if (threadIds == null || threadIds.isEmpty()) {
+            log.warn("getThreadsByIds called with an empty or null list of IDs");
             return List.of();
         }
 
-        List<Hashtag> hashtags = new ArrayList<>();
+        log.debug("Fetching bulk threads from DB for {} IDs: {}", threadIds.size(), threadIds);
 
+        List<Thread> foundThreads = threadRepository.findAllById(threadIds);
+
+        if (foundThreads.size() != threadIds.size()) {
+            log.warn("Bulk fetch mismatch: requested {} threads, but found only {} in DB",
+                    threadIds.size(), foundThreads.size());
+        } else {
+            log.info("Successfully fetched all {} requested threads in bulk", foundThreads.size());
+        }
+
+        return foundThreads.stream()
+                .map(threadMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public void likeThread(String threadId, String userId) {}
+
+    @Override
+    public void unlikeThread(String threadId, String userId) {}
+
+
+    private List<Hashtag> extractHashtags(String text) {
+        if (text == null || text.isBlank()) return List.of();
+
+        List<Hashtag> hashtags = new ArrayList<>();
         Pattern pattern = Pattern.compile("#(\\w+)");
         Matcher matcher = pattern.matcher(text);
 
         while (matcher.find()) {
-            Hashtag hashtag = new Hashtag(
-                    matcher.start(),
-                    matcher.end(),
-                    matcher.group(1).toLowerCase()
-            );
-
-            hashtags.add(hashtag);
+            hashtags.add(new Hashtag(matcher.start(), matcher.end(), matcher.group(1).toLowerCase()));
         }
-
         return hashtags;
     }
 
     private List<UrlEntity> extractUrls(String text) {
-        if (text == null || text.isBlank()) {
-            return List.of();
-        }
+        if (text == null || text.isBlank()) return List.of();
 
         List<UrlEntity> urls = new ArrayList<>();
         Pattern pattern = Pattern.compile("https?://\\S+");
@@ -165,15 +187,12 @@ public class ThreadServiceImpl implements ThreadService {
 
         while (matcher.find()) {
             String rawUrl = matcher.group();
-
             UrlEntity urlEntity = new UrlEntity();
             urlEntity.setStartIdx(matcher.start());
             urlEntity.setEndIdx(matcher.end());
             urlEntity.setUrl(rawUrl);
-
             urlEntity.setExpandedUrl(rawUrl);
             urlEntity.setDisplayUrl(simplifyUrl(rawUrl));
-
             urls.add(urlEntity);
         }
         return urls;
