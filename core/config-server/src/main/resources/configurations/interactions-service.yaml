@@ -40,4 +40,4 @@ eureka:
 app:
   kafka:
     topics:
-      interactions: thread.stats.events
+      interactions: thread.interactions.events

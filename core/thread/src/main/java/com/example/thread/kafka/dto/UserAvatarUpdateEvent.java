@@ -1,6 +1,6 @@
 package com.example.thread.kafka.dto;
 
-public record UserAvatarUpdateEventDto(
+public record UserAvatarUpdateEvent(
         String userId,
         String newAvatarUrl
 ) {}
