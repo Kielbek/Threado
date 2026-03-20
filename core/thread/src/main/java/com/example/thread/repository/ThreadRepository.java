@@ -10,16 +10,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ThreadRepository extends JpaRepository<Thread, String> {
+public interface ThreadRepository extends JpaRepository<Thread, UUID> {
 
     @EntityGraph(attributePaths = {"author"})
     Page<Thread> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"author"})
     Page<Thread> findAllByAuthor_IdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"author"})
+    List<Thread> findAllById(Iterable<UUID> threadIds);
 
     @Modifying
     @Query("UPDATE Thread t SET t.publicMetrics.likeCount = t.publicMetrics.likeCount + :value WHERE t.id = :threadId")
