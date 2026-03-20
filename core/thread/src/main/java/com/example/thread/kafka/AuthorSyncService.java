@@ -1,7 +1,7 @@
 package com.example.thread.kafka;
 
 import com.example.thread.entity.AuthorCache;
-import com.example.thread.kafka.dto.UserAvatarUpdateEventDto;
+import com.example.thread.kafka.dto.UserAvatarUpdateEvent;
 import com.example.thread.kafka.dto.UserProfileSyncEvent;
 import com.example.thread.repository.AuthorCacheRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +48,7 @@ public class AuthorSyncService {
     @KafkaListener(topics = "user.avatar.updated", groupId = "threado-post-group")
     public void consumeAvatarUpdate(String message) {
         try {
-            UserAvatarUpdateEventDto dto = objectMapper.readValue(message, UserAvatarUpdateEventDto.class);
+            UserAvatarUpdateEvent dto = objectMapper.readValue(message, UserAvatarUpdateEvent.class);
 
             authorCacheRepository.findById(dto.userId()).ifPresent(author -> {
                 author.setAvatarUrl(dto.newAvatarUrl());

@@ -41,3 +41,4 @@ app:
   kafka:
     topics:
       user-profile-sync: user.profile.synced
+      interactions: thread.interactions.events
