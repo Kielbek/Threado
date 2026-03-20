@@ -1,5 +1,6 @@
 package com.example.thread.repository;
 
+import com.example.thread.entity.Thread;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -8,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.example.thread.entity.Thread;
 
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public interface ThreadRepository extends JpaRepository<Thread, String> {
     Page<Thread> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"author"})
-    Page<Thread> findAllByAuthor_IdOrderByCreatedAtDesc(String userId, Pageable pageable);
+    Page<Thread> findAllByAuthor_IdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Thread t SET t.publicMetrics.likeCount = t.publicMetrics.likeCount + :value WHERE t.id = :threadId")

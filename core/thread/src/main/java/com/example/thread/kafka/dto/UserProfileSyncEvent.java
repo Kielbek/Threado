@@ -1,7 +1,9 @@
 package com.example.thread.kafka.dto;
 
+import java.util.UUID;
+
 public record UserProfileSyncEvent(
-        String userId,
+        UUID userId,
         String username,
         String firstName,
         String lastName,

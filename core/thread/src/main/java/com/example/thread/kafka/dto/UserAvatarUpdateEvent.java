@@ -1,6 +1,8 @@
 package com.example.thread.kafka.dto;
 
+import java.util.UUID;
+
 public record UserAvatarUpdateEvent(
-        String userId,
+        UUID userId,
         String newAvatarUrl
 ) {}

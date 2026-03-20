@@ -37,7 +37,7 @@ public class ThreadServiceImpl implements ThreadService {
     private final ThreadLanguageDetector languageDetector;
 
     @Override
-    public ThreadResponse createThread(CreateThreadRequest request, String authorId) {
+    public ThreadResponse createThread(CreateThreadRequest request, UUID authorId) {
         log.info("Creating new thread for author: {}", authorId);
 
         List<Hashtag> hashtags = extractHashtags(request.content());
@@ -102,7 +102,7 @@ public class ThreadServiceImpl implements ThreadService {
     }
 
     @Override
-    public PageResponse<ThreadResponse> getThreadsByAuthor(String authorId, int page, int size) {
+    public PageResponse<ThreadResponse> getThreadsByAuthor(UUID authorId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Thread> threadPage = threadRepository.findAllByAuthor_IdOrderByCreatedAtDesc(authorId, pageable);
