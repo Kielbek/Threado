@@ -1,6 +1,7 @@
 package com.example.interactions.service.impl;
 
 import com.example.interactions.dto.InteractionStatusResponse;
+import com.example.interactions.dto.PageResponse;
 import com.example.interactions.entity.Bookmark;
 import com.example.interactions.entity.Like;
 import com.example.interactions.enums.InteractionType;
@@ -63,9 +64,21 @@ public class InteractionServiceImpl implements InteractionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable) {
+    public PageResponse<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable) {
         log.debug("Fetching bookmarked thread IDs for user: {}", userId);
-        return bookmarkRepository.findBookmarkedThreadIdsByUserId(userId, pageable);
+
+        Page<UUID> bookmarkedPage = bookmarkRepository.findBookmarkedThreadIdsByUserId(userId, pageable);
+
+        log.info("Found {} bookmarked threads for user {}", bookmarkedPage.getTotalElements(), userId);
+
+        return PageResponse.<UUID>builder()
+                .content(bookmarkedPage.getContent())
+                .pageNumber(bookmarkedPage.getNumber())
+                .pageSize(bookmarkedPage.getSize())
+                .totalElements(bookmarkedPage.getTotalElements())
+                .totalPages(bookmarkedPage.getTotalPages())
+                .isLast(bookmarkedPage.isLast())
+                .build();
     }
 
     @Override
