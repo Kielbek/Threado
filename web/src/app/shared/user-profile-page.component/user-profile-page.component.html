@@ -18,10 +18,13 @@
     </app-user-profile-header>
 
     <app-thread-feed
+      #feed
+      [cacheKey]="currentCacheKey()"
       [fetchStrategy]="userThreadsFetcher"
-      emptyTitle="Brak postów"
-      emptyDescription="Gdy ten użytkownik coś opublikuje, pojawi się to tutaj.">
+      [emptyTitle]="'Brak postów'"
+      emptyDescription="Nie ma tu nic do wyświetlenia.">
     </app-thread-feed>
+
 
   }
 

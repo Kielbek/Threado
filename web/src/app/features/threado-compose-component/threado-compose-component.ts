@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, HostListener, inject, signal } from '@angular/core';
+import {Component, computed, ElementRef, HostListener, inject, output, signal} from '@angular/core';
 import { LucideAngularModule, PaperclipIcon, SmileIcon, XIcon } from 'lucide-angular';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avat
 import { ThreadoActionButtonComponent } from '../threado-action-button.component/threado-action-button.component';
 import { UserService } from '../../core/services/user.service';
 import {ThreadService} from '../../core/services/thread.service';
+import {ThreadResponse} from '../../core/model/thread/thread-response';
 
 @Component({
   selector: 'app-threado-compose',
@@ -31,6 +32,8 @@ export class ThreadoComposeComponent {
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
+
+  threadCreated = output<ThreadResponse>();
 
   content = signal('');
   isExpanded = signal(false);
@@ -197,7 +200,9 @@ export class ThreadoComposeComponent {
     this.isSubmitting.set(true);
 
     try {
-      await this.threadService.createThread(this.content(), this.selectedFile());
+      const newThread = await this.threadService.createThread(this.content(), this.selectedFile());
+
+      this.threadCreated.emit(newThread);
 
       this.content.set('');
       this.selectedImage.set(null);

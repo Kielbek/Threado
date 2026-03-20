@@ -2,14 +2,16 @@
 
   <app-page-header title="Home"></app-page-header>
 
-  <app-threado-compose></app-threado-compose>
+  <app-threado-compose (threadCreated)="feed.addThreadToTop($event)"></app-threado-compose>
 
-  <app-feed-tabs></app-feed-tabs>
+  <app-feed-tabs [(activeTab)]="currentTab"></app-feed-tabs>
 
   <app-thread-feed
-    [fetchStrategy]="globalFeedFetcher"
-    emptyTitle="Witaj na Threado!"
-    emptyDescription="Bądź pierwszą osobą, która podzieli się swoimi myślami.">
+    #feed
+    [cacheKey]="currentCacheKey()"
+    [fetchStrategy]="currentStrategy()"
+    [emptyTitle]="emptyTitle()"
+    emptyDescription="Nie ma tu nic do wyświetlenia.">
   </app-thread-feed>
 
 </div>

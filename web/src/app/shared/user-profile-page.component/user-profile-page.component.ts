@@ -27,6 +27,7 @@ export class UserProfilePageComponent {
   private threadService = inject(ThreadService);
 
   readonly usernameFromRoute = input.required<string>({ alias: 'username' });
+  readonly currentCacheKey = computed(() => `home-${this.usernameFromRoute()}-profile`);
 
   readonly cleanUsername = computed(() => {
     const raw = this.usernameFromRoute();

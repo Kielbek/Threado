@@ -132,6 +132,7 @@
                 <app-threado-button
                   (click)="submitPost()"
                   [disabled]="(characterCount() === 0 && !selectedImage()) || isOverLimit()"
+                  [isLoading]="isSubmitting()"
                   text="Thread"
                   customClasses="py-1.5 !text-sm !w-27"
                 >
