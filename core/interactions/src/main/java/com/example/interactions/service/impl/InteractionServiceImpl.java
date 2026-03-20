@@ -5,7 +5,6 @@ import com.example.interactions.entity.Bookmark;
 import com.example.interactions.entity.Like;
 import com.example.interactions.enums.InteractionType;
 import com.example.interactions.kafka.InteractionEventProducer;
-import com.example.interactions.kafka.dto.InteractionEvent;
 import com.example.interactions.repository.BookmarkRepository;
 import com.example.interactions.repository.LikeRepository;
 import com.example.interactions.service.InteractionService;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -29,18 +27,20 @@ public class InteractionServiceImpl implements InteractionService {
 
     private final LikeRepository likeRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final InteractionEventProducer kafkaProducer;
+    private final InteractionEventProducer interactionEventProducer;
 
     @Override
     @Transactional
     public void toggleLike(UUID threadId, UUID userId) {
         if (likeRepository.existsByUserIdAndThreadId(userId, threadId)) {
             likeRepository.deleteByUserIdAndThreadId(userId, threadId);
-            sendInteractionEvent(threadId, userId, InteractionType.UNLIKE);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.UNLIKE);
             log.info("Action [UNLIKE]: User {} from thread {}", userId, threadId);
         } else {
             likeRepository.save(Like.builder().userId(userId).threadId(threadId).build());
-            sendInteractionEvent(threadId, userId, InteractionType.LIKE);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.LIKE);
             log.info("Action [LIKE]: User {} liked thread {}", userId, threadId);
         }
     }
@@ -50,24 +50,15 @@ public class InteractionServiceImpl implements InteractionService {
     public void toggleBookmark(UUID threadId, UUID userId) {
         if (bookmarkRepository.existsByUserIdAndThreadId(userId, threadId)) {
             bookmarkRepository.deleteByUserIdAndThreadId(userId, threadId);
-            sendInteractionEvent(threadId, userId, InteractionType.UNBOOKMARK);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.UNBOOKMARK);
             log.info("Action [UNBOOKMARK]: User {} removed bookmark from thread {}", userId, threadId);
         } else {
             bookmarkRepository.save(Bookmark.builder().userId(userId).threadId(threadId).build());
-            sendInteractionEvent(threadId, userId, InteractionType.BOOKMARK);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.BOOKMARK);
             log.info("Action [BOOKMARK]: User {} bookmarked thread {}", userId, threadId);
         }
-    }
-
-    private void sendInteractionEvent(UUID threadId, UUID userId, InteractionType type) {
-        InteractionEvent event = new InteractionEvent(
-                UUID.randomUUID(),
-                threadId,
-                userId,
-                type,
-                Instant.now()
-        );
-        kafkaProducer.sendEvent(event);
     }
 
     @Override

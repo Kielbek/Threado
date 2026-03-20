@@ -5,7 +5,6 @@ import com.example.interactions.entity.Bookmark;
 import com.example.interactions.entity.Like;
 import com.example.interactions.enums.InteractionType;
 import com.example.interactions.kafka.InteractionEventProducer;
-import com.example.interactions.kafka.dto.InteractionEvent;
 import com.example.interactions.repository.BookmarkRepository;
 import com.example.interactions.repository.LikeRepository;
 import org.junit.jupiter.api.BeforeEach;
