@@ -4,9 +4,11 @@ import com.example.thread.dto.request.CreateThreadRequest;
 import com.example.thread.dto.response.PageResponse;
 import com.example.thread.dto.response.ThreadResponse;
 
+import java.util.UUID;
+
 public interface ThreadService {
 
-    ThreadResponse createThread(CreateThreadRequest request, String authorId);
+    ThreadResponse createThread(CreateThreadRequest request, UUID authorId);
 
     ThreadResponse getThreadById(String threadId);
 
@@ -14,7 +16,7 @@ public interface ThreadService {
 
     PageResponse<ThreadResponse> getGlobalTimeline(int page, int size);
 
-    PageResponse<ThreadResponse> getThreadsByAuthor(String authorId, int page, int size);
+    PageResponse<ThreadResponse> getThreadsByAuthor(UUID authorId, int page, int size);
 
     void likeThread(String threadId, String userId);
 

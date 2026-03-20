@@ -14,9 +14,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/threads")
@@ -49,11 +51,9 @@ public class ThreadController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ThreadResponse> createThread(
             @Valid @RequestBody CreateThreadRequest request,
-            Principal principal
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        String currentUserId = principal.getName();
-
-        ThreadResponse response = threadService.createThread(request, currentUserId);
+        ThreadResponse response = threadService.createThread(request, getUserId(jwt));
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -93,13 +93,17 @@ public class ThreadController {
                     description = "User not found (optional, depends on your service logic)"
             )
     })
-    @GetMapping("/user/{authorId}")
+    @GetMapping("/public/user/{authorId}")
     public ResponseEntity<PageResponse<ThreadResponse>> getThreadsByUser(
-            @PathVariable String authorId,
+            @PathVariable UUID authorId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         PageResponse<ThreadResponse> response = threadService.getThreadsByAuthor(authorId, page, size);
         return ResponseEntity.ok(response);
+    }
+
+    private UUID getUserId(Jwt jwt) {
+        return UUID.fromString(jwt.getSubject());
     }
 }
