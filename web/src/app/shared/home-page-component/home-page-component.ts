@@ -1,6 +1,6 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {ThreadoComposeComponent} from '../../features/threado-compose-component/threado-compose-component';
-import {FeedTabsComponent} from '../../features/feed-tabs.component/feed-tabs.component';
+import {FeedTabsComponent, FeedTabType} from '../../features/feed-tabs.component/feed-tabs.component';
 import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 import {ThreadService} from '../../core/services/thread.service';
 import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-feed.component';
@@ -19,7 +19,21 @@ import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-f
 export class HomePageComponent {
   private readonly threadService = inject(ThreadService);
 
-  globalFeedFetcher = (page: number, size: number) => {
-    return this.threadService.getGlobalTimeline(page, size);
-  };
+  currentTab = signal<FeedTabType>('For You');
+
+  readonly currentCacheKey = computed(() =>
+    `home-${this.currentTab() === 'For You' ? 'global' : 'following'}-timeline`
+  );
+
+  readonly emptyTitle = computed(() =>
+    this.currentTab() === 'For You' ? 'Witaj na Threado!' : 'Nic tu jeszcze nie ma'
+  );
+
+  readonly currentStrategy = computed(() => {
+    return this.currentTab() === 'For You'
+      ? (page: number, size: number) => this.threadService.getGlobalTimeline(page, size)
+      : (page: number, size: number) => this.threadService.getGlobalTimeline(page, size);
+      // : (page: number, size: number) => this.threadService.getFollowingTimeline(page, size);
+  });
+
 }
