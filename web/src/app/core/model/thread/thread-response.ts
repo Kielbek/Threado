@@ -15,4 +15,9 @@ export interface ThreadResponse {
   urls: UrlEntityResponse[];
   media: MediaResponse[];
   author: UserResponse;
+
+  userInteractions?: {
+    isLiked: boolean;
+    isBookmarked: boolean;
+  };
 }

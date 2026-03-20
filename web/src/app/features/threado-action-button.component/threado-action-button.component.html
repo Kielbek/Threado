@@ -1,12 +1,16 @@
 <button
   class="threado-action-btn"
+  [class.is-active]="isActive()"
   [ngClass]="[variantClass(), customClass()]">
 
-  <div class="icon-wrapper">
-    <lucide-icon [img]="icon()" class="w-5 h-5"></lucide-icon>
+  <div class="icon-wrapper p-2 rounded-full transition-colors duration-200">
+    <lucide-icon
+      [img]="icon()"
+      class="w-5 h-5 flex items-center justify-center transition-transform group-active:scale-90">
+    </lucide-icon>
   </div>
 
-  @if (count()) {
+  @if (count() !== undefined && count() !== null) {
     <span class="text-xs font-medium">{{ count() }}</span>
   }
 </button>

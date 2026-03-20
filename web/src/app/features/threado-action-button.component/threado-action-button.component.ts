@@ -16,6 +16,6 @@ export class ThreadoActionButtonComponent {
   count = input<number | string>();
   variant = input<'accent' | 'red' | 'blue' | 'green'>('accent');
   customClass = input<string>('');
-
+  isActive = input<boolean>(false);
   variantClass = computed(() => `btn-${this.variant()}`);
 }
