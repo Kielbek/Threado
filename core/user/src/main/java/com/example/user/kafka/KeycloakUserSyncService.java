@@ -31,7 +31,7 @@ public class KeycloakUserSyncService {
             if (event.type() != null) {
                 switch (event.type()) {
                     case "REGISTER" -> syncNewUser(event);
-                    case "UPDATE_EMAIL", "UPDATE_PROFILE" -> updateExistingUser(event);
+                    case "UPDATE_EMAIL" -> updateExistingUser(event);
                     default -> log.debug("Ignored Keycloak event type: {}", event.type());
                 }
             }

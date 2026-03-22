@@ -1,18 +1,19 @@
 package com.example.user.controller;
 
+import com.example.user.dto.request.UserProfileUpdateRequest;
 import com.example.user.dto.response.UserProfileResponse;
 import com.example.user.dto.response.UserResponse;
 import com.example.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,5 +47,24 @@ public class UserController {
     public UserProfileResponse getPublicProfile(@PathVariable String username) {
 
         return userService.getUserByUsername(username);
+    }
+
+    @Operation(
+            summary = "Update current user profile",
+            description = "Updates the authenticated user's profile, including text fields (firstName, bio, website) and images (avatar, cover). Uses multipart/form-data."
+    )
+    @ApiResponse(responseCode = "204", description = "Profile updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid input data (e.g., file too large, validation error)")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing JWT token")
+    @PutMapping(value = "/me")
+    public ResponseEntity<UserResponse> updateCurrentUser(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody UserProfileUpdateRequest request
+    ) {
+        String keycloakId = jwt.getSubject();
+
+        UserResponse userResponse = userService.updateUserProfile(keycloakId, request);
+
+        return ResponseEntity.ok(userResponse);
     }
 }

@@ -82,12 +82,13 @@ public class ThreadMapper {
 
     private UserResponse mapAuthor(AuthorCache author) {
         if (author == null) {
-            return new UserResponse(null, "Guest", "unknown", false);
+            return new UserResponse(null, "Guest", "unknown", "", false);
         }
         return new UserResponse(
                 author.getId(),
                 author.getName(),
                 author.getUsername(),
+                author.getAvatarUrl(),
                 author.isVerified()
         );
     }

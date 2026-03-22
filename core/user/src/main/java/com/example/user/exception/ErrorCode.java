@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User entity not found in the database by provided Keycloak ID.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User entity not found in the database by provided Keycloak ID."),
+    KEYCLOAK_UPDATE_FAILED(HttpStatus.CONFLICT, "Failed to update account data in the identity provider."),
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "This username is already taken. Please choose another one.");
 
     private final HttpStatus httpStatus;
     private final String defaultMessage;

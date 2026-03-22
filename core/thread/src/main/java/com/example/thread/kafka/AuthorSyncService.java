@@ -44,19 +44,4 @@ public class AuthorSyncService {
             log.error("Error processing UserProfileSyncEvent", e);
         }
     }
-
-    @KafkaListener(topics = "user.avatar.updated", groupId = "threado-post-group")
-    public void consumeAvatarUpdate(String message) {
-        try {
-            UserAvatarUpdateEvent dto = objectMapper.readValue(message, UserAvatarUpdateEvent.class);
-
-            authorCacheRepository.findById(dto.userId()).ifPresent(author -> {
-                author.setAvatarUrl(dto.newAvatarUrl());
-                authorCacheRepository.save(author);
-                log.info("Updated avatar in AuthorCache for user: {}", dto.userId());
-            });
-        } catch (Exception e) {
-            log.error("Error processing Avatar update", e);
-        }
-    }
 }
