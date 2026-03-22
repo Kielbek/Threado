@@ -13,14 +13,6 @@ export class ThreadService {
   private readonly pureHttp = new HttpClient(this.httpBackend);
   private readonly apiUrl = '/api/threads';
 
-  getGlobalTimeline(page = 0, size = 10): Observable<Page<ThreadResponse>> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
-
-    return this.http.get<Page<ThreadResponse>>(`${this.apiUrl}/timeline`, { params });
-  }
-
   private getImageDimensions(file: File): Promise<{width: number, height: number}> {
     return new Promise((resolve) => {
       const img = new Image();
@@ -60,14 +52,5 @@ export class ThreadService {
     };
 
     return await firstValueFrom(this.http.post<ThreadResponse>(this.apiUrl, requestPayload));
-  }
-
-  getUserThreads(authorId: string, page: number, size: number): Observable<Page<ThreadResponse>> {
-    return this.http.get<Page<ThreadResponse>>(`${this.apiUrl}/public/user/${authorId}`, {
-      params: {
-        page: page.toString(),
-        size: size.toString()
-      }
-    });
   }
 }

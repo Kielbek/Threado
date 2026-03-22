@@ -3,10 +3,11 @@ import {HashtagResponse} from './hashtag-response';
 import {UrlEntityResponse} from './url-entity-response';
 import {UserResponse} from './user-response';
 import {MediaResponse} from './media-response';
+import {InteractionContextResponse} from './interaction-context-response';
 
 export interface ThreadResponse {
   id: string;
-  text: string;
+  content: string;
   createdAt: string;
   replySettings: string;
   lang: string;
@@ -15,9 +16,5 @@ export interface ThreadResponse {
   urls: UrlEntityResponse[];
   media: MediaResponse[];
   author: UserResponse;
-
-  userInteractions?: {
-    isLiked: boolean;
-    isBookmarked: boolean;
-  };
+  interactions: InteractionContextResponse
 }

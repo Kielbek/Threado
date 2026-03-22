@@ -8,6 +8,7 @@ import {EMPTY} from 'rxjs';
 import {UserProfileSkeletonComponent} from './user-profile-skeleton.component/user-profile-skeleton.component';
 import {UserProfileNotFoundComponent} from './user-profile-not-found.component/user-profile-not-found.component';
 import {UserProfileHeaderComponent} from './user-profile-header.component/user-profile-header.component';
+import {FeedService} from '../../core/services/feed-service';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -24,7 +25,7 @@ import {UserProfileHeaderComponent} from './user-profile-header.component/user-p
 export class UserProfilePageComponent {
   private keycloakService = inject(KeycloakService);
   private userService = inject(UserService);
-  private threadService = inject(ThreadService);
+  private feedService = inject(FeedService);
 
   readonly usernameFromRoute = input.required<string>({ alias: 'username' });
   readonly currentCacheKey = computed(() => `home-${this.usernameFromRoute()}-profile`);
@@ -76,6 +77,6 @@ export class UserProfilePageComponent {
       return EMPTY;
     }
 
-    return this.threadService.getUserThreads(authorId, page, size);
+    return this.feedService.getUserThreads(authorId, page, size);
   };
 }
