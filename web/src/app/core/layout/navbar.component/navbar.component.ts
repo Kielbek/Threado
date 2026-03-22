@@ -6,7 +6,7 @@ import {
   EllipsisIcon,
   GlobeIcon,
   Home,
-  LucideAngularModule,
+  LucideAngularModule, SettingsIcon,
   SunIcon,
   User
 } from 'lucide-angular';
@@ -64,6 +64,7 @@ export class NavbarComponent {
         route: username ? `/@${username}` : '/profile',
         icon: User
       },
+      { label: 'Settings', route: '/settings', icon: SettingsIcon },
     ];
   });
 
@@ -91,7 +92,7 @@ export class NavbarComponent {
     this.themeService.setTheme(selectElement.value as ThemeMode);
   }
 
-  currentLanguage = signal('pl'); // lub pobieranie z serwisu tłumaczeń
+  currentLanguage = signal('pl');
 
   onLanguageChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
@@ -99,6 +100,4 @@ export class NavbarComponent {
     this.currentLanguage.set(selectedLang);
     // np. this.translateService.use(selectedLang);
   }
-
-  protected readonly GlobeIcon = GlobeIcon;
 }

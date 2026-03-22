@@ -46,3 +46,8 @@ app:
   kafka:
     topics:
       user-profile-sync: user.profile.synced
+  keycloak:
+    server-url: "http://localhost:8180"
+    realm: "Threado"
+    client-id: "backend-service"
+    client-secret: "LPiNRDQASAWUxdXeFXBvw237lB6MYIHK"
