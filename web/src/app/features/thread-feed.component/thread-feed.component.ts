@@ -102,6 +102,7 @@ export class ThreadFeedComponent implements OnInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response) => {
+          console.log(response);
           this.threads.update(current => [...current, ...response.content]);
           this.isLastPage.set(response.isLast);
           this.currentPage.update(page => page + 1);

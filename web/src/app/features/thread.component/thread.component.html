@@ -33,11 +33,11 @@
 
       <div
         class="text-black dark:text-white text-[15px] leading-relaxed whitespace-pre-wrap transition-all"
-        [class.line-clamp-4]="t.text.length > maxLength && !isExpanded()"
-        [innerHTML]="t.text | linkify">
+        [class.line-clamp-4]="t.content.length > maxLength && !isExpanded()"
+        [innerHTML]="t.content | linkify">
       </div>
 
-      @if (t.text.length > maxLength) {
+      @if (t.content.length > maxLength) {
         <button
           (click)="toggleText($event)"
           class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-semibold mt-1">

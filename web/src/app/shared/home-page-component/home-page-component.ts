@@ -4,6 +4,7 @@ import {FeedTabsComponent, FeedTabType} from '../../features/feed-tabs.component
 import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 import {ThreadService} from '../../core/services/thread.service';
 import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-feed.component';
+import {FeedService} from '../../core/services/feed-service';
 
 @Component({
   selector: 'app-home-page',
@@ -17,7 +18,7 @@ import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-f
   styleUrl: './home-page-component.css',
 })
 export class HomePageComponent {
-  private readonly threadService = inject(ThreadService);
+  private readonly feedService = inject(FeedService);
 
   currentTab = signal<FeedTabType>('For You');
 
@@ -31,8 +32,8 @@ export class HomePageComponent {
 
   readonly currentStrategy = computed(() => {
     return this.currentTab() === 'For You'
-      ? (page: number, size: number) => this.threadService.getGlobalTimeline(page, size)
-      : (page: number, size: number) => this.threadService.getGlobalTimeline(page, size);
+      ? (page: number, size: number) => this.feedService.getGlobalTimeline(page, size)
+      : (page: number, size: number) => this.feedService.getGlobalTimeline(page, size);
       // : (page: number, size: number) => this.threadService.getFollowingTimeline(page, size);
   });
 

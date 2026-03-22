@@ -5,7 +5,8 @@ import { ThreadoActionButtonComponent } from '../threado-action-button.component
 import { ThreadResponse } from '../../core/model/thread/thread-response';
 import { LinkifyPipe } from '../../core/pipes/linkify-pipe';
 import { RouterLink } from '@angular/router';
-import { InteractionService } from '../../core/services/interaction.service'; // Pamiętaj o imporcie!
+import { InteractionService } from '../../core/services/interaction.service';
+import {FeedCacheService} from '../../core/services/feed-cache-service'; // Pamiętaj o imporcie!
 
 @Component({
   selector: 'app-thread',
@@ -28,6 +29,7 @@ export class ThreadComponent {
   protected readonly MessageCircleIcon = MessageCircleIcon;
 
   private interactionService = inject(InteractionService);
+  private feedCache = inject(FeedCacheService);
 
   threadInput = input.required<ThreadResponse>({ alias: 'thread' });
 
@@ -45,8 +47,8 @@ export class ThreadComponent {
         bookmarkCount: t.publicMetrics?.bookmarkCount || 0
       });
       this.localInteractions.set({
-        isLiked: t.userInteractions?.isLiked || false,
-        isBookmarked: t.userInteractions?.isBookmarked || false
+        isLiked: t.interactions?.isLiked || false,
+        isBookmarked: t.interactions?.isBookmarked || false
       });
     }, { allowSignalWrites: true });
   }
@@ -90,6 +92,9 @@ export class ThreadComponent {
     }));
 
     this.interactionService.toggleBookmark(t.id).subscribe({
+      next: () => {
+        this.feedCache.clear('user-bookmarks-feed');
+      },
       error: () => {
         this.localInteractions.update(state => ({ ...state, isBookmarked: currentBookmarked }));
         this.localMetrics.update(state => ({

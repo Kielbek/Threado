@@ -5,8 +5,11 @@
     subtitle="@mateusz_dev">
   </app-page-header>
 
-  <div class="flex flex-col">
-
-  </div>
+  <app-thread-feed
+    [cacheKey]="cacheKey"
+    [fetchStrategy]="bookmarksFetcher"
+    [emptyTitle]="'Brak zapisanych postów'"
+    emptyDescription="Gdy zapiszesz jakiś post, pojawi się on tutaj.">
+  </app-thread-feed>
 
 </div>
