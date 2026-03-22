@@ -1,0 +1,31 @@
+<div [ngClass]="{
+  'flex items-center justify-between': variant() === 'full',
+  'inline-block': variant() === 'compact'
+}">
+
+  @if (variant() === 'full') {
+    <div class="flex flex-col pr-4">
+      <span class="text-[15px] font-semibold text-black dark:text-white">{{ label() }}</span>
+
+      @if (description()) {
+        <span class="text-[13px] text-gray-500 dark:text-gray-400 mt-0.5">{{ description() }}</span>
+      }
+    </div>
+  }
+
+  <div class="relative inline-block">
+    <lucide-icon [img]="currentIcon()" class="w-4 h-4 absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></lucide-icon>
+
+    <select
+      [value]="themeService.currentTheme()"
+      (change)="onThemeChange($event)"
+      class="appearance-none bg-zinc-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-black dark:text-white text-sm font-medium rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-threado-accent)] cursor-pointer transition-colors"
+      [ngClass]="{'w-[130px]': variant() === 'full', 'w-[120px] py-1.5': variant() === 'compact'}">
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+
+    <lucide-icon [img]="ChevronDownIcon" class="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></lucide-icon>
+  </div>
+</div>
