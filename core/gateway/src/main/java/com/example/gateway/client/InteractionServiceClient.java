@@ -33,6 +33,6 @@ public class InteractionServiceClient {
                 .header("Authorization", authHeader)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<InteractionStatusResponse>>() {})
-                .onErrorReturn(List.of()); // Fail-safe
+                .onErrorReturn(List.of());
     }
 }
