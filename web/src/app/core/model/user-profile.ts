@@ -1,9 +1,13 @@
 export interface UserProfile {
-  id: number;
-  keycloakId: string;
+  id: string;
+  username: string;
   firstName: string;
   lastName: string;
-  username: string;
-  email: string;
+  bio: string;
+  websiteUrl: string;
   avatarUrl: string;
+  coverUrl: string;
+  followersCount: number;
+  followingCount: number;
+  joinedAt: string;
 }

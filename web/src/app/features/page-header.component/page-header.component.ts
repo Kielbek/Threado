@@ -1,4 +1,4 @@
-import {Component, inject, input, output} from '@angular/core';
+import {Component, inject, input, model, output} from '@angular/core';
 import {ArrowLeft, LucideAngularModule} from "lucide-angular";
 import {Location} from '@angular/common';
 import {ThreadoButtonComponent} from '../threado-button-component/threado-button.component';
@@ -18,6 +18,7 @@ export class PageHeaderComponent {
   showBackButton = input<boolean>(false);
   buttonText = input<string>();
   buttonDisabled = input<boolean>(false);
+  isButtonLoading = input<boolean>(false);
 
   buttonClicked = output<void>();
 

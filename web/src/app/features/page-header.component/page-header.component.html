@@ -25,6 +25,7 @@
       <app-threado-button
         [text]="buttonText()!"
         [disabled]="buttonDisabled()"
+        [isLoading]="isButtonLoading()"
         variant="primary"
         (clicked)="buttonClicked.emit()">
       </app-threado-button>

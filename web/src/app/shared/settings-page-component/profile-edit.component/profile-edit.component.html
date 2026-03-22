@@ -9,8 +9,10 @@
     [showBackButton]="true"
     buttonText="Save"
     [buttonDisabled]="profileForm.invalid && profileForm.pristine"
+    [isButtonLoading]="isLoading()"
     [ngClass]="{'blur-sm': dragService.isDraggingAnywhere()}"
-    (buttonClicked)="saveProfile()">
+    (buttonClicked)="saveProfile()"
+  >
   </app-page-header>
 
   <main class="flex-1 w-full mx-auto sm:border-x border-gray-200 dark:border-zinc-800 relative flex flex-col transition-all duration-300">
@@ -102,14 +104,28 @@
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="flex flex-col gap-6 px-4 mt-16 sm:mt-20 pb-10 w-full transition-all duration-300"
           [ngClass]="{'blur-sm opacity-60 pointer-events-none': dragService.isDraggingAnywhere()}">
 
-      <div class="flex flex-col gap-1.5">
-        <app-threado-input inputId="profileName" label="Name" formControlName="name"></app-threado-input>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col gap-1.5 flex-1">
+          <app-threado-input inputId="profileFirstName" label="First Name" formControlName="firstName"></app-threado-input>
+        </div>
+        <div class="flex flex-col gap-1.5 flex-1">
+          <app-threado-input inputId="profileLastName" label="Last Name" formControlName="lastName"></app-threado-input>
+        </div>
       </div>
+
+      <div class="flex flex-col gap-1.5">
+        <app-threado-input inputId="profileUsername" label="Username" formControlName="username"></app-threado-input>
+        @if (profileForm.get('username')?.hasError('usernameTaken')) {
+          <span class="text-[13px] text-red-500 px-2 font-medium">This username is already taken.</span>
+        }
+      </div>
+
       <div class="flex flex-col gap-1.5">
         <app-threado-input inputId="profileBio" label="Bio" [isTextarea]="true" formControlName="bio"></app-threado-input>
       </div>
+
       <div class="flex flex-col gap-1.5">
-        <app-threado-input inputId="profileWebsite" label="Website" type="url" formControlName="website"></app-threado-input>
+        <app-threado-input inputId="profileWebsite" label="Website" type="url" formControlName="websiteUrl"></app-threado-input>
       </div>
 
     </form>

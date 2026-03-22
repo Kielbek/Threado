@@ -1,11 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CameraIcon, LucideAngularModule } from 'lucide-angular';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
+
 import { ThreadoAvatarComponent } from '../../../features/threado-avatar-component/threado-avatar-component';
 import { PageHeaderComponent } from '../../../features/page-header.component/page-header.component';
 import { ThreadoInputComponent } from '../../../features/threado-input.component/threado-input.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {DragDropService} from '../../../core/services/drag-drop-service';
-import {NgClass} from '@angular/common';
+
+import { DragDropService } from '../../../core/services/drag-drop-service';
+import { MediaService } from '../../../core/services/media-service';
+import {UserService} from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-profile-edit',
@@ -21,8 +26,10 @@ import {NgClass} from '@angular/common';
   templateUrl: './profile-edit.component.html'
 })
 export class ProfileEditComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  public dragService = inject(DragDropService);
+  private readonly fb = inject(FormBuilder);
+  public readonly dragService = inject(DragDropService);
+  private readonly mediaService = inject(MediaService);
+  private readonly userService = inject(UserService);
 
   readonly CameraIcon = CameraIcon;
   profileForm!: FormGroup;
@@ -33,15 +40,43 @@ export class ProfileEditComponent implements OnInit {
   coverFileToUpload: File | null = null;
   avatarFileToUpload: File | null = null;
 
+  currentAvatarUrl: string | null = null;
+  currentCoverUrl: string | null = null;
+
   isDraggingOverCover = signal(false);
   isDraggingOverAvatar = signal(false);
+  isLoading = signal(false);
 
   ngOnInit() {
     this.profileForm = this.fb.nonNullable.group({
-      name: ['Mateusz', [Validators.required, Validators.maxLength(50)]],
-      bio: ['Add your bio', [Validators.maxLength(160)]],
-      website: ['', [Validators.pattern('https?://.+')]]
+      firstName: ['', [Validators.required, Validators.maxLength(50)]],
+      lastName: ['', [Validators.required, Validators.maxLength(50)]],
+      username: ['', [Validators.required, Validators.maxLength(30)]],
+      bio: ['', [Validators.maxLength(160)]],
+      websiteUrl: ['', [Validators.pattern('https?://.+')]]
     });
+
+    const currentUser = this.userService.getCurrentUserSnapshot();
+
+    if (currentUser) {
+      this.profileForm.patchValue({
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        username: currentUser.username,
+        bio: currentUser.bio || '',
+        websiteUrl: currentUser.websiteUrl || ''
+      });
+
+      if (currentUser.avatarUrl) {
+        this.avatarPreview.set(currentUser.avatarUrl);
+        this.currentAvatarUrl = currentUser.avatarUrl;
+      }
+
+      if (currentUser.coverUrl) {
+        this.coverPreview.set(currentUser.coverUrl);
+        this.currentCoverUrl = currentUser.coverUrl;
+      }
+    }
   }
 
   onCoverSelected(event: Event) {
@@ -119,14 +154,42 @@ export class ProfileEditComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  saveProfile() {
-    if (this.profileForm.valid) {
-      const formData = this.profileForm.getRawValue();
-      console.log('Dane tekstowe:', formData);
-      console.log('Nowy Avatar do wysłania:', this.avatarFileToUpload);
-      console.log('Nowy Cover do wysłania:', this.coverFileToUpload);
+  async saveProfile() {
+    if (this.profileForm.invalid) return;
 
-      // this.apiService.updateProfile(formData, this.avatarFileToUpload, this.coverFileToUpload)
+    this.isLoading.set(true);
+
+    try {
+      const formData = this.profileForm.getRawValue();
+      let avatarUrl = this.currentAvatarUrl;
+      let coverUrl = this.currentCoverUrl;
+
+      if (this.avatarFileToUpload) {
+        avatarUrl = await this.mediaService.uploadBasicFile(this.avatarFileToUpload);
+      }
+
+      if (this.coverFileToUpload) {
+        coverUrl = await this.mediaService.uploadBasicFile(this.coverFileToUpload);
+      }
+
+      const finalPayload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        bio: formData.bio,
+        websiteUrl: formData.websiteUrl,
+        avatarUrl: avatarUrl,
+        coverUrl: coverUrl
+      };
+
+      await firstValueFrom(this.userService.updateProfile(finalPayload));
+
+    } catch (error: any) {
+      if (error.status === 409) {
+        this.profileForm.get('username')?.setErrors({ usernameTaken: true });
+      }
+    } finally {
+      this.isLoading.set(false);
     }
   }
 }
