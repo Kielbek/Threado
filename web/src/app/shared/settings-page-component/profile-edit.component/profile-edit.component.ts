@@ -154,8 +154,18 @@ export class ProfileEditComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  hasChanges(): boolean {
+    const isFormDirty = this.profileForm.dirty;
+    const hasNewAvatar = !!this.avatarFileToUpload;
+    const hasNewCover = !!this.coverFileToUpload;
+
+    return isFormDirty || hasNewAvatar || hasNewCover;
+  }
+
   async saveProfile() {
-    if (this.profileForm.invalid) return;
+    if (!this.hasChanges() || this.profileForm.invalid || this.isLoading()) {
+      return;
+    }
 
     this.isLoading.set(true);
 
