@@ -5,6 +5,9 @@ import {UserProfilePageComponent} from './shared/user-profile-page.component/use
 import {BookmarksPageComponent} from './shared/bookmarks-page.component/bookmarks-page.component';
 import {SettingsPageComponent} from "./shared/settings-page-component/settings-page-component";
 import {ProfileEditComponent} from './shared/settings-page-component/profile-edit.component/profile-edit.component';
+import {
+  PreferencesPageComponent
+} from './shared/settings-page-component/preferences-page.component/preferences-page.component';
 
 export const routes: Routes = [
   {
@@ -30,6 +33,7 @@ export const routes: Routes = [
   },
   { path: 'settings', component: SettingsPageComponent },
   { path: 'settings/profile', component: ProfileEditComponent },
+  { path: 'settings/preferences', component: PreferencesPageComponent },
   {
     path: ':username',
     component: UserProfilePageComponent,

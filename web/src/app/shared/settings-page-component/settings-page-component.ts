@@ -1,8 +1,17 @@
-import {Component} from '@angular/core';
-import {BellIcon, ChevronRightIcon, LucideAngularModule, ShieldIcon, UserIcon} from 'lucide-angular';
+import {Component, inject} from '@angular/core';
+import {
+  BellIcon,
+  ChevronRightIcon,
+  LogOutIcon,
+  LucideAngularModule,
+  MonitorIcon,
+  ShieldIcon,
+  UserIcon
+} from 'lucide-angular';
 import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
 import {NavItemComponent} from '../../features/nav-item-component/nav-item-component';
 import {NavItem} from '../../core/model/nav-item';
+import {KeycloakService} from '../../core/services/keycloak-service';
 
 export const SETTINGS_MENU: NavItem[] = [
   {
@@ -17,6 +26,13 @@ export const SETTINGS_MENU: NavItem[] = [
     label: 'Konto i bezpieczeństwo',
     description: 'Zarządzaj hasłem, emailem i bezpieczeństwem.',
     icon: ShieldIcon,
+    showArrow: true
+  },
+  {
+    route: '/settings/preferences',
+    label: 'Preferencje',
+    description: 'Dostosuj motyw i wygląd aplikacji.',
+    icon: MonitorIcon,
     showArrow: true
   },
   {
@@ -40,6 +56,13 @@ export const SETTINGS_MENU: NavItem[] = [
   styleUrl: './settings-page-component.css',
 })
 export class SettingsPageComponent {
+  private ksService = inject(KeycloakService)
+
   readonly menuItems = SETTINGS_MENU
   protected readonly ChevronRightIcon = ChevronRightIcon;
+  protected readonly LogOutIcon = LogOutIcon;
+
+  protected onLogout() {
+    this.ksService.keycloak.logout()
+  }
 }

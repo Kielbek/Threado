@@ -23,6 +23,7 @@ import {ThemeMode, ThemeService} from '../../services/theme.service';
 import {UserService} from '../../services/user.service';
 import {UiService} from '../../services/ui.service';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {ThreadoSelectorComponent} from '../../../features/threado-selector.component/threado-selector.component';
 
 @Component({
   selector: 'app-navbar',
@@ -36,6 +37,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
     ThreadoActionButtonComponent,
     NgClass,
     AsyncPipe,
+    ThreadoSelectorComponent,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
@@ -49,8 +51,6 @@ export class NavbarComponent {
   currentUser = toSignal(this.userService.currentUser$);
 
   readonly EllipsisIcon = EllipsisIcon;
-  readonly ChevronDownIcon = ChevronDownIcon;
-  readonly SunIcon = SunIcon;
 
   readonly menuItems = computed(() => {
     const username = this.currentUser()?.username;
