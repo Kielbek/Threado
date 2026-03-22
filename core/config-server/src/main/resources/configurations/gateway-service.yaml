@@ -2,30 +2,36 @@ server:
   port: 8222
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/Threado
+
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
       server:
-        webmvc:
+        webflux:
           routes:
             - id: user_service_route
-              uri: lb://user-service
+              uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/users/**
 
             - id: thread_service_route
-              uri: lb://thread-service
+              uri: lb://THREAD-SERVICE
               predicates:
                 - Path=/api/threads/**
 
             - id: media_service_route
-              uri: lb://media-service
+              uri: lb://MEDIA-SERVICE
               predicates:
                 - Path=/api/media/**
 
             - id: interactions_service_route
-              uri: lb://interactions-service
+              uri: lb://INTERACTIONS-SERVICE
               predicates:
                 - Path=/api/interactions/**
