@@ -7,6 +7,7 @@ import com.example.user.exception.BusinessException;
 import com.example.user.exception.ErrorCode;
 import com.example.user.kafka.UserEventProducer;
 import com.example.user.mapper.UserMapper;
+import com.example.user.repository.UserFollowRepository;
 import com.example.user.repository.UserRepository;
 import com.example.user.service.KeycloakUserService;
 import com.example.user.service.UserService;
@@ -16,12 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserFollowRepository followRepository;
     private final UserMapper userMapper;
     private final KeycloakUserService keycloakUserService;
     private final UserEventProducer userEventProducer;
@@ -35,10 +39,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .map(userMapper::toUserResponse)
+    public UserResponse getUserByUsername(UUID currentUserId, String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        boolean followedByMe = followRepository.existsByFollowerIdAndFolloweeId(
+                currentUserId,
+                user.getId()
+        );
+
+        return userMapper.toUserResponse(user, followedByMe);
     }
 
     @Override

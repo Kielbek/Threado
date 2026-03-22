@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -42,9 +44,12 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Public profile retrieved successfully")
     @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/public/{username}")
-    public UserResponse getPublicProfile(@PathVariable String username) {
+    public UserResponse getPublicProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String username
+    ) {
 
-        return userService.getUserByUsername(username);
+        return userService.getUserByUsername(getUserId(jwt), username);
     }
 
     @Operation(
@@ -64,5 +69,9 @@ public class UserController {
         UserResponse userResponse = userService.updateUserProfile(keycloakId, request);
 
         return ResponseEntity.ok(userResponse);
+    }
+
+    private UUID getUserId(Jwt jwt) {
+        return UUID.fromString(jwt.getSubject());
     }
 }

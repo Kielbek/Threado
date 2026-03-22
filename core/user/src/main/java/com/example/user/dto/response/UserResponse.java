@@ -13,6 +13,7 @@ public record UserResponse(
         String coverUrl,
         long followersCount,
         long followingCount,
-        Instant joinedAt
+        Instant joinedAt,
+        boolean isFollowedByMe
 ) {
 }
