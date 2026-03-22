@@ -1,7 +1,6 @@
 package com.example.user.controller;
 
 import com.example.user.dto.request.UserProfileUpdateRequest;
-import com.example.user.dto.response.UserProfileResponse;
 import com.example.user.dto.response.UserResponse;
 import com.example.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -44,7 +42,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Public profile retrieved successfully")
     @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/public/{username}")
-    public UserProfileResponse getPublicProfile(@PathVariable String username) {
+    public UserResponse getPublicProfile(@PathVariable String username) {
 
         return userService.getUserByUsername(username);
     }

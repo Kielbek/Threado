@@ -1,7 +1,6 @@
 package com.example.user.service.impl;
 
 import com.example.user.dto.request.UserProfileUpdateRequest;
-import com.example.user.dto.response.UserProfileResponse;
 import com.example.user.dto.response.UserResponse;
 import com.example.user.entity.User;
 import com.example.user.exception.BusinessException;
@@ -31,14 +30,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserByKeycloakId(String keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
-                .map(userMapper::toResponse)
+                .map(userMapper::toUserResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Override
-    public UserProfileResponse getUserByUsername(String username) {
+    public UserResponse getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .map(userMapper::toUserProfileResponse)
+                .map(userMapper::toUserResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -69,7 +68,7 @@ public class UserServiceImpl implements UserService {
         userEventProducer.sendProfileSyncEvent(user);
         log.info("Successfully completed profile update process for user: {}", keycloakId);
 
-        return userMapper.toResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     public User updateLocalUserProfile(String keycloakId, UserProfileUpdateRequest request) {
@@ -97,12 +96,16 @@ public class UserServiceImpl implements UserService {
             user.setBio(request.bio());
         }
 
+        if (request.websiteUrl() != null) {
+            user.setWebsiteUrl(request.websiteUrl());
+        }
+
         if (request.avatarUrl() != null) {
             user.setAvatarUrl(request.avatarUrl());
         }
 
         if (request.coverUrl() != null) {
-            user.setWebsiteUrl(request.coverUrl());
+            user.setCoverUrl(request.coverUrl());
         }
 
         userRepository.save(user);

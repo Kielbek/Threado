@@ -16,6 +16,9 @@ public record UserProfileUpdateRequest(
         @Size(max = 160, message = "Bio must not exceed 160 characters")
         String bio,
 
+        @Pattern(regexp = "^(https?://.+)?$", message = "Invalid URL format")
+        String websiteUrl,
+
         @Pattern(regexp = "^(https?://.+)?$", message = "Avatar URL must be a valid URL")
         String avatarUrl,
 
