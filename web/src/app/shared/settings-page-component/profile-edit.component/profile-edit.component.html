@@ -1,0 +1,117 @@
+<div class="flex flex-col font-sans pb-20 sm:pb-0 relative">
+
+  @if (dragService.isDraggingAnywhere()) {
+    <div class="fixed inset-0 z-30 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"></div>
+  }
+
+  <app-page-header
+    title="Edit profile"
+    [showBackButton]="true"
+    buttonText="Save"
+    [buttonDisabled]="profileForm.invalid && profileForm.pristine"
+    [ngClass]="{'blur-sm': dragService.isDraggingAnywhere()}"
+    (buttonClicked)="saveProfile()">
+  </app-page-header>
+
+  <main class="flex-1 w-full mx-auto sm:border-x border-gray-200 dark:border-zinc-800 relative flex flex-col transition-all duration-300">
+
+    <section
+      (click)="coverInput.click()"
+      class="relative w-full aspect-[3/1] sm:aspect-[4/1] bg-zinc-200 dark:bg-zinc-800 group overflow-hidden transition-all duration-300"
+      [ngClass]="{
+        'z-40': dragService.isDraggingAnywhere(),
+        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': dragService.isDraggingAnywhere() && !isDraggingOverCover(),
+        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverCover()
+      }">
+
+      <input #coverInput type="file" accept="image/*" class="hidden" (change)="onCoverSelected($event)">
+
+      @if (dragService.isDraggingAnywhere()) {
+        <div class="absolute inset-0 z-50 rounded-none"
+             (dragenter)="onCoverDragEnter($event)"
+             (dragleave)="onCoverDragLeave($event)"
+             (dragover)="$event.preventDefault()"
+             (drop)="onCoverDrop($event)">
+        </div>
+      }
+
+      @if (coverPreview()) {
+        <img [src]="coverPreview()" class="w-full h-full object-cover" alt="Cover preview">
+      }
+
+      <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-200 flex items-center justify-center z-10 pointer-events-none"
+           [ngClass]="{'bg-transparent': isDraggingOverCover()}">
+
+        @if (isDraggingOverCover()) {
+          <div class="bg-white/90 dark:bg-black/80 text-[var(--color-threado-accent)] font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-[var(--color-threado-accent)] scale-105 transition-transform shadow-xl flex items-center gap-2">
+            <lucide-icon [img]="CameraIcon" class="w-5 h-5"></lucide-icon>
+            Upuść tło tutaj
+          </div>
+        } @else {
+          <div class="p-3 bg-black/40 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg">
+            <lucide-icon [img]="CameraIcon" class="w-6 h-6 text-white"></lucide-icon>
+          </div>
+        }
+      </div>
+    </section>
+
+
+    <section class="relative px-4 z-20" [ngClass]="{'!z-50': dragService.isDraggingAnywhere()}">
+
+      <div class="absolute -top-12 sm:-top-16 left-4 transition-all duration-300">
+
+        <div
+          (click)="avatarInput.click()"
+          class="relative group rounded-full p-1 bg-white dark:bg-black transition-all duration-300 cursor-pointer"
+          [ngClass]="{
+            'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': dragService.isDraggingAnywhere() && !isDraggingOverAvatar(),
+            'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow scale-105': isDraggingOverAvatar()
+          }">
+
+          <input #avatarInput type="file" accept="image/*" class="hidden" (change)="onAvatarSelected($event)">
+
+          @if (dragService.isDraggingAnywhere()) {
+            <div class="absolute inset-0 z-50 rounded-full"
+                 (dragenter)="onAvatarDragEnter($event)"
+                 (dragleave)="onAvatarDragLeave($event)"
+                 (dragover)="$event.preventDefault()"
+                 (drop)="onAvatarDrop($event)">
+            </div>
+          }
+
+          <div class="w-[80px] h-[80px] sm:w-[112px] sm:h-[112px] rounded-full overflow-hidden bg-zinc-300 dark:bg-zinc-700 shadow-sm pointer-events-none">
+            @if (avatarPreview()) {
+              <img [src]="avatarPreview()" class="w-full h-full object-cover" alt="Avatar preview">
+            } @else {
+              <app-threado-avatar sizeClasses="w-full h-full"></app-threado-avatar>
+            }
+          </div>
+
+          <div class="absolute inset-1 rounded-full transition-all duration-200 flex items-center justify-center pointer-events-none"
+               [ngClass]="isDraggingOverAvatar() ? 'bg-[var(--color-threado-accent)]/10 backdrop-blur-sm opacity-100' : 'bg-black/30 opacity-0 group-hover:opacity-100'">
+            <div class="p-2 rounded-full backdrop-blur-md transition-all duration-200"
+                 [ngClass]="isDraggingOverAvatar() ? 'bg-[var(--color-threado-accent)] scale-110' : 'bg-black/50'">
+              <lucide-icon [img]="CameraIcon" class="w-5 h-5 text-white"></lucide-icon>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="flex flex-col gap-6 px-4 mt-16 sm:mt-20 pb-10 w-full transition-all duration-300"
+          [ngClass]="{'blur-sm opacity-60 pointer-events-none': dragService.isDraggingAnywhere()}">
+
+      <div class="flex flex-col gap-1.5">
+        <app-threado-input inputId="profileName" label="Name" formControlName="name"></app-threado-input>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <app-threado-input inputId="profileBio" label="Bio" [isTextarea]="true" formControlName="bio"></app-threado-input>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <app-threado-input inputId="profileWebsite" label="Website" type="url" formControlName="website"></app-threado-input>
+      </div>
+
+    </form>
+  </main>
+</div>

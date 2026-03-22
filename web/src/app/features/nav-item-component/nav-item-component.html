@@ -1,10 +1,11 @@
-<a [routerLink]="item().route"
+<a [routerLink]="item().disabled ? null : item().route"
    routerLinkActive #rla="routerLinkActive"
-   (click)="clicked.emit()"
-   class="group flex items-center gap-4 px-4 py-3 rounded-full transition-all w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10"
-   [ngClass]="rla.isActive
-     ? 'text-[var(--color-threado-accent)] font-bold'
-     : 'text-black dark:text-white  font-medium'">
+   (click)="!item().disabled && clicked.emit()"
+   class="group flex items-center gap-4 px-4 py-3 rounded-full transition-all w-full"
+   [ngClass]="[
+     item().disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10',
+     rla.isActive && !item().disabled ? 'text-[var(--color-threado-accent)] font-bold' : 'text-black dark:text-white font-medium'
+   ]">
 
   <div class="relative flex-shrink-0">
     <lucide-icon
@@ -17,7 +18,23 @@
     }
   </div>
 
-  <span class="text-lg truncate">
-    {{ item().label }}
-  </span>
+  <div class="flex flex-col flex-1 overflow-hidden">
+    <span class="text-lg truncate">
+      {{ item().label }}
+    </span>
+
+    @if (item().description) {
+      <span class="text-xs text-gray-500 font-normal truncate mt-0.5">
+        {{ item().description }}
+      </span>
+    }
+  </div>
+
+  @if (item().showArrow) {
+    <lucide-icon
+      [img]="ChevronRightIcon"
+      class="w-5 h-5 text-gray-400 ml-auto transition-transform group-hover:translate-x-1">
+    </lucide-icon>
+  }
+
 </a>

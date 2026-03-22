@@ -1,4 +1,4 @@
-import {Component, computed, ElementRef, HostListener, inject, output, signal} from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, output, signal } from '@angular/core';
 import { LucideAngularModule, PaperclipIcon, SmileIcon, XIcon } from 'lucide-angular';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,11 +7,13 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { ThreadoAvatarComponent } from '../threado-avatar-component/threado-avatar-component';
 import { ThreadoActionButtonComponent } from '../threado-action-button.component/threado-action-button.component';
 import { UserService } from '../../core/services/user.service';
-import {ThreadService} from '../../core/services/thread.service';
-import {ThreadResponse} from '../../core/model/thread/thread-response';
+import { ThreadService } from '../../core/services/thread.service';
+import { ThreadResponse } from '../../core/model/thread/thread-response';
+import {DragDropService} from '../../core/services/drag-drop-service';
 
 @Component({
   selector: 'app-threado-compose',
+  standalone: true,
   imports: [
     LucideAngularModule,
     NgClass,
@@ -27,8 +29,10 @@ import {ThreadResponse} from '../../core/model/thread/thread-response';
 })
 export class ThreadoComposeComponent {
   private elementRef = inject(ElementRef);
-  userService = inject(UserService);
+  public userService = inject(UserService);
   private threadService = inject(ThreadService);
+
+  public dragService = inject(DragDropService);
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
@@ -43,9 +47,7 @@ export class ThreadoComposeComponent {
 
   isEmojiPickerVisible: boolean = false;
 
-  isDraggingAnywhere: boolean = false;
   isDraggingOverComponent: boolean = false;
-  private documentDragCounter: number = 0;
 
   characterCount = computed(() => this.content().length);
 
@@ -68,44 +70,9 @@ export class ThreadoComposeComponent {
 
     if (!clickedInsideComponent && !clickedInsidePicker) {
       this.isEmojiPickerVisible = false;
-
       if (this.selectedImage()) return;
-
       this.isExpanded.set(false);
     }
-  }
-
-  @HostListener('document:dragenter', ['$event'])
-  onDocumentDragEnter(event: DragEvent) {
-    if (event.dataTransfer?.types.includes('Files')) {
-      event.preventDefault();
-      this.documentDragCounter++;
-      this.isDraggingAnywhere = true;
-    }
-  }
-
-  @HostListener('document:dragleave', ['$event'])
-  onDocumentDragLeave(event: DragEvent) {
-    if (event.dataTransfer?.types.includes('Files')) {
-      event.preventDefault();
-      this.documentDragCounter--;
-
-      if (this.documentDragCounter === 0) {
-        this.isDraggingAnywhere = false;
-        this.isDraggingOverComponent = false;
-      }
-    }
-  }
-
-  @HostListener('document:dragover', ['$event'])
-  onDocumentDragOver(event: DragEvent) {
-    event.preventDefault();
-  }
-
-  @HostListener('document:drop', ['$event'])
-  onDocumentDrop(event: DragEvent) {
-    event.preventDefault();
-    this.resetDragState();
   }
 
   onComponentDragEnter(event: DragEvent) {
@@ -117,14 +84,14 @@ export class ThreadoComposeComponent {
   onComponentDragLeave(event: DragEvent) {
     event.preventDefault();
     this.isDraggingOverComponent = false;
-    this.isExpanded.set(false);
   }
 
   onComponentDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.resetDragState();
+    this.isDraggingOverComponent = false;
+    this.dragService.reset();
 
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
@@ -137,15 +104,7 @@ export class ThreadoComposeComponent {
     }
   }
 
-  private resetDragState() {
-    this.documentDragCounter = 0;
-    this.isDraggingAnywhere = false;
-    this.isDraggingOverComponent = false;
-  }
-
-  expandForm() {
-    this.isExpanded.set(true);
-  }
+  expandForm() { this.isExpanded.set(true); }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -181,7 +140,6 @@ export class ThreadoComposeComponent {
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     textarea.style.height = 'auto';
-
     const maxHeight = 200;
     if (textarea.scrollHeight <= maxHeight) {
       textarea.style.height = textarea.scrollHeight + 'px';
@@ -196,14 +154,10 @@ export class ThreadoComposeComponent {
     if ((this.characterCount() === 0 && !this.selectedImage()) || this.isOverLimit() || this.isSubmitting()) {
       return;
     }
-
     this.isSubmitting.set(true);
-
     try {
       const newThread = await this.threadService.createThread(this.content(), this.selectedFile());
-
       this.threadCreated.emit(newThread);
-
       this.content.set('');
       this.selectedImage.set(null);
       this.selectedFile.set(null);

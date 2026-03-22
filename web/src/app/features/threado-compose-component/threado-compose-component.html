@@ -1,20 +1,20 @@
-@if (isDraggingAnywhere) {
+@if (dragService.isDraggingAnywhere()) {
   <div class="fixed inset-0 z-40 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"></div>
 }
 
 <div
   class="mx-auto w-full relative transition-all duration-300"
-  [ngClass]="{'z-50': isDraggingAnywhere}"
+  [ngClass]="{'z-50': dragService.isDraggingAnywhere()}"
 >
   <div
     class="p-4 transition-all duration-300 relative"
     [ngClass]="{
-        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': isDraggingAnywhere && !isDraggingOverComponent,
+        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': dragService.isDraggingAnywhere() && !isDraggingOverComponent,
         'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
-        'border-b threado-border': !isDraggingAnywhere
+        'border-b threado-border': !dragService.isDraggingAnywhere()
       }"
   >
-    @if (isDraggingAnywhere) {
+    @if (dragService.isDraggingAnywhere()) {
       <div
         class="absolute inset-0 z-50 rounded-xl"
         (dragenter)="onComponentDragEnter($event)"
@@ -36,7 +36,7 @@
       <div class="flex items-center gap-2.5">
         <app-threado-avatar></app-threado-avatar>
         <div class="flex flex-col mb-1">
-          <span class="text-black dark:text-white font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guset' }}</span>
+          <span class="text-black dark:text-white font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guest' }}</span>
           <span class="text-gray-500 text-sm">@{{ (userService.currentUser$ | async)?.username || 'unknown' }}</span>
         </div>
       </div>
