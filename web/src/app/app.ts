@@ -4,6 +4,7 @@ import {MobileNavComponent} from './core/layout/mobile-nav.component/mobile-nav.
 import {AuthSidebarComponent} from './features/auth-sidebar-component/auth-sidebar-component';
 import {HeaderComponent} from './core/layout/header.component/header.component';
 import {NavbarComponent} from './core/layout/navbar.component/navbar.component';
+import {ToastContainerComponent} from './features/toast-container.component/toast-container.component';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import {NavbarComponent} from './core/layout/navbar.component/navbar.component';
     AuthSidebarComponent,
     HeaderComponent,
     NavbarComponent,
+    ToastContainerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
