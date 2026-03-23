@@ -11,11 +11,13 @@ import { UserProfileUpdateRequest } from '../model/user-profile-update-request';
 export class UserService {
   private readonly http = inject(HttpClient);
 
+  private readonly apiUrl = '/api/users'
+
   private readonly currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public readonly currentUser$: Observable<UserProfile | null> = this.currentUserSubject.asObservable();
 
   public fetchCurrentUser(): Observable<UserProfile | null> {
-    return this.http.get<UserProfile>('/api/users/me').pipe(
+    return this.http.get<UserProfile>(`${this.apiUrl}/me`).pipe(
       tap((user: UserProfile) => {
         this.currentUserSubject.next(user);
       }),
@@ -28,15 +30,23 @@ export class UserService {
   }
 
   getPublicProfile(username: string): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`/api/users/public/${username}`);
+    return this.http.get<UserProfile>(`${this.apiUrl}/public/${username}`);
   }
 
   updateProfile(request: UserProfileUpdateRequest): Observable<UserProfile> {
-    return this.http.put<UserProfile>('/api/users/me', request).pipe(
+    return this.http.put<UserProfile>(`${this.apiUrl}/me`, request).pipe(
       tap((updatedUser: UserProfile) => {
         this.currentUserSubject.next(updatedUser);
       })
     );
+  }
+
+  followUser(userId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${userId}/follow`, {});
+  }
+
+  unfollowUser(userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${userId}/unfollow`);
   }
 
   public clearUserState(): void {

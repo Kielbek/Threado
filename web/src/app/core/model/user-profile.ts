@@ -10,4 +10,5 @@ export interface UserProfile {
   followersCount: number;
   followingCount: number;
   joinedAt: string;
+  isFollowedByMe: boolean;
 }
