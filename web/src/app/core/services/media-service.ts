@@ -1,7 +1,8 @@
-import {inject, Injectable} from '@angular/core';
-import { MediaUploadResult } from "../model/media-upload-result";
-import { HttpBackend, HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { inject, Injectable } from '@angular/core';
+import { MediaUploadResult } from '../model/media-upload-result';
+import { HttpBackend, HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import imageCompression from 'browser-image-compression';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,77 @@ export class MediaService {
   private readonly http = inject(HttpClient);
   private readonly httpBackend = inject(HttpBackend);
   private readonly pureHttp = new HttpClient(this.httpBackend);
+
+  public readonly MAX_VIDEO_DURATION_SEC = 60;
+  public readonly MAX_VIDEO_SIZE_MB = 50;
+  public readonly MAX_IMAGE_SIZE_MB = 20;
+
+
+  async processFile(file: File): Promise<File> {
+    if (file.type.startsWith('video/')) {
+      return this.processVideo(file);
+    } else if (file.type.startsWith('image/')) {
+      return this.processImage(file);
+    }
+    throw new Error('Nieobsługiwany format pliku. Wybierz zdjęcie lub wideo.');
+  }
+
+  private async processVideo(file: File): Promise<File> {
+    const fileSizeMB = file.size / 1024 / 1024;
+
+    if (fileSizeMB > this.MAX_VIDEO_SIZE_MB) {
+      throw new Error(`Plik wideo jest za duży (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_VIDEO_SIZE_MB}MB.`);
+    }
+
+    const duration = await this.getVideoDuration(file);
+    if (duration > this.MAX_VIDEO_DURATION_SEC) {
+      throw new Error(`Wideo nie może być dłuższe niż ${this.MAX_VIDEO_DURATION_SEC} sekund.`);
+    }
+
+    return file;
+  }
+
+  private async processImage(file: File): Promise<File> {
+    const fileSizeMB = file.size / 1024 / 1024;
+
+    if (fileSizeMB > this.MAX_IMAGE_SIZE_MB) {
+      throw new Error(`Zdjęcie jest za duże (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_IMAGE_SIZE_MB}MB.`);
+    }
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      console.log(`[MediaService] Skompresowano z ${(file.size / 1024 / 1024).toFixed(2)}MB do ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+      return compressedFile;
+    } catch (error) {
+      console.error('Błąd podczas kompresji zdjęcia:', error);
+      return file;
+    }
+  }
+
+  private getVideoDuration(file: File): Promise<number> {
+    return new Promise((resolve) => {
+      const videoElement = document.createElement('video');
+      videoElement.preload = 'metadata';
+
+      videoElement.onloadedmetadata = () => {
+        URL.revokeObjectURL(videoElement.src);
+        resolve(videoElement.duration);
+      };
+
+      videoElement.onerror = () => {
+        URL.revokeObjectURL(videoElement.src);
+        resolve(Infinity);
+      };
+
+      videoElement.src = URL.createObjectURL(file);
+    });
+  }
 
   async uploadBasicFile(file: File): Promise<string> {
     const { presignedUrl, fileAccessUrl } = await this.getPresignedUrl(file);
@@ -41,7 +113,7 @@ export class MediaService {
   private async getPresignedUrl(file: File): Promise<{presignedUrl: string, fileAccessUrl: string}> {
     return await firstValueFrom(
       this.http.get<{presignedUrl: string, fileAccessUrl: string}>(
-        `/api/media/upload-url?fileName=${file.name}&contentType=${file.type}`
+        `/api/media/upload-url?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`
       )
     );
   }
@@ -57,7 +129,10 @@ export class MediaService {
   private getImageDimensions(file: File): Promise<{width: number, height: number}> {
     return new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => resolve({ width: img.width, height: img.height });
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        resolve({ width: img.width, height: img.height });
+      };
       img.src = URL.createObjectURL(file);
     });
   }

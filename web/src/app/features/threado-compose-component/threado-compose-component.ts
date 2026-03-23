@@ -9,7 +9,8 @@ import { ThreadoActionButtonComponent } from '../threado-action-button.component
 import { UserService } from '../../core/services/user.service';
 import { ThreadService } from '../../core/services/thread.service';
 import { ThreadResponse } from '../../core/model/thread/thread-response';
-import {DragDropService} from '../../core/services/drag-drop-service';
+import { DragDropService } from '../../core/services/drag-drop-service';
+import { MediaService } from '../../core/services/media-service';
 
 @Component({
   selector: 'app-threado-compose',
@@ -31,8 +32,8 @@ export class ThreadoComposeComponent {
   private elementRef = inject(ElementRef);
   public userService = inject(UserService);
   private threadService = inject(ThreadService);
-
   public dragService = inject(DragDropService);
+  private mediaService = inject(MediaService);
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
@@ -41,12 +42,14 @@ export class ThreadoComposeComponent {
 
   content = signal('');
   isExpanded = signal(false);
-  selectedImage = signal<string | null>(null);
-  selectedFile = signal<File | null>(null);
   isSubmitting = signal(false);
 
-  isEmojiPickerVisible: boolean = false;
+  selectedMediaPreview = signal<string | null>(null);
+  selectedMediaType = signal<'image' | 'video' | null>(null);
+  selectedFile = signal<File | null>(null);
+  mediaError = signal<string | null>(null);
 
+  isEmojiPickerVisible: boolean = false;
   isDraggingOverComponent: boolean = false;
 
   characterCount = computed(() => this.content().length);
@@ -63,14 +66,13 @@ export class ThreadoComposeComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.isExpanded()) return;
-
     const clickedInsideComponent = this.elementRef.nativeElement.contains(event.target);
     const targetElement = event.target as HTMLElement;
     const clickedInsidePicker = !!targetElement.closest('emoji-mart');
 
     if (!clickedInsideComponent && !clickedInsidePicker) {
       this.isEmojiPickerVisible = false;
-      if (this.selectedImage()) return;
+      if (this.selectedMediaPreview()) return;
       this.isExpanded.set(false);
     }
   }
@@ -89,17 +91,14 @@ export class ThreadoComposeComponent {
   onComponentDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-
     this.isDraggingOverComponent = false;
     this.dragService.reset();
 
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       const droppedFile = files[0];
-
-      if (droppedFile.type.startsWith('image/')) {
-        this.handleFile(droppedFile);
-        this.expandForm();
+      if (droppedFile.type.startsWith('image/') || droppedFile.type.startsWith('video/')) {
+        this.processFile(droppedFile);
       }
     }
   }
@@ -109,22 +108,44 @@ export class ThreadoComposeComponent {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.handleFile(input.files[0]);
+      this.processFile(input.files[0]);
+      input.value = '';
     }
   }
 
-  private handleFile(file: File) {
-    this.selectedFile.set(file);
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.selectedImage.set(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  private async processFile(file: File) {
+    this.mediaError.set(null);
+    this.isSubmitting.set(true);
+
+    try {
+      const processedFile = await this.mediaService.processFile(file);
+      const type = processedFile.type.startsWith('video/') ? 'video' : 'image';
+      this.setMedia(processedFile, type);
+    } catch (error: any) {
+      console.error('Błąd pliku:', error);
+      this.mediaError.set(error.message || 'Wystąpił błąd podczas przetwarzania pliku.');
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 
-  removeImage() {
-    this.selectedImage.set(null);
+  private setMedia(file: File, type: 'image' | 'video') {
+    this.removeMedia();
+    this.selectedFile.set(file);
+    this.selectedMediaType.set(type);
+    this.selectedMediaPreview.set(URL.createObjectURL(file));
+    this.expandForm();
+  }
+
+  removeMedia() {
+    const currentPreview = this.selectedMediaPreview();
+    if (currentPreview) {
+      URL.revokeObjectURL(currentPreview);
+    }
+    this.selectedMediaPreview.set(null);
+    this.selectedMediaType.set(null);
     this.selectedFile.set(null);
+    this.mediaError.set(null);
   }
 
   toggleEmojiPicker(event: MouseEvent) {
@@ -151,16 +172,16 @@ export class ThreadoComposeComponent {
   }
 
   async submitPost() {
-    if ((this.characterCount() === 0 && !this.selectedImage()) || this.isOverLimit() || this.isSubmitting()) {
+    if ((this.characterCount() === 0 && !this.selectedFile()) || this.isOverLimit() || this.isSubmitting()) {
       return;
     }
+
     this.isSubmitting.set(true);
     try {
       const newThread = await this.threadService.createThread(this.content(), this.selectedFile());
       this.threadCreated.emit(newThread);
       this.content.set('');
-      this.selectedImage.set(null);
-      this.selectedFile.set(null);
+      this.removeMedia();
       this.isExpanded.set(false);
     } catch (error) {
       console.error(error);
