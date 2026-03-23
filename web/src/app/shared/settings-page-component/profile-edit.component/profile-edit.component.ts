@@ -10,7 +10,8 @@ import { ThreadoInputComponent } from '../../../features/threado-input.component
 
 import { DragDropService } from '../../../core/services/drag-drop-service';
 import { MediaService } from '../../../core/services/media-service';
-import { UserService } from '../../../core/services/user.service';
+import {UserService} from '../../../core/services/user.service';
+import {ToastService} from '../../../core/services/toast-service';
 
 @Component({
   selector: 'app-profile-edit',
@@ -30,6 +31,7 @@ export class ProfileEditComponent implements OnInit {
   public readonly dragService = inject(DragDropService);
   private readonly mediaService = inject(MediaService);
   private readonly userService = inject(UserService);
+  private toast = inject(ToastService);
 
   readonly CameraIcon = CameraIcon;
   profileForm!: FormGroup;
@@ -204,9 +206,17 @@ export class ProfileEditComponent implements OnInit {
 
       await firstValueFrom(this.userService.updateProfile(finalPayload));
 
+      this.toast.success('Zmiany zostały pomyślnie zapisane.', 'Profil zaktualizowany');
+
+      this.avatarFileToUpload = null;
+      this.coverFileToUpload = null;
+
     } catch (error: any) {
       if (error.status === 409) {
         this.profileForm.get('username')?.setErrors({ usernameTaken: true });
+        this.toast.warning('Ta nazwa użytkownika jest już zajęta. Wybierz inną.', 'Błąd nazwy');
+      } else {
+        this.toast.error('Nie udało się zapisać zmian. Spróbuj ponownie później.', 'Wystąpił błąd');
       }
     } finally {
       this.isLoading.set(false);
