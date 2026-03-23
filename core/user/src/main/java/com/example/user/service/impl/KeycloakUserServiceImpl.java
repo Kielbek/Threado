@@ -9,6 +9,8 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,10 +21,10 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     @Value("${app.keycloak.realm}")
     private String realm;
 
-    public void updateBasicUserInfo(String keycloakId, String firstName, String lastName, String username) {
+    public void updateBasicUserInfo(UUID keycloakId, String firstName, String lastName, String username) {
         log.info("Initiating Keycloak user update for ID: {}", keycloakId);
 
-        UserResource userResource = keycloak.realm(realm).users().get(keycloakId);
+        UserResource userResource = keycloak.realm(realm).users().get(keycloakId.toString());
         UserRepresentation user = userResource.toRepresentation();
 
         boolean isChanged = false;

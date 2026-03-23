@@ -27,7 +27,7 @@ public class UserEventProducer {
                 user.getAvatarUrl()
         );
 
-        kafkaTemplate.send(syncTopic, user.getKeycloakId(), syncEvent);
+        kafkaTemplate.send(syncTopic, user.getKeycloakId().toString(), syncEvent);
         log.info("Sent UserProfileSyncEvent to topic '{}' for user: {}", syncTopic, user.getKeycloakId());
     }
 }

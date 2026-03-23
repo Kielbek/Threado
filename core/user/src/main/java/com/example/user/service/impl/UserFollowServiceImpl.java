@@ -49,7 +49,6 @@ public class UserFollowServiceImpl implements UserFollowService {
             userRepository.decrementFollowersCount(followeeId);
             log.info("User {} unfollowed {}", followerId, followeeId);
         } else {
-            // Optional: You can throw an error here if you want strict UI feedback
             log.warn("Unfollow failed: User {} was not following {}", followerId, followeeId);
             throw new BusinessException(ErrorCode.FOLLOW_RELATION_NOT_FOUND);
         }

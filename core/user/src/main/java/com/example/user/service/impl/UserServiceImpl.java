@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUserByKeycloakId(String keycloakId) {
+    public UserResponse getUserByKeycloakId(UUID keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
                 .map(userMapper::toUserResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
         boolean followedByMe = followRepository.existsByFollowerIdAndFolloweeId(
                 currentUserId,
-                user.getId()
+                user.getKeycloakId()
         );
 
         return userMapper.toUserResponse(user, followedByMe);
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUserProfile(String keycloakId, UserProfileUpdateRequest request) {
+    public UserResponse updateUserProfile(UUID keycloakId, UserProfileUpdateRequest request) {
         log.info("Starting complete profile update process for user: {}", keycloakId);
 
         try {
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    public User updateLocalUserProfile(String keycloakId, UserProfileUpdateRequest request) {
+    public User updateLocalUserProfile(UUID keycloakId, UserProfileUpdateRequest request) {
         log.debug("Updating local database record for user ID: {}", keycloakId);
 
         User user = userRepository.findByKeycloakId(keycloakId)

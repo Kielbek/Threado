@@ -11,6 +11,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class KeycloakUserSyncService {
     }
 
     private void syncNewUser(KeycloakEventDto event) {
-        String keycloakId = event.userId();
+        UUID keycloakId = UUID.fromString(event.userId());
 
         if (userRepository.existsByKeycloakId(keycloakId)) {
             log.warn("User with Keycloak ID {} already exists in the database. Skipping creation.", keycloakId);
@@ -69,7 +71,7 @@ public class KeycloakUserSyncService {
     }
 
     private void updateExistingUser(KeycloakEventDto event) {
-        String keycloakId = event.userId();
+        UUID keycloakId = UUID.fromString(event.userId());
 
         userRepository.findByKeycloakId(keycloakId).ifPresentOrElse(user -> {
             boolean isUpdated = false;

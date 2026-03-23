@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserResponse getUserByKeycloakId(String keycloakId);
+    UserResponse getUserByKeycloakId(UUID keycloakId);
 
     UserResponse getUserByUsername(UUID currentUser, String username);
 
-    UserResponse updateUserProfile(String keycloakId, @Valid UserProfileUpdateRequest request);
+    UserResponse updateUserProfile(UUID keycloakId, @Valid UserProfileUpdateRequest request);
 }

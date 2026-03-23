@@ -13,25 +13,25 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    Optional<User> findByKeycloakId(String keycloakId);
+    Optional<User> findByKeycloakId(UUID keycloakId);
 
     Optional<User> findByUsername(String username);
 
-    boolean existsByKeycloakId(String keycloakId);
+    boolean existsByKeycloakId(UUID keycloakId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE User u SET u.followersCount = u.followersCount + 1 WHERE u.id = :userId")
+    @Query("UPDATE User u SET u.followersCount = u.followersCount + 1 WHERE u.keycloakId = :userId")
     void incrementFollowersCount(@Param("userId") UUID userId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE User u SET u.followersCount = u.followersCount - 1 WHERE u.id = :userId AND u.followersCount > 0")
+    @Query("UPDATE User u SET u.followersCount = u.followersCount - 1 WHERE u.keycloakId = :userId AND u.followersCount > 0")
     void decrementFollowersCount(@Param("userId") UUID userId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE User u SET u.followingCount = u.followingCount + 1 WHERE u.id = :userId")
+    @Query("UPDATE User u SET u.followingCount = u.followingCount + 1 WHERE u.keycloakId = :userId")
     void incrementFollowingCount(@Param("userId") UUID userId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE User u SET u.followingCount = u.followingCount - 1 WHERE u.id = :userId AND u.followingCount > 0")
+    @Query("UPDATE User u SET u.followingCount = u.followingCount - 1 WHERE u.keycloakId = :userId AND u.followingCount > 0")
     void decrementFollowingCount(@Param("userId") UUID userId);
 }

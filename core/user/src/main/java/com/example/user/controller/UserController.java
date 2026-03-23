@@ -32,9 +32,8 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "User not found in the local database")
     @GetMapping("/me")
     public UserResponse getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        String keycloakId = jwt.getSubject();
 
-        return userService.getUserByKeycloakId(keycloakId);
+        return userService.getUserByKeycloakId(getUserId(jwt));
     }
 
     @Operation(
@@ -64,9 +63,7 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody UserProfileUpdateRequest request
     ) {
-        String keycloakId = jwt.getSubject();
-
-        UserResponse userResponse = userService.updateUserProfile(keycloakId, request);
+        UserResponse userResponse = userService.updateUserProfile(getUserId(jwt), request);
 
         return ResponseEntity.ok(userResponse);
     }

@@ -33,7 +33,7 @@ public class User {
 
     @NaturalId
     @Column(name = "keycloak_id", nullable = false, updatable = false, unique = true)
-    private String keycloakId;
+    private UUID keycloakId;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
