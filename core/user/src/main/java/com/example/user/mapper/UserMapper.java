@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public UserResponse toUserResponse(User user) {
+    public UserResponse toUserResponse(User user, boolean isFollowedByMe) {
         if (user == null) {
             return null;
         }
@@ -23,7 +23,12 @@ public class UserMapper {
                 user.getCoverUrl(),
                 user.getFollowersCount(),
                 user.getFollowingCount(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                isFollowedByMe
         );
+    }
+
+    public UserResponse toUserResponse(User user) {
+        return toUserResponse(user, false);
     }
 }

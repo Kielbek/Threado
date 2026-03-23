@@ -32,9 +32,12 @@
         </app-threado-button>
       } @else {
         <app-threado-button
-          text="Obserwuj"
-          variant="primary"
-          customClasses="rounded-full font-bold px-6 py-1.5 !text-sm">
+          [text]="followedByMe() ? 'Obserwujesz' : 'Obserwuj'"
+          [variant]="followedByMe() ? 'outline' : 'primary'"
+          [customClasses]="followedByMe()
+            ? 'rounded-full font-bold px-6 py-1.5 !text-sm border-gray-300 dark:border-zinc-700'
+            : 'rounded-full font-bold px-6 py-1.5 !text-sm'"
+          (clicked)="toggleFollow()">
         </app-threado-button>
       }
     </div>
@@ -71,7 +74,7 @@
         <strong class="text-black dark:text-white">{{ user().followingCount || 0 }}</strong> Obserwowanych
       </a>
       <a href="#" class="hover:underline text-gray-500">
-        <strong class="text-black dark:text-white">{{ user().followersCount || 0 }}</strong> Obserwujących
+        <strong class="text-black dark:text-white">{{ followersCount() }}</strong> Obserwujących
       </a>
     </div>
   </div>

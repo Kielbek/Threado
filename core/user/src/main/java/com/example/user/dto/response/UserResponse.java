@@ -1,9 +1,10 @@
 package com.example.user.dto.response;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record UserResponse(
-        String id,
+        UUID id,
         String username,
         String firstName,
         String lastName,
@@ -13,6 +14,7 @@ public record UserResponse(
         String coverUrl,
         long followersCount,
         long followingCount,
-        Instant joinedAt
+        Instant joinedAt,
+        boolean isFollowedByMe
 ) {
 }

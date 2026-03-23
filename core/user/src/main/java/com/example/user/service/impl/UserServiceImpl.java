@@ -7,6 +7,7 @@ import com.example.user.exception.BusinessException;
 import com.example.user.exception.ErrorCode;
 import com.example.user.kafka.UserEventProducer;
 import com.example.user.mapper.UserMapper;
+import com.example.user.repository.UserFollowRepository;
 import com.example.user.repository.UserRepository;
 import com.example.user.service.KeycloakUserService;
 import com.example.user.service.UserService;
@@ -16,34 +17,43 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserFollowRepository followRepository;
     private final UserMapper userMapper;
     private final KeycloakUserService keycloakUserService;
     private final UserEventProducer userEventProducer;
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUserByKeycloakId(String keycloakId) {
+    public UserResponse getUserByKeycloakId(UUID keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
                 .map(userMapper::toUserResponse)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Override
-    public UserResponse getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .map(userMapper::toUserResponse)
+    public UserResponse getUserByUsername(UUID currentUserId, String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        boolean followedByMe = followRepository.existsByFollowerIdAndFolloweeId(
+                currentUserId,
+                user.getKeycloakId()
+        );
+
+        return userMapper.toUserResponse(user, followedByMe);
     }
 
     @Override
     @Transactional
-    public UserResponse updateUserProfile(String keycloakId, UserProfileUpdateRequest request) {
+    public UserResponse updateUserProfile(UUID keycloakId, UserProfileUpdateRequest request) {
         log.info("Starting complete profile update process for user: {}", keycloakId);
 
         try {
@@ -71,7 +81,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-    public User updateLocalUserProfile(String keycloakId, UserProfileUpdateRequest request) {
+    public User updateLocalUserProfile(UUID keycloakId, UserProfileUpdateRequest request) {
         log.debug("Updating local database record for user ID: {}", keycloakId);
 
         User user = userRepository.findByKeycloakId(keycloakId)
