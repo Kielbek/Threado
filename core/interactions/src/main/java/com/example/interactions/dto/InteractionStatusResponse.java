@@ -13,5 +13,8 @@ public record InteractionStatusResponse(
         boolean isLiked,
 
         @Schema(description = "True if the current user has bookmarked this thread", example = "false")
-        boolean isBookmarked
+        boolean isBookmarked,
+
+        @Schema(description = "True if the current user has repost this thread", example = "false")
+        boolean isReposted
 ) {}

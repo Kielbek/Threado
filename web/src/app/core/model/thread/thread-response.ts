@@ -7,10 +7,11 @@ import {InteractionContextResponse} from './interaction-context-response';
 
 export interface ThreadResponse {
   id: string;
-  content: string;
+  text: string;
   createdAt: string;
   replySettings: string;
   lang: string;
+  repostedThread: ThreadResponse;
   publicMetrics: PublicMetricsResponse;
   hashtags: HashtagResponse[];
   urls: UrlEntityResponse[];

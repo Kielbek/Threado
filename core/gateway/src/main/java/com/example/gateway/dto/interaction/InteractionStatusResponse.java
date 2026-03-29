@@ -5,5 +5,6 @@ import java.util.UUID;
 public record InteractionStatusResponse(
         UUID threadId,
         boolean isLiked,
-        boolean isBookmarked
+        boolean isBookmarked,
+        boolean isReposted
 ) {}

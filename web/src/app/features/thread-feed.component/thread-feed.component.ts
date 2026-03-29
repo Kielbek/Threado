@@ -116,11 +116,6 @@ export class ThreadFeedComponent implements OnInit {
       });
   }
 
-  addThreadToTop(thread: any) {
-    this.threads.update(current => [thread, ...current]);
-    this.syncCache();
-  }
-
   private syncCache() {
     this.feedCache.save(this.cacheKey(), {
       items: this.threads(),

@@ -100,8 +100,9 @@ public class FeedAggregatorService {
     private EnrichedThreadResponse enrichSingle(ThreadResponse thread, InteractionStatusResponse status) {
         boolean isLiked = status != null && status.isLiked();
         boolean isBookmarked = status != null && status.isBookmarked();
+        boolean isReposted = status != null && status.isReposted();
 
-        InteractionContextResponse interactionContext = new InteractionContextResponse(isLiked, isBookmarked);
+        InteractionContextResponse interactionContext = new InteractionContextResponse(isLiked, isBookmarked, isReposted);
 
         return new EnrichedThreadResponse(
                 thread.id(),
@@ -109,6 +110,7 @@ public class FeedAggregatorService {
                 thread.createdAt(),
                 thread.replySettings(),
                 thread.lang(),
+                thread.repostedThread(),
                 thread.publicMetrics(),
                 thread.hashtags(),
                 thread.urls(),

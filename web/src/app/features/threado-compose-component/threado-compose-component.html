@@ -1,20 +1,19 @@
-@if (dragService.isDraggingAnywhere()) {
+@if (dragService.isDraggingAnywhere() && !quoteThread()) {
   <div class="fixed inset-0 z-40 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"></div>
 }
 
 <div
   class="mx-auto w-full relative transition-all duration-300"
-  [ngClass]="{'z-50': dragService.isDraggingAnywhere()}"
+  [ngClass]="{'z-50': dragService.isDraggingAnywhere() && !quoteThread()}"
 >
   <div
     class="p-4 transition-all duration-300 relative"
     [ngClass]="{
-        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': dragService.isDraggingAnywhere() && !isDraggingOverComponent,
-        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent,
-        'border-b threado-border': !dragService.isDraggingAnywhere()
+        'border-2 border-dashed border-[color-mix(in_srgb,var(--color-threado-accent),transparent_40%)]': dragService.isDraggingAnywhere() && !isDraggingOverComponent && !quoteThread(),
+        'border-2 border-dashed border-[var(--color-threado-accent)] ring-2 ring-[var(--color-threado-accent)] ring-offset-2 ring-offset-white dark:ring-offset-black bg-[color-mix(in_srgb,var(--color-threado-accent),transparent_90%)] shadow-threado-glow': isDraggingOverComponent && !quoteThread(),
       }"
   >
-    @if (dragService.isDraggingAnywhere()) {
+    @if (dragService.isDraggingAnywhere() && !quoteThread()) {
       <div
         class="absolute inset-0 z-50 rounded-xl"
         (dragenter)="onComponentDragEnter($event)"
@@ -25,7 +24,7 @@
         @if (isDraggingOverComponent) {
           <div class="w-full h-full flex items-center justify-center pointer-events-none rounded-xl">
             <div class="bg-white/90 dark:bg-black/80 text-threado font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-threado scale-105 transition-transform shadow-xl">
-              Upuść zdjęcie tutaj
+              Upuść plik tutaj
             </div>
           </div>
         }
@@ -34,7 +33,7 @@
 
     <div class="space-x-4">
       <div class="flex items-center gap-2.5">
-        <app-threado-avatar [avatarUrl]="(userService.currentUser$ | async)?.avatarUrl"></app-threado-avatar>
+        <app-threado-avatar></app-threado-avatar>
         <div class="flex flex-col mb-1">
           <span class="text-black dark:text-white font-bold leading-tight">{{ (userService.currentUser$ | async)?.firstName || 'Guest' }}</span>
           <span class="text-gray-500 text-sm">@{{ (userService.currentUser$ | async)?.username || 'unknown' }}</span>
@@ -44,48 +43,72 @@
       <div class="flex w-full flex-col space-y-3">
         <div class="relative mt-4">
          <textarea
-           [(ngModel)]="content"
+           [ngModel]="content()"
+           (ngModelChange)="content.set($event)"
            (input)="autoResize($event)"
            (focus)="expandForm()"
            class="w-full resize-none border-0 bg-transparent p-0 text-lg text-black dark:text-white placeholder-gray-400 focus:ring-0 outline-none overflow-hidden relative z-10"
-           placeholder="Co tam na Twoim Threadzie?"
+           [placeholder]="quoteThread() ? 'Dodaj komentarz...' : 'Co tam na Twoim Threadzie?'"
            rows="2"
            id="compose-textarea"></textarea>
         </div>
 
-        @if (selectedImage()) {
+        @if (mediaError()) {
+          <div class="text-red-500 text-sm font-medium">
+            {{ mediaError() }}
+          </div>
+        }
+
+        @if (selectedMediaPreview() && !quoteThread()) {
           <div class="relative mt-2 group overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg">
             <button
-              (click)="removeImage()"
+              (click)="removeMedia()"
               type="button"
               class="absolute top-3 left-3 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition z-10 backdrop-blur-sm">
               <lucide-icon [img]="XIcon" class="h-4 w-4"></lucide-icon>
             </button>
-            <img [src]="selectedImage()"
-                 class="max-h-[450px] w-full object-cover transition duration-300 group-hover:scale-[1.01]"
-                 alt="Podgląd załącznika">
+
+            @if (selectedMediaType() === 'image') {
+              <img [src]="selectedMediaPreview()"
+                   class="max-h-[450px] w-full object-cover transition duration-300 group-hover:scale-[1.01]"
+                   alt="Podgląd załącznika">
+            }
+
+            @if (selectedMediaType() === 'video') {
+              <video [src]="selectedMediaPreview()"
+                     controls
+                     class="max-h-[450px] w-full object-contain bg-black transition duration-300">
+              </video>
+            }
+          </div>
+        }
+
+        @if (quoteThread(); as quote) {
+          <div class="mt-2">
+            <app-quoted-thread [thread]="quote"></app-quoted-thread>
           </div>
         }
 
         <div
           class="grid transition-all duration-300 ease-out relative"
-          [ngClass]="isExpanded() ? 'grid-rows-[1fr] mt-1' : 'grid-rows-[0fr] mt-0 pointer-events-none'"
+          [ngClass]="(isExpanded() || quoteThread()) ? 'grid-rows-[1fr] mt-1' : 'grid-rows-[0fr] mt-0 pointer-events-none'"
         >
-          <div [ngClass]="isExpanded() ? 'overflow-visible' : 'overflow-hidden'">
+          <div [ngClass]="(isExpanded() || quoteThread()) ? 'overflow-visible' : 'overflow-hidden'">
             <div
               class="flex items-center justify-between pt-3 transition-transform duration-300 ease-out"
-              [ngClass]="isExpanded() ? 'translate-y-0' : '-translate-y-full'"
+              [ngClass]="(isExpanded() || quoteThread()) ? 'translate-y-0' : '-translate-y-full'"
             >
               <div class="flex space-x-1 relative">
 
-                <app-threado-action-button
-                  [icon]="PaperclipIcon"
-                  variant="accent"
-                  (click)="fileInput.click()"
-                  title="Dodaj zdjęcie">
-                </app-threado-action-button>
-
-                <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden">
+                @if (!quoteThread()) {
+                  <app-threado-action-button
+                    [icon]="PaperclipIcon"
+                    variant="accent"
+                    (click)="fileInput.click()"
+                    title="Dodaj zdjęcie lub wideo">
+                  </app-threado-action-button>
+                  <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*,video/*" class="hidden">
+                }
 
                 <div class="relative">
                   <app-threado-action-button
@@ -131,9 +154,9 @@
 
                 <app-threado-button
                   (click)="submitPost()"
-                  [disabled]="(characterCount() === 0 && !selectedImage()) || isOverLimit()"
+                  [disabled]="(characterCount() === 0 && !selectedMediaPreview() && !quoteThread()) || isOverLimit()"
                   [isLoading]="isSubmitting()"
-                  text="Thread"
+                  [text]="quoteThread() ? 'Cytuj' : 'Thread'"
                   customClasses="py-1.5 !text-sm !w-27"
                 >
                 </app-threado-button>

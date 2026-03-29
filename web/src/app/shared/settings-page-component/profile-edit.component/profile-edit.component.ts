@@ -81,22 +81,40 @@ export class ProfileEditComponent implements OnInit {
     }
   }
 
-  onCoverSelected(event: Event) {
+  async onAvatarSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.coverFileToUpload = file;
-      this.previewImage(file, this.coverPreview);
+      await this.handleProfileImage(input.files[0], 'avatar');
       input.value = '';
     }
   }
 
-  onAvatarSelected(event: Event) {
+  onAvatarDragEnter(event: DragEvent) {
+    event.preventDefault();
+    this.isDraggingOverAvatar.set(true);
+  }
+
+  onAvatarDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isDraggingOverAvatar.set(false);
+  }
+
+  async onAvatarDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingOverAvatar.set(false);
+    this.dragService.reset();
+
+    const file = event.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      await this.handleProfileImage(file, 'avatar');
+    }
+  }
+
+  async onCoverSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.avatarFileToUpload = file;
-      this.previewImage(file, this.avatarPreview);
+      await this.handleProfileImage(input.files[0], 'cover');
       input.value = '';
     }
   }
@@ -111,7 +129,7 @@ export class ProfileEditComponent implements OnInit {
     this.isDraggingOverCover.set(false);
   }
 
-  onCoverDrop(event: DragEvent) {
+  async onCoverDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.isDraggingOverCover.set(false);
@@ -119,41 +137,33 @@ export class ProfileEditComponent implements OnInit {
 
     const file = event.dataTransfer?.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      this.coverFileToUpload = file;
-      this.previewImage(file, this.coverPreview);
+      await this.handleProfileImage(file, 'cover');
     }
   }
 
-  onAvatarDragEnter(event: DragEvent) {
-    event.preventDefault();
-    this.isDraggingOverAvatar.set(true);
-  }
+  private async handleProfileImage(file: File, type: 'avatar' | 'cover') {
+    try {
+      this.isLoading.set(true);
+      const processedFile = await this.mediaService.processFile(file);
 
-  onAvatarDragLeave(event: DragEvent) {
-    event.preventDefault();
-    this.isDraggingOverAvatar.set(false);
-  }
-
-  onAvatarDrop(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isDraggingOverAvatar.set(false);
-    this.dragService.reset();
-
-    const file = event.dataTransfer?.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      this.avatarFileToUpload = file;
-      this.previewImage(file, this.avatarPreview);
-    }
-  }
-
-  private previewImage(file: File, targetSignal: any) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      targetSignal.set(reader.result as string);
+      if (type === 'avatar') {
+        this.avatarFileToUpload = processedFile;
+        this.setPreview(processedFile, this.avatarPreview);
+      } else {
+        this.coverFileToUpload = processedFile;
+        this.setPreview(processedFile, this.coverPreview);
+      }
       this.profileForm.markAsDirty();
-    };
-    reader.readAsDataURL(file);
+    } catch (error: any) {
+      console.error('Błąd wgrywania zdjęcia profilowego:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private setPreview(file: File, targetSignal: any) {
+    const objectUrl = URL.createObjectURL(file);
+    targetSignal.set(objectUrl);
   }
 
   hasChanges(): boolean {

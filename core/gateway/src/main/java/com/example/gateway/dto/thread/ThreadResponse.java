@@ -12,6 +12,7 @@ public record ThreadResponse(
         Instant createdAt,
         String replySettings,
         String lang,
+        ThreadResponse repostedThread,
         PublicMetricsResponse publicMetrics,
         List<HashtagResponse> hashtags,
         List<UrlEntityResponse> urls,
