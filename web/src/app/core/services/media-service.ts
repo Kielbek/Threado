@@ -3,6 +3,7 @@ import { MediaUploadResult } from '../model/media-upload-result';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import imageCompression from 'browser-image-compression';
+import { ToastService } from "./toast-service";
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +12,11 @@ export class MediaService {
   private readonly http = inject(HttpClient);
   private readonly httpBackend = inject(HttpBackend);
   private readonly pureHttp = new HttpClient(this.httpBackend);
+  private readonly toast = inject(ToastService);
 
   public readonly MAX_VIDEO_DURATION_SEC = 60;
   public readonly MAX_VIDEO_SIZE_MB = 50;
   public readonly MAX_IMAGE_SIZE_MB = 20;
-
 
   async processFile(file: File): Promise<File> {
     if (file.type.startsWith('video/')) {
@@ -23,19 +24,26 @@ export class MediaService {
     } else if (file.type.startsWith('image/')) {
       return this.processImage(file);
     }
-    throw new Error('Nieobsługiwany format pliku. Wybierz zdjęcie lub wideo.');
+
+    const msg = 'Nieobsługiwany format pliku. Wybierz zdjęcie lub wideo.';
+    this.toast.error(msg, 'Zły format');
+    throw new Error(msg);
   }
 
   private async processVideo(file: File): Promise<File> {
     const fileSizeMB = file.size / 1024 / 1024;
 
     if (fileSizeMB > this.MAX_VIDEO_SIZE_MB) {
-      throw new Error(`Plik wideo jest za duży (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_VIDEO_SIZE_MB}MB.`);
+      const msg = `Plik wideo jest za duży (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_VIDEO_SIZE_MB}MB.`;
+      this.toast.warning(msg, 'Wideo za duże');
+      throw new Error(msg);
     }
 
     const duration = await this.getVideoDuration(file);
     if (duration > this.MAX_VIDEO_DURATION_SEC) {
-      throw new Error(`Wideo nie może być dłuższe niż ${this.MAX_VIDEO_DURATION_SEC} sekund.`);
+      const msg = `Wideo nie może być dłuższe niż ${this.MAX_VIDEO_DURATION_SEC} sekund.`;
+      this.toast.warning(msg, 'Wideo za długie');
+      throw new Error(msg);
     }
 
     return file;
@@ -45,7 +53,9 @@ export class MediaService {
     const fileSizeMB = file.size / 1024 / 1024;
 
     if (fileSizeMB > this.MAX_IMAGE_SIZE_MB) {
-      throw new Error(`Zdjęcie jest za duże (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_IMAGE_SIZE_MB}MB.`);
+      const msg = `Zdjęcie jest za duże (${fileSizeMB.toFixed(1)}MB). Maksymalny rozmiar to ${this.MAX_IMAGE_SIZE_MB}MB.`;
+      this.toast.warning(msg, 'Zdjęcie za duże');
+      throw new Error(msg);
     }
 
     const options = {
@@ -59,7 +69,9 @@ export class MediaService {
       console.log(`[MediaService] Skompresowano z ${(file.size / 1024 / 1024).toFixed(2)}MB do ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
       return compressedFile;
     } catch (error) {
-      console.error('Błąd podczas kompresji zdjęcia:', error);
+      // ZAMIAST CONSOLE ERROR UŻYWAMY TOASTA
+      // Nie rzucamy wyjątku, żeby wysłał się chociaż oryginał pliku
+      this.toast.error('Nie udało się skompresować zdjęcia. Spróbujemy wysłać oryginał.', 'Błąd kompresji');
       return file;
     }
   }

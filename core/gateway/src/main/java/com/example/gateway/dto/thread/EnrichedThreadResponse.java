@@ -9,10 +9,11 @@ import java.util.UUID;
 
 public record EnrichedThreadResponse(
         UUID id,
-        String content,
+        String text,
         Instant createdAt,
         String replySettings,
         String lang,
+        ThreadResponse repostedThread,
         PublicMetricsResponse publicMetrics,
         List<HashtagResponse> hashtags,
         List<UrlEntityResponse> urls,

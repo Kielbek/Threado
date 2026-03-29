@@ -31,4 +31,12 @@ export class FeedCacheService {
   clearAll(): void {
     this.cache.clear();
   }
+
+  prependItem<T>(key: string, item: T): void {
+    const state = this.get<T>(key);
+    if (state) {
+      state.items = [item, ...state.items];
+      this.save(key, state);
+    }
+  }
 }

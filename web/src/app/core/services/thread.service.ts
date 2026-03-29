@@ -35,4 +35,9 @@ export class ThreadService {
 
     return await firstValueFrom(this.http.post<ThreadResponse>(this.apiUrl, requestPayload));
   }
+
+  repostThread(threadId: string, content?: string): Observable<ThreadResponse> {
+    const body = content ? { content } : {};
+    return this.http.post<ThreadResponse>(`${this.apiUrl}/${threadId}/repost`, body);
+  }
 }

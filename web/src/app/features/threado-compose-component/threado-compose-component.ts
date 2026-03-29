@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, HostListener, inject, output, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 import { LucideAngularModule, PaperclipIcon, SmileIcon, XIcon } from 'lucide-angular';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,10 @@ import { ThreadService } from '../../core/services/thread.service';
 import { ThreadResponse } from '../../core/model/thread/thread-response';
 import { DragDropService } from '../../core/services/drag-drop-service';
 import { MediaService } from '../../core/services/media-service';
+import { ToastService } from '../../core/services/toast-service';
+import {QuotedThreadComponent} from '../quoted-thread.component/quoted-thread.component';
+import {lastValueFrom} from 'rxjs';
+import {FeedCacheService} from '../../core/services/feed-cache-service';
 
 @Component({
   selector: 'app-threado-compose',
@@ -23,7 +27,8 @@ import { MediaService } from '../../core/services/media-service';
     PickerComponent,
     ThreadoAvatarComponent,
     ThreadoActionButtonComponent,
-    AsyncPipe
+    AsyncPipe,
+    QuotedThreadComponent
   ],
   templateUrl: './threado-compose-component.html',
   styleUrl: './threado-compose-component.css',
@@ -34,9 +39,13 @@ export class ThreadoComposeComponent {
   private threadService = inject(ThreadService);
   public dragService = inject(DragDropService);
   private mediaService = inject(MediaService);
+  private toast = inject(ToastService);
+  private feedCache = inject(FeedCacheService);
 
   readonly MAX_CHARS = 3000;
   readonly CIRCUMFERENCE = 50.26;
+
+  quoteThread = input<ThreadResponse | null>(null);
 
   threadCreated = output<ThreadResponse>();
 
@@ -63,9 +72,24 @@ export class ThreadoComposeComponent {
   isNearLimit = computed(() => this.characterCount() >= this.MAX_CHARS - 200);
   isOverLimit = computed(() => this.characterCount() > this.MAX_CHARS);
 
+  protected readonly XIcon = XIcon;
+  protected readonly SmileIcon = SmileIcon;
+  protected readonly PaperclipIcon = PaperclipIcon;
+
+  constructor() {
+    effect(() => {
+      if (this.quoteThread()) {
+        this.isExpanded.set(true);
+      }
+    }, { allowSignalWrites: true });
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.isExpanded()) return;
+
+    if (this.quoteThread()) return;
+
     const clickedInsideComponent = this.elementRef.nativeElement.contains(event.target);
     const targetElement = event.target as HTMLElement;
     const clickedInsidePicker = !!targetElement.closest('emoji-mart');
@@ -76,6 +100,8 @@ export class ThreadoComposeComponent {
       this.isExpanded.set(false);
     }
   }
+
+  expandForm() { this.isExpanded.set(true); }
 
   onComponentDragEnter(event: DragEvent) {
     event.preventDefault();
@@ -103,8 +129,6 @@ export class ThreadoComposeComponent {
     }
   }
 
-  expandForm() { this.isExpanded.set(true); }
-
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -116,13 +140,11 @@ export class ThreadoComposeComponent {
   private async processFile(file: File) {
     this.mediaError.set(null);
     this.isSubmitting.set(true);
-
     try {
       const processedFile = await this.mediaService.processFile(file);
       const type = processedFile.type.startsWith('video/') ? 'video' : 'image';
       this.setMedia(processedFile, type);
     } catch (error: any) {
-      console.error('Błąd pliku:', error);
       this.mediaError.set(error.message || 'Wystąpił błąd podczas przetwarzania pliku.');
     } finally {
       this.isSubmitting.set(false);
@@ -178,19 +200,30 @@ export class ThreadoComposeComponent {
 
     this.isSubmitting.set(true);
     try {
-      const newThread = await this.threadService.createThread(this.content(), this.selectedFile());
+      const quoteId = this.quoteThread()?.id;
+      let newThread: ThreadResponse;
+      const quote = this.quoteThread();
+
+      if (quote) {
+        newThread = await lastValueFrom(this.threadService.repostThread(quote.id, this.content()));
+      } else {
+        newThread = await this.threadService.createThread(this.content(), this.selectedFile());
+      }
+
+      this.feedCache.prependItem('home-global-timeline', newThread);
+      this.toast.success(quoteId ? 'Zacytowano pomyślnie!' : 'Pomyślnie opublikowano Threada!');
       this.threadCreated.emit(newThread);
       this.content.set('');
       this.removeMedia();
-      this.isExpanded.set(false);
+
+      if (!this.quoteThread()) {
+        this.isExpanded.set(false);
+      }
+
     } catch (error) {
-      console.error(error);
+      this.toast.error('Nie udało się opublikować.');
     } finally {
       this.isSubmitting.set(false);
     }
   }
-
-  protected readonly XIcon = XIcon;
-  protected readonly SmileIcon = SmileIcon;
-  protected readonly PaperclipIcon = PaperclipIcon;
 }

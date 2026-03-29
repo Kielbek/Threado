@@ -1,105 +1,132 @@
 @if (threadInput(); as t) {
-  <div class="border-b threado-border p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer group/thread">
+  <article class="border-b threado-border p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer group/thread">
 
-    <div class="flex items-center gap-3">
+    @if (t.repostedThread && !t.text) {
+      <div class="flex items-center space-x-2 text-success-600 dark:text-accent-green mb-3">
+        <lucide-icon [img]="RepeatIcon" class="w-4 h-4"></lucide-icon>
+
+        <span class="text-xs font-medium text-gray-700 dark:text-gray-400">
+          <span class="font-bold text-gray-900 dark:text-white">{{ t.author.name }}</span> podaje thread dalej
+        </span>
+      </div>
+    }
+
+    @let displayThread = (t.repostedThread && !t.text) ? t.repostedThread : t;
+
+    <div class="flex items-center space-x-3 mb-3">
       <div class="flex-shrink-0">
-        <app-threado-avatar
-          size="3rem"
-          [avatarUrl]="t.author.avatarUrl"
-        ></app-threado-avatar>
+        <app-threado-avatar size="42px" [avatarUrl]="displayThread.author.avatarUrl"></app-threado-avatar>
       </div>
 
-      <div class="flex flex-col overflow-hidden">
-        <div class="flex items-center gap-1 truncate">
-          <a [routerLink]="['/@' + t.author.username]" class="flex items-center gap-1 truncate hover:underline" (click)="$event.stopPropagation()">
-            <span class="font-bold text-black dark:text-white">
-              {{ t.author.name }}
-            </span>
-            @if (t.author.verified) {
-              <svg class="w-4 h-4 text-blue-500 fill-current" viewBox="0 0 24 24">
-                <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.79-4-4-4-.495 0-.965.084-1.4.238C14.55 2.465 13.18 1.59 11.6 1.59c-1.58 0-2.95.875-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.21 0-4 1.79-4 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.79 4 4 4 .495 0 .965-.084 1.4-.238.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.154.905.238 1.4.238 2.21 0 4-1.79 4-4 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-10.65 4.88l-4.14-4.14 1.41-1.41 2.73 2.73 6.13-6.13 1.41 1.41-7.54 7.54z"></path>
-              </svg>
-            }
+      <div class="flex flex-col flex-grow overflow-hidden">
+        <div class="flex items-center gap-1">
+          <a [routerLink]="['/@' + displayThread.author.username]" class="font-bold text-[15px] text-gray-900 dark:text-gray-100 truncate hover:underline" (click)="$event.stopPropagation()">
+            {{ displayThread.author.name }}
           </a>
+          @if (displayThread.author.verified) {
+            <svg class="w-4 h-4 text-blue-500 fill-current shrink-0" viewBox="0 0 24 24"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.79-4-4-4-.495 0-.965.084-1.4.238C14.55 2.465 13.18 1.59 11.6 1.59c-1.58 0-2.95.875-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.21 0-4 1.79-4 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.79 4 4 4 .495 0 .965-.084 1.4-.238.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.154.905.238 1.4.238 2.21 0 4-1.79 4-4 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-10.65 4.88l-4.14-4.14 1.41-1.41 2.73 2.73 6.13-6.13 1.41 1.41-7.54 7.54z"></path></svg>
+          }
         </div>
-
-        <a [routerLink]="['/@' + t.author.username]" class="text-gray-500 text-sm truncate" (click)="$event.stopPropagation()">
-          @{{ t.author.username }}
-        </a>
+        <div class="flex items-center gap-1 text-[14px] text-gray-700 dark:text-gray-500">
+          <a [routerLink]="['/@' + displayThread.author.username]" class="truncate hover:underline" (click)="$event.stopPropagation()">
+            &#64;{{ displayThread.author.username }}
+          </a>
+          <span>·</span>
+          <span class="hover:underline" [title]="displayThread.createdAt | date:'medium'">
+            {{ displayThread.createdAt | relativeTime }}
+          </span>
+        </div>
       </div>
     </div>
 
-    <div class="mt-2">
+    <div class="flex flex-col space-y-4">
 
-      <div
-        class="text-black dark:text-white text-[15px] leading-relaxed whitespace-pre-wrap transition-all"
-        [class.line-clamp-4]="t.content.length > maxLength && !isExpanded()"
-        [innerHTML]="t.content | linkify">
-      </div>
+      @if (displayThread.text) {
+        <div>
+          <div class="text-base leading-5 text-gray-900 dark:text-gray-100 whitespace-pre-wrap wrap-break-word transition-all"
+               [class.line-clamp-4]="displayThread.text.length > maxLength && !isExpanded()"
+               [innerHTML]="displayThread.text | linkify">
+          </div>
 
-      @if (t.content.length > maxLength) {
-        <button
-          (click)="toggleText($event)"
-          class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-semibold mt-1">
-          {{ isExpanded() ? 'Pokaż mniej' : 'Pokaż więcej' }}
-        </button>
-      }
-
-      @if (t.media && t.media.length > 0) {
-        <div class="mt-3 rounded-2xl overflow-hidden border threado-border bg-gray-100 dark:bg-gray-900/50" (click)="$event.stopPropagation()">
-
-          @if (t.media[0].type === 'VIDEO' || t.media[0].type.includes('VIDEO') || t.media[0].url.endsWith('.mp4') || t.media[0].url.endsWith('.webm')) {
-            <video [src]="t.media[0].url"
-                   controls
-                   preload="metadata"
-                   class="w-full h-auto object-contain max-h-[512px] bg-black">
-              Twoja przeglądarka nie obsługuje tagu wideo.
-            </video>
+          @if (displayThread.text.length > maxLength) {
+            <button (click)="toggleText($event)" class="text-blue-600 dark:text-blue-400 hover:underline text-sm font-semibold mt-1">
+              {{ isExpanded() ? 'Pokaż mniej' : 'Czytaj dalej...' }}
+            </button>
           }
-          @else {
-            <img [src]="t.media[0].url"
-                 alt="Thread image"
-                 class="w-full h-auto object-cover max-h-[512px] hover:scale-[1.01] transition-transform duration-500">
-          }
-
         </div>
       }
 
-      <div class="mt-3 w-full flex justify-around -ml-2 text-gray-500">
-        <app-threado-action-button
-          [icon]="MessageCircleIcon"
-          variant="accent"
-          [count]="t.publicMetrics.replyCount">
-        </app-threado-action-button>
+      @if (displayThread.media && displayThread.media.length > 0) {
+        <div class="rounded-lg overflow-hidden border threado-border  bg-gray-100 dark:bg-black flex justify-center items-center" (click)="$event.stopPropagation()">
+          @if (displayThread.media[0].type.includes('VIDEO') || displayThread.media[0].url.endsWith('.mp4')) {
+            <video [src]="displayThread.media[0].url" controls class="w-full h-auto max-h-[558px] object-contain"></video>
+          } @else {
+            <img [src]="displayThread.media[0].url" class="w-full h-auto max-h-[558px] object-contain">
+          }
+        </div>
+      }
 
+      @if (t.repostedThread && t.text) {
+        <app-quoted-thread [thread]="t.repostedThread"></app-quoted-thread>
+      }
+
+    </div>
+
+    <div class="mt-4 flex justify-around text-gray-600 dark:text-gray-400">
+      <app-threado-action-button [icon]="MessageCircleIcon" variant="accent" [count]="0"></app-threado-action-button>
+      <div class="relative">
         <app-threado-action-button
           [icon]="RepeatIcon"
           variant="green"
-          [count]="t.publicMetrics.retweetCount">
+          [count]="(localMetrics().repostCount)"
+          [isActive]="localInteractions().isReposted"
+          (click)="toggleRepostMenu($event)">
         </app-threado-action-button>
 
-        <app-threado-action-button
-          [icon]="HeartIcon"
-          variant="red"
-          [count]="localMetrics().likeCount"
-          [isActive]="localInteractions().isLiked"
-          (click)="onToggleLike($event)">
-        </app-threado-action-button>
+        @if (isRepostMenuOpen()) {
+          <div class="absolute bottom-full left-0 mb-2 w-[220px] bg-white dark:bg-black border threado-border rounded-lg shadow-xl p-1.5 z-50 transition-all">
+            <ul class="flex flex-col">
 
-        <app-threado-action-button
-          [icon]="BookmarkIcon"
-          variant="blue"
-          [count]="localMetrics().bookmarkCount"
-          [isActive]="localInteractions().isBookmarked"
-          (click)="onToggleBookmark($event)">
-        </app-threado-action-button>
+              <li>
+                <button
+                  (click)="doPureRepost($event)"
+                  class="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-black dark:text-white">
+                  <lucide-icon [img]="RepeatIcon" class="w-4 h-4 mr-3" [ngClass]="localInteractions().isReposted ? 'text-green-500' : 'text-gray-500 dark:text-gray-400'"></lucide-icon>
+                  {{ localInteractions().isReposted ? 'Cofnij podanie dalej' : 'Podaj dalej' }}
+                </button>
+              </li>
 
-        <app-threado-action-button
-          [icon]="ShareIcon"
-          variant="accent">
-        </app-threado-action-button>
+              <li class="mx-2 my-1 h-px border-b threado-border"></li>
+
+              <li>
+                <button
+                  (click)="openQuoteModal($event)"
+                  class="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-black dark:text-white">
+                  <svg class="w-4 h-4 mr-3 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  Cytuj
+                </button>
+              </li>
+
+            </ul>
+          </div>
+        }
       </div>
+      <app-threado-action-button [icon]="HeartIcon" variant="red" [count]="localMetrics().likeCount" [isActive]="localInteractions().isLiked" (click)="onToggleLike($event)"></app-threado-action-button>
+      <app-threado-action-button [icon]="BookmarkIcon" variant="blue" [count]="localMetrics().bookmarkCount" [isActive]="localInteractions().isBookmarked" (click)="onToggleBookmark($event)"></app-threado-action-button>
+      <app-threado-action-button [icon]="ShareIcon" variant="accent"></app-threado-action-button>
     </div>
 
-  </div>
+  </article>
+
+  <app-threado-modal
+    [isOpen]="isQuoteModalOpen()"
+    (close)="isQuoteModalOpen.set(false)"
+    title="Zacytuj posta">
+
+    <app-threado-compose
+      [quoteThread]="threadInput()"
+      (threadCreated)="onQuoteCreated($event)">
+    </app-threado-compose>
+
+  </app-threado-modal>
 }

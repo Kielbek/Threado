@@ -21,6 +21,7 @@ public class ThreadMapper {
                 thread.getCreatedAt(),
                 thread.getReplySettings(),
                 thread.getLang(),
+                toResponse(thread.getRepostedThread()),
                 mapPublicMetrics(thread),
                 mapHashtags(thread.getHashtags()),
                 mapUrls(thread.getUrls()),
@@ -47,16 +48,14 @@ public class ThreadMapper {
 
     private PublicMetricsResponse mapPublicMetrics(Thread thread) {
         if (thread.getPublicMetrics() == null) {
-            return new PublicMetricsResponse(0, 0, 0, 0, 0, 0);
+            return new PublicMetricsResponse(0, 0, 0, 0);
         }
         var metrics = thread.getPublicMetrics();
         return new PublicMetricsResponse(
-                metrics.getRetweetCount(),
-                metrics.getReplyCount(),
                 metrics.getLikeCount(),
-                metrics.getQuoteCount(),
                 metrics.getBookmarkCount(),
-                metrics.getImpressionCount()
+                metrics.getRepostCount(),
+                metrics.getReplyCount()
         );
     }
 

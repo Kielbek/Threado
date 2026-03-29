@@ -13,6 +13,10 @@ public interface InteractionService {
 
     void toggleBookmark(UUID threadId, UUID userId);
 
+    void addRepost(UUID threadId, UUID userId);
+
+    void removeRepost(UUID threadId, UUID userId);
+
     PageResponse<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable);
 
     List<InteractionStatusResponse> getStatusesForUser(UUID userId, List<UUID> threadIds);

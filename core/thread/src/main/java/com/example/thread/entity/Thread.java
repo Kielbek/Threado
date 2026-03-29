@@ -38,6 +38,10 @@ public class Thread {
     private PublicMetrics publicMetrics;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reposted_thread_id")
+    private Thread repostedThread;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private AuthorCache author;
 
@@ -55,7 +59,4 @@ public class Thread {
     @CollectionTable(name = "thread_media", joinColumns = @JoinColumn(name = "thread_id"))
     @Fetch(FetchMode.SUBSELECT)
     private List<Media> media = new ArrayList<>();
-
-    @ManyToOne
-    private AuthorCache authorCache;
 }

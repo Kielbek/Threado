@@ -1,7 +1,6 @@
 package com.example.thread.kafka;
 
 import com.example.thread.entity.AuthorCache;
-import com.example.thread.kafka.dto.UserAvatarUpdateEvent;
 import com.example.thread.kafka.dto.UserProfileSyncEvent;
 import com.example.thread.repository.AuthorCacheRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
