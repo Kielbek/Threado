@@ -9,33 +9,39 @@ import {
   PreferencesPageComponent
 } from './shared/settings-page-component/preferences-page.component/preferences-page.component';
 import {AccountPageComponent} from './shared/settings-page-component/account-page.component/account-page.component';
+import { authGuard } from "./core/guard/auth-guard";
 
 export const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
     pathMatch: 'full',
-    title: 'Główna / Threado'
+    title: 'Główna / Threado',
+    canActivate: [authGuard]
   },
   {
     path: 'home',
     component: HomePageComponent,
-    title: 'Główna / Threado'
+    title: 'Główna / Threado',
+    canActivate: [authGuard]
   },
   {
     path: 'notifications',
     component: NotificationsPageComponent,
-    title: 'Główna / Threado'
+    title: 'Powiadomienia / Threado',
+    canActivate: [authGuard]
   },
   {
     path: 'bookmarks',
     component: BookmarksPageComponent,
-    title: 'Główna / Threado'
+    title: 'Zakładki / Threado',
+    canActivate: [authGuard]
   },
-  { path: 'settings', component: SettingsPageComponent },
-  { path: 'settings/profile', component: ProfileEditComponent },
-  { path: 'settings/account', component: AccountPageComponent },
-  { path: 'settings/preferences', component: PreferencesPageComponent },
+  { path: 'settings', component: SettingsPageComponent, canActivate: [authGuard] },
+  { path: 'settings/profile', component: ProfileEditComponent, canActivate: [authGuard] },
+  { path: 'settings/account', component: AccountPageComponent, canActivate: [authGuard] },
+  { path: 'settings/preferences', component: PreferencesPageComponent, canActivate: [authGuard] },
+
   {
     path: ':username',
     component: UserProfilePageComponent,
