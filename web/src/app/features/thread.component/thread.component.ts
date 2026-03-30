@@ -14,7 +14,7 @@ import { RelativeTimePipe } from '../../core/pipes/relative-time-pipe';
 import {DatePipe, NgClass} from '@angular/common';
 import { ThreadoModalComponent } from '../threado-modal-component/threado-modal-component';
 import { ThreadoComposeComponent } from '../threado-compose-component/threado-compose-component';
-import { lastValueFrom } from 'rxjs'; // DODANY IMPORT
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-thread',

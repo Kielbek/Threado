@@ -24,7 +24,7 @@ export class FeedService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<Page<ThreadResponse>>(`${this.feedApiUrl}/user/${authorId}`, { params });
+    return this.http.get<Page<ThreadResponse>>(`${this.feedApiUrl}/public/user/${authorId}`, { params });
   }
 
   getBookmarkedThreads(page = 0, size = 10): Observable<Page<ThreadResponse>> {
@@ -33,9 +33,5 @@ export class FeedService {
       .set('size', size.toString());
 
     return this.http.get<Page<ThreadResponse>>(`${this.feedApiUrl}/bookmarks`, { params });
-  }
-
-  test(): Observable<string> {
-    return this.http.get('http://localhost:8222/api/feed/test', { responseType: 'text' });
   }
 }
