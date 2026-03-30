@@ -43,10 +43,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        boolean followedByMe = followRepository.existsByFollowerIdAndFolloweeId(
-                currentUserId,
-                user.getKeycloakId()
-        );
+        boolean followedByMe = false;
+
+        if (currentUserId != null) {
+            followedByMe = followRepository.existsByFollowerIdAndFolloweeId(
+                    currentUserId,
+                    user.getKeycloakId()
+            );
+        }
 
         return userMapper.toUserResponse(user, followedByMe);
     }
