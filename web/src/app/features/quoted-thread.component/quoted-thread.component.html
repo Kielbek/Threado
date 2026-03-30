@@ -1,0 +1,35 @@
+@if (thread(); as repost) {
+  <div class="rounded-lg border border-solid threado-border p-4 cursor-pointer hover:bg-black/[0.03] dark:hover:bg-white/[0.02] transition-colors"
+       [routerLink]="['/thread', repost.id]" (click)="$event.stopPropagation()">
+
+    <div class="flex flex-col space-y-2">
+      <div class="flex items-center space-x-3 overflow-hidden">
+        <img [src]="repost.author.avatarUrl" class="w-[42px] h-[42px] rounded-full object-cover">
+
+        <div class="flex flex-col min-w-0">
+          <div class="flex items-center space-x-1">
+            <span class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100 hover:underline">{{ repost.author.name }}</span>
+            @if (repost.author.verified) {
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" class="text-blue-500 shrink-0"><path d="M8.82.521a1.596 1.596 0 012.36 0l.362.398c.42.46 1.07.635 1.664.445l.512-.163a1.596 1.596 0 012.043 1.18l.115.525a1.596 1.596 0 001.218 1.218l.525.115a1.596 1.596 0 011.18 2.043l-.163.513a1.596 1.596 0 00.446 1.663l.397.362a1.596 1.596 0 010 2.36l-.397.362c-.461.42-.635 1.07-.446 1.664l.163.512a1.596 1.596 0 01-1.18 2.043l-.525.115a1.596 1.596 0 00-1.218 1.218l-.115.525a1.596 1.596 0 01-2.043 1.18l-.512-.163a1.596 1.596 0 00-1.664.445l-.362.398a1.596 1.596 0 01-2.36 0l-.362-.398a1.596 1.596 0 00-1.663-.445l-.513.163a1.596 1.596 0 01-2.043-1.18l-.115-.525a1.596 1.596 0 00-1.218-1.218l-.525-.115a1.596 1.596 0 01-1.18-2.043l.164-.512a1.596 1.596 0 00-.446-1.664L.52 11.18a1.596 1.596 0 010-2.36l.398-.362c.46-.42.635-1.07.446-1.663L1.2 6.282a1.596 1.596 0 011.18-2.043l.525-.115a1.596 1.596 0 001.218-1.218l.115-.525A1.596 1.596 0 016.282 1.2l.513.163c.594.19 1.244.015 1.663-.445L8.821.52z"></path><path d="M6.66 7.464L5.012 9.111l3.85 3.85 5.483-5.481-1.966-1.966L8.544 9.35 6.66 7.464z" fill="#fff"></path></svg>
+            }
+          </div>
+          <span class="truncate text-sm text-gray-700 dark:text-gray-600">&#64;{{ repost.author.username }}</span>
+        </div>
+      </div>
+
+      @if (repost.text) {
+        <div class="text-base leading-5 threado-border whitespace-pre-wrap line-clamp-3" [innerHTML]="repost.text | linkify"></div>
+      }
+
+      @if (repost.media && repost.media.length > 0) {
+        <div class="mt-2 rounded-lg overflow-hidden border threado-border relative bg-gray-100 dark:bg-black flex justify-center items-center">
+          @if (repost.media[0].type.includes('VIDEO') || repost.media[0].url.endsWith('.mp4')) {
+            <video [src]="repost.media[0].url" controls class="w-full h-auto max-h-72 object-contain"></video>
+          } @else {
+            <img [src]="repost.media[0].url" class="w-full h-auto max-h-72 object-contain">
+          }
+        </div>
+      }
+    </div>
+  </div>
+}
