@@ -48,19 +48,33 @@ export class KeycloakService {
     return this.keycloak.register(options);
   }
 
-  updatePasswordDirectly(): Promise<void> {
+  triggerAction(action: 'CONFIGURE_TOTP' | 'UPDATE_PASSWORD' | 'VERIFY_EMAIL') {
     this.setKeycloakThemeCookie();
-    return this.keycloak!.login({ action: 'UPDATE_PASSWORD' });
+    return this.keycloak.login({
+      action: action,        // np. CONFIGURE_OTP
+      redirectUri: window.location.href // Wraca dokładnie na stronę ustawień
+    });
+  }
+
+  async getActiveSessions(): Promise<any[]> {
+    const url = `${this.keycloak.authServerUrl}/realms/${this.keycloak.realm}/account/sessions`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${this.keycloak.token}`, 'Accept': 'application/json' }
+    });
+    return response.ok ? await response.json() : [];
   }
 
   getUserEmailFromToken(): string | null {
-    if (this.keycloak && this.keycloak.tokenParsed) {
-      return this.keycloak.tokenParsed['email'] || null;
-    }
-    return null;
+    return this.keycloak.tokenParsed?.['email'] || null;
   }
+
 
   isLoggedIn(): boolean {
     return !!this.keycloak?.authenticated;
+  }
+
+  navigateToSessionsManagement() {
+    const url = `${this.keycloak.authServerUrl}/realms/${this.keycloak.realm}/account/sessions`;
+    window.location.href = url;
   }
 }

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,9 @@ public class KeycloakUserSyncService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final UserEventProducer userEventProducer;
+    private final Keycloak keycloakAdminClient;
+
+    private static final String REALM_NAME = "Threado";
 
     @Transactional
     @KafkaListener(topics = "threado.user.events", groupId = "threado-user-group")
@@ -32,84 +37,80 @@ public class KeycloakUserSyncService {
 
             if (event.type() != null) {
                 switch (event.type()) {
-                    case "REGISTER" -> syncNewUser(event);
-                    case "UPDATE_EMAIL" -> updateExistingUser(event);
-                    default -> log.debug("Ignored Keycloak event type: {}", event.type());
+                    case "REGISTER", "IDENTITY_PROVIDER_FIRST_LOGIN" -> syncUserFromAdminApi(event.userId());
+                    case "UPDATE_EMAIL", "UPDATE_PROFILE" -> syncUserFromAdminApi(event.userId());
+                    case "DELETE_ACCOUNT" -> deleteUser(event.userId());
+                    default -> log.debug("Ignored event type: {}", event.type());
                 }
             }
 
         } catch (JsonProcessingException e) {
-            log.error("Error while parsing Keycloak event from Kafka", e);
+            log.error("Error while parsing Keycloak event", e);
         }
     }
 
-    private void syncNewUser(KeycloakEventDto event) {
-        UUID keycloakId = UUID.fromString(event.userId());
+    private void syncUserFromAdminApi(String userId) {
+        log.info("Starting full sync for user ID: {}", userId);
 
-        if (userRepository.existsByKeycloakId(keycloakId)) {
-            log.warn("User with Keycloak ID {} already exists in the database. Skipping creation.", keycloakId);
-            return;
-        }
+        try {
+            UserRepresentation kcUser = keycloakAdminClient
+                    .realm(REALM_NAME)
+                    .users()
+                    .get(userId)
+                    .toRepresentation();
 
-        String username = event.details().get("username");
-        String email = event.details().get("email");
-        String firstName = event.details().get("first_name");
-        String lastName = event.details().get("last_name");
+            UUID keycloakId = UUID.fromString(kcUser.getId());
 
-        User newUser = User.builder()
-                .keycloakId(keycloakId)
-                .username(username)
-                .email(email)
-                .firstName(firstName)
-                .lastName(lastName)
-                .build();
+            User user = userRepository.findByKeycloakId(keycloakId)
+                    .orElseGet(() -> User.builder().keycloakId(keycloakId).build());
 
-        userRepository.save(newUser);
-        log.info("Successfully synchronized new user: {}", username);
+            boolean isChanged = updateFieldsIfNecessary(user, kcUser);
 
-        userEventProducer.sendProfileSyncEvent(newUser);
-    }
-
-    private void updateExistingUser(KeycloakEventDto event) {
-        UUID keycloakId = UUID.fromString(event.userId());
-
-        userRepository.findByKeycloakId(keycloakId).ifPresentOrElse(user -> {
-            boolean isUpdated = false;
-
-            String newEmail = event.details().get("email");
-            String newUsername = event.details().get("username");
-
-            String newFirstName = event.details().get("first_name");
-            String newLastName = event.details().get("last_name");
-
-            if (newEmail != null && !newEmail.equals(user.getEmail())) {
-                user.setEmail(newEmail);
-                isUpdated = true;
-                log.info("Updated email for user ID {}: {}", keycloakId, newEmail);
-            }
-            if (newUsername != null && !newUsername.equals(user.getUsername())) {
-                user.setUsername(newUsername);
-                isUpdated = true;
-                log.info("Updated username for user ID {}: {}", keycloakId, newUsername);
-            }
-            if (newFirstName != null && !newFirstName.equals(user.getFirstName())) {
-                user.setFirstName(newFirstName);
-                isUpdated = true;
-                log.info("Updated first name for user ID {}: {}", keycloakId, newFirstName);
-            }
-            if (newLastName != null && !newLastName.equals(user.getLastName())) {
-                user.setLastName(newLastName);
-                isUpdated = true;
-                log.info("Updated last name for user ID {}: {}", keycloakId, newLastName);
-            }
-
-            if (isUpdated) {
+            if (isChanged || user.getId() == null) {
                 userRepository.save(user);
-                log.info("Successfully synchronized updates for user ID: {}", keycloakId);
+                log.info("User {} synchronized successfully (Source: Admin API)", kcUser.getUsername());
 
                 userEventProducer.sendProfileSyncEvent(user);
             }
 
-        }, () -> log.warn("Received update event for unknown user with Keycloak ID: {}. Skipping.", keycloakId));
+        } catch (Exception e) {
+            log.error("Failed to sync user {} from Keycloak Admin API", userId, e);
+        }
+    }
+
+    private boolean updateFieldsIfNecessary(User user, UserRepresentation kcUser) {
+        boolean changed = false;
+
+        if (!compare(user.getEmail(), kcUser.getEmail())) {
+            user.setEmail(kcUser.getEmail());
+            changed = true;
+        }
+        if (!compare(user.getUsername(), kcUser.getUsername())) {
+            user.setUsername(kcUser.getUsername());
+            changed = true;
+        }
+        if (!compare(user.getFirstName(), kcUser.getFirstName())) {
+            user.setFirstName(kcUser.getFirstName());
+            changed = true;
+        }
+        if (!compare(user.getLastName(), kcUser.getLastName())) {
+            user.setLastName(kcUser.getLastName());
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    private void deleteUser(String userId) {
+        UUID keycloakId = UUID.fromString(userId);
+        userRepository.findByKeycloakId(keycloakId).ifPresent(user -> {
+            userRepository.delete(user);
+            log.info("User with Keycloak ID {} deleted from local database", userId);
+        });
+    }
+
+    private boolean compare(String current, String newValue) {
+        if (current == null && newValue == null) return true;
+        return current != null && current.equals(newValue);
     }
 }
