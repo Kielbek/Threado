@@ -33,12 +33,12 @@ public class FeedAggregatorController {
         return feedAggregatorService.getBookmarks(page, size, authHeader);
     }
 
-    @GetMapping("/user/{authorId}")
+    @GetMapping("/public/user/{authorId}")
     public Mono<PageResponse<EnrichedThreadResponse>> getUserTimeline(
             @PathVariable String authorId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader
+            @RequestHeader(value = "Authorization", required = false) String authHeader
     ) {
         return feedAggregatorService.getUserTimeline(authorId, page, size, authHeader);
     }

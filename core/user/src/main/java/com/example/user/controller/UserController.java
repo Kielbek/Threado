@@ -69,6 +69,9 @@ public class UserController {
     }
 
     private UUID getUserId(Jwt jwt) {
+        if (jwt == null) {
+            return null;
+        }
         return UUID.fromString(jwt.getSubject());
     }
 }
