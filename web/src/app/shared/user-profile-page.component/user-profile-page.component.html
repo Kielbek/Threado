@@ -1,0 +1,31 @@
+<div class="w-full pb-safe">
+
+  @if (isLoading()) {
+    <app-user-profile-skeleton></app-user-profile-skeleton>
+  }
+
+  @else if (hasError()) {
+    <app-user-profile-not-found
+      [username]="cleanUsername()">
+    </app-user-profile-not-found>
+  }
+
+  @else if (user()) {
+
+    <app-user-profile-header
+      [user]="user()"
+      [isOwner]="isOwner()">
+    </app-user-profile-header>
+
+    <app-thread-feed
+      #feed
+      [cacheKey]="currentCacheKey()"
+      [fetchStrategy]="userThreadsFetcher"
+      [emptyTitle]="'Brak postów'"
+      emptyDescription="Nie ma tu nic do wyświetlenia.">
+    </app-thread-feed>
+
+
+  }
+
+</div>

@@ -24,6 +24,9 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: threado-user-group
       auto-offset-reset: earliest
@@ -36,3 +39,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+app:
+  kafka:
+    topics:
+      user-profile-sync: user.profile.synced
+      interactions: thread.interactions.events

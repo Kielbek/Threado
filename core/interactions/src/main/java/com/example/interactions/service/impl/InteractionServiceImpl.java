@@ -1,0 +1,125 @@
+package com.example.interactions.service.impl;
+
+import com.example.interactions.dto.InteractionStatusResponse;
+import com.example.interactions.dto.PageResponse;
+import com.example.interactions.entity.Bookmark;
+import com.example.interactions.entity.Like;
+import com.example.interactions.entity.Repost;
+import com.example.interactions.enums.InteractionType;
+import com.example.interactions.kafka.InteractionEventProducer;
+import com.example.interactions.repository.BookmarkRepository;
+import com.example.interactions.repository.LikeRepository;
+import com.example.interactions.repository.RepostRepository;
+import com.example.interactions.service.InteractionService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class InteractionServiceImpl implements InteractionService {
+
+    private final LikeRepository likeRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final RepostRepository repostRepository;
+    private final InteractionEventProducer interactionEventProducer;
+
+    @Override
+    @Transactional
+    public void toggleLike(UUID threadId, UUID userId) {
+        if (likeRepository.existsByUserIdAndThreadId(userId, threadId)) {
+            likeRepository.deleteByUserIdAndThreadId(userId, threadId);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.UNLIKE);
+            log.info("Action [UNLIKE]: User {} from thread {}", userId, threadId);
+        } else {
+            likeRepository.save(Like.builder().userId(userId).threadId(threadId).build());
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.LIKE);
+            log.info("Action [LIKE]: User {} liked thread {}", userId, threadId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void toggleBookmark(UUID threadId, UUID userId) {
+        if (bookmarkRepository.existsByUserIdAndThreadId(userId, threadId)) {
+            bookmarkRepository.deleteByUserIdAndThreadId(userId, threadId);
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.UNBOOKMARK);
+            log.info("Action [UNBOOKMARK]: User {} removed bookmark from thread {}", userId, threadId);
+        } else {
+            bookmarkRepository.save(Bookmark.builder().userId(userId).threadId(threadId).build());
+            interactionEventProducer.sendInteractionEvent(
+                    threadId, userId, InteractionType.BOOKMARK);
+            log.info("Action [BOOKMARK]: User {} bookmarked thread {}", userId, threadId);
+        }
+    }
+
+    @Override
+    public void addRepost(UUID threadId, UUID userId) {
+        boolean exists = repostRepository.existsByUserIdAndThreadId(userId, threadId);
+
+        if (!exists) {
+            Repost repost = Repost.builder()
+                    .threadId(threadId)
+                    .userId(userId)
+                    .build();
+            repostRepository.save(repost);
+            log.debug("Saved new repost interaction for User [{}] and Thread [{}]", userId, threadId);
+        } else {
+            log.debug("Repost interaction already exists for User [{}] and Thread [{}]. Ignoring.", userId, threadId);
+        }
+    }
+
+    @Override
+    public void removeRepost(UUID threadId, UUID userId) {
+        repostRepository.deleteByUserIdAndThreadId(userId, threadId);
+        log.debug("Removed repost interaction for User [{}] and Thread [{}]", userId, threadId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<UUID> getUserBookmarkedThreadIds(UUID userId, Pageable pageable) {
+        log.debug("Fetching bookmarked thread IDs for user: {}", userId);
+
+        Page<UUID> bookmarkedPage = bookmarkRepository.findBookmarkedThreadIdsByUserId(userId, pageable);
+
+        log.info("Found {} bookmarked threads for user {}", bookmarkedPage.getTotalElements(), userId);
+
+        return PageResponse.<UUID>builder()
+                .content(bookmarkedPage.getContent())
+                .pageNumber(bookmarkedPage.getNumber())
+                .pageSize(bookmarkedPage.getSize())
+                .totalElements(bookmarkedPage.getTotalElements())
+                .totalPages(bookmarkedPage.getTotalPages())
+                .isLast(bookmarkedPage.isLast())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InteractionStatusResponse> getStatusesForUser(UUID userId, List<UUID> threadIds) {
+        Set<UUID> likedIds = likeRepository.findLikedThreadIds(userId, threadIds);
+        Set<UUID> bookmarkedIds = bookmarkRepository.findBookmarkedThreadIds(userId, threadIds);
+        Set<UUID> repostedIds = repostRepository.findRepostedThreadIds(userId, threadIds);
+
+        return threadIds.stream()
+                .map(id -> new InteractionStatusResponse(
+                        id,
+                        likedIds.contains(id),
+                        bookmarkedIds.contains(id),
+                        repostedIds.contains(id)
+                ))
+                .collect(Collectors.toList());
+    }
+}

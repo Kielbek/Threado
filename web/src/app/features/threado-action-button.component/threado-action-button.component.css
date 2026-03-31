@@ -1,0 +1,16 @@
+.is-active lucide-icon ::ng-deep svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.btn-red.is-active {
+  color: #ef4444;
+}
+
+.btn-blue.is-active {
+  color: #3b82f6;
+}
+
+.btn-green.is-active {
+  color: #22c55e;
+}

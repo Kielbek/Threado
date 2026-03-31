@@ -2,13 +2,15 @@ package com.example.thread.dto.response;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 public record ThreadResponse(
-        String id,
+        UUID id,
         String text,
         Instant createdAt,
         String replySettings,
         String lang,
+        ThreadResponse repostedThread,
         PublicMetricsResponse publicMetrics,
         List<HashtagResponse> hashtags,
         List<UrlEntityResponse> urls,

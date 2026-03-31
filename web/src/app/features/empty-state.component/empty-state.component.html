@@ -1,0 +1,31 @@
+<div class="flex flex-col items-center justify-center py-16 sm:py-24 text-center px-4">
+
+  @if (icon()) {
+    <div class="w-16 h-16 bg-gray-200 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-5">
+      <lucide-icon [img]="icon()" class="w-8 h-8 text-gray-500"></lucide-icon>
+    </div>
+  }
+
+  <h2 class="text-2xl font-extrabold text-black dark:text-white mb-2">
+    {{ title() }}
+  </h2>
+
+  @if (description()) {
+    <p class="text-gray-500 mb-5 text-base">
+      {{ description() }}
+    </p>
+  }
+
+  @if (actionText()) {
+    @if (actionLink()) {
+      <a [routerLink]="actionLink()" class="text-threado hover:underline hover:opacity-80 transition-opacity cursor-pointer font-medium text-sm">
+        {{ actionText() }}
+      </a>
+    }
+    @else {
+      <button (click)="actionClick.emit()" class="text-threado hover:underline hover:opacity-80 transition-opacity cursor-pointer font-medium text-sm">
+        {{ actionText() }}
+      </button>
+    }
+  }
+</div>

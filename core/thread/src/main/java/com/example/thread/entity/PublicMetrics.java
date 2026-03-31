@@ -13,10 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PublicMetrics {
 
-    private int retweetCount;
-    private int replyCount;
     private int likeCount;
-    private int quoteCount;
+
     private int bookmarkCount;
-    private int impressionCount;
+
+    private int repostCount;
+
+    private int replyCount;
+
 }

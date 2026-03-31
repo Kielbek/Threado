@@ -2,10 +2,13 @@ package com.example.thread.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "thread")
@@ -18,7 +21,7 @@ public class Thread {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(columnDefinition = "TEXT")
     private String text;
@@ -34,22 +37,26 @@ public class Thread {
     @Embedded
     private PublicMetrics publicMetrics;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reposted_thread_id")
+    private Thread repostedThread;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private AuthorCache author;
 
     @ElementCollection
-    @CollectionTable(name = "tweet_hashtags", joinColumns = @JoinColumn(name = "tweet_id"))
+    @CollectionTable(name = "thread_hashtags", joinColumns = @JoinColumn(name = "thread_id"))
+    @Fetch(FetchMode.SUBSELECT)
     private List<Hashtag> hashtags = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "tweet_urls", joinColumns = @JoinColumn(name = "tweet_id"))
+    @CollectionTable(name = "thread_urls", joinColumns = @JoinColumn(name = "thread_id"))
+    @Fetch(FetchMode.SUBSELECT)
     private List<UrlEntity> urls = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "thread_media", joinColumns = @JoinColumn(name = "thread_id"))
+    @Fetch(FetchMode.SUBSELECT)
     private List<Media> media = new ArrayList<>();
-
-    @ManyToOne
-    private AuthorCache authorCache;
 }

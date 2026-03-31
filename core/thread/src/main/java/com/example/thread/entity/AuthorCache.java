@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "author_cache")
 @Getter
@@ -17,7 +19,7 @@ import lombok.Setter;
 public class AuthorCache {
 
     @Id
-    private String id;
+    private UUID id;
     private String name;
     private String username;
     private String avatarUrl;

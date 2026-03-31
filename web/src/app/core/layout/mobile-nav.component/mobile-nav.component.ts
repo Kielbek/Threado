@@ -65,7 +65,7 @@ export class MobileNavComponent {
       },
       { label: 'Messages', route: '/messages', icon: this.MessageSquareIcon },
       { label: 'Bookmarks', route: '/bookmarks', icon: this.BookmarkIcon },
-      { label: 'Settings', route: '/settings', icon: this.SettingsIcon, showDot: true },
+      { label: 'Settings', route: '/settings', icon: this.SettingsIcon },
     ];
   });
 

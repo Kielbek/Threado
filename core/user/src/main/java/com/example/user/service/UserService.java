@@ -1,12 +1,16 @@
 package com.example.user.service;
 
-import com.example.user.dto.response.UserProfileResponse;
+import com.example.user.dto.request.UserProfileUpdateRequest;
 import com.example.user.dto.response.UserResponse;
+import jakarta.validation.Valid;
+
+import java.util.UUID;
 
 public interface UserService {
 
-    UserResponse getUserByKeycloakId(String keycloakId);
+    UserResponse getUserByKeycloakId(UUID keycloakId);
 
-    UserProfileResponse getUserByUsername(String username);
+    UserResponse getUserByUsername(UUID currentUser, String username);
 
+    UserResponse updateUserProfile(UUID keycloakId, @Valid UserProfileUpdateRequest request);
 }

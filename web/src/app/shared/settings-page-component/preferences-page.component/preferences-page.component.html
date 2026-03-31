@@ -1,0 +1,29 @@
+<div class="flex flex-col font-sans pb-20 sm:pb-0 h-full">
+
+  <app-page-header
+    title="Preferences"
+    [showBackButton]="true">
+  </app-page-header>
+
+  <main class="flex-1 w-full mx-auto sm:border-x border-gray-200 dark:border-zinc-800">
+
+    <section class="flex flex-col mt-2">
+      <div class="px-4 py-3">
+        <h2 class="text-xl font-bold text-black dark:text-white">Display</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Manage your display settings and application appearance.
+        </p>
+      </div>
+
+      <div class="flex flex-col px-4 divide-y divide-gray-100 dark:divide-zinc-800/50">
+
+        <app-threado-selector
+          label="Wygląd interfejsu"
+          description="Dostosuj kolory do swoich preferencji.">
+        </app-threado-selector>
+
+      </div>
+    </section>
+
+  </main>
+</div>

@@ -29,6 +29,11 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 eureka:
   client:
@@ -36,3 +41,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+app:
+  kafka:
+    topics:
+      user-profile-sync: user.profile.synced
+  keycloak:
+    server-url: "http://localhost:8180"
+    realm: "Threado"
+    client-id: "backend-service"
+    client-secret: "LPiNRDQASAWUxdXeFXBvw237lB6MYIHK"

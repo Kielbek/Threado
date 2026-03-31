@@ -1,7 +1,11 @@
-import {Component, signal} from '@angular/core';
-import {Bookmark, Heart, LucideAngularModule, Repeat2, Share} from "lucide-angular";
-import {ThreadComponent} from '../../features/thread.component/thread.component';
+import {Component, inject, signal} from '@angular/core';
+import {LucideAngularModule} from "lucide-angular";
 import {PageHeaderComponent} from '../../features/page-header.component/page-header.component';
+import {ThreadFeedComponent} from '../../features/thread-feed.component/thread-feed.component';
+import {FeedService} from '../../core/services/feed-service';
+import {Observable} from 'rxjs';
+import {Page} from '../../core/model/page';
+import {ThreadResponse} from '../../core/model/thread/thread-response';
 
 export interface BookmarkedPost {
   id: string;
@@ -16,38 +20,18 @@ export interface BookmarkedPost {
   selector: 'app-bookmarks-page.component',
   imports: [
     LucideAngularModule,
-    ThreadComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    ThreadFeedComponent
   ],
   templateUrl: './bookmarks-page.component.html',
   styleUrl: './bookmarks-page.component.css',
 })
 export class BookmarksPageComponent {
-  readonly BookmarkIcon = Bookmark;
-  readonly HeartIcon = Heart;
-  readonly RepostIcon = Repeat2;
-  readonly ShareIcon = Share;
+  private feedService = inject(FeedService);
 
-  bookmarks = signal<any[]>([
-    {
-      id: '101',
-      user: { name: 'Kamil', username: 'kamil_tworzy', avatarUrl: 'https://i.pravatar.cc/150?img=11' },
-      content: 'Znalazłem dzisiaj świetny sposób na optymalizację Signals w Angularze 17. Zamiast używać effect(), lepiej oprzeć się na computed(). Zmienia to całkowicie zasady gry! 🚀 #angular #frontend',
-      timeAgo: '2 dni',
-      stats: { replies: 12, reposts: 5, likes: 142, views: 3200 },
-      isLiked: true
-    },
-    {
-      id: '102',
-      user: { name: 'Sarah', username: 'sarah_designs', avatarUrl: 'https://i.pravatar.cc/150?img=5' },
-      content: 'Kolekcja darmowych narzędzi dla UI Designerów. Zapiszcie sobie na później, bo linki często wygasają! 👇',
-      timeAgo: '5 dni',
-      stats: { replies: 89, reposts: 412, likes: 2100, views: 45000 },
-      isLiked: false
-    }
-  ]);
+  readonly cacheKey = 'user-bookmarks-feed';
 
-  removeBookmark(id: string) {
-    this.bookmarks.update(posts => posts.filter(p => p.id !== id));
-  }
+  bookmarksFetcher = (page: number, size: number): Observable<Page<ThreadResponse>> => {
+    return this.feedService.getBookmarkedThreads(page, size);
+  };
 }

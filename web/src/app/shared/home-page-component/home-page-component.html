@@ -1,11 +1,16 @@
-<div class="min-h-screen pb-safe">
+<div class="w-full pb-safe">
 
   <app-page-header title="Home"></app-page-header>
 
   <app-threado-compose></app-threado-compose>
 
-  <app-feed-tabs></app-feed-tabs>
+  <app-feed-tabs [(activeTab)]="currentTab"></app-feed-tabs>
 
-  <app-thread-feed [fetchStrategy]="globalFeedFetcher"></app-thread-feed>
+  <app-thread-feed
+    [cacheKey]="currentCacheKey()"
+    [fetchStrategy]="currentStrategy()"
+    [emptyTitle]="emptyTitle()"
+    emptyDescription="Nie ma tu nic do wyświetlenia.">
+  </app-thread-feed>
 
 </div>

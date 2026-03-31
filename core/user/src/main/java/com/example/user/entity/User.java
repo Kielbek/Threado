@@ -33,7 +33,7 @@ public class User {
 
     @NaturalId
     @Column(name = "keycloak_id", nullable = false, updatable = false, unique = true)
-    private String keycloakId;
+    private UUID keycloakId;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
@@ -55,6 +55,9 @@ public class User {
 
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
+
+    @Column(name = "cover_url", length = 500)
+    private String coverUrl;
 
     @Builder.Default
     @Column(name = "followers_count", nullable = false)

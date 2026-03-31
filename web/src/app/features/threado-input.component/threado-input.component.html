@@ -1,0 +1,33 @@
+<div class="relative rounded-md border threado-border focus-within:border-[var(--color-threado-accent)] focus-within:ring-1 focus-within:ring-[var(--color-threado-accent)] transition-all bg-white dark:bg-black group">
+
+  @if (isTextarea()) {
+    <textarea
+      [id]="inputId()"
+      rows="3"
+      class="peer block w-full appearance-none bg-transparent px-3 pb-2 pt-6 text-black dark:text-white focus:outline-none sm:text-base resize-none placeholder-transparent disabled:opacity-50"
+      placeholder=" "
+      [value]="value"
+      [disabled]="disabled"
+      (input)="onInput($event)"
+      (blur)="onTouched()"
+    ></textarea>
+  } @else {
+    <input
+      [type]="type()"
+      [id]="inputId()"
+      class="peer block w-full appearance-none bg-transparent px-3 pb-2 pt-6 text-black dark:text-white focus:outline-none sm:text-base placeholder-transparent disabled:opacity-50"
+      placeholder=" "
+      [value]="value"
+      [disabled]="disabled"
+      (input)="onInput($event)"
+      (blur)="onTouched()"
+    />
+  }
+
+  <label
+    [for]="inputId()"
+    class="pointer-events-none absolute left-3 top-2 z-10 origin-[0] -translate-y-0 transform text-xs text-gray-500 duration-150 peer-placeholder-shown:translate-y-2.5 peer-placeholder-shown:text-base peer-focus:-translate-y-0 peer-focus:text-xs peer-focus:text-[var(--color-threado-accent)]"
+  >
+    {{ label() }}
+  </label>
+</div>

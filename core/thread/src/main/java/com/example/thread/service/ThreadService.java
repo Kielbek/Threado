@@ -1,22 +1,23 @@
 package com.example.thread.service;
 
 import com.example.thread.dto.request.CreateThreadRequest;
+import com.example.thread.dto.request.RepostRequest;
 import com.example.thread.dto.response.PageResponse;
 import com.example.thread.dto.response.ThreadResponse;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface ThreadService {
 
-    ThreadResponse createThread(CreateThreadRequest request, String authorId);
+    ThreadResponse createThread(CreateThreadRequest request, UUID authorId);
 
-    ThreadResponse getThreadById(String threadId);
-
-    void deleteThread(String threadId, String authorId);
+    ThreadResponse createRepost(UUID threadId, RepostRequest request, UUID userId);
 
     PageResponse<ThreadResponse> getGlobalTimeline(int page, int size);
 
-    PageResponse<ThreadResponse> getThreadsByAuthor(String authorId, int page, int size);
+    PageResponse<ThreadResponse> getThreadsByAuthor(UUID authorId, int page, int size);
 
-    void likeThread(String threadId, String userId);
+    List<ThreadResponse> getThreadsByIds(List<UUID> threadIds);
 
-    void unlikeThread(String threadId, String userId);
 }
