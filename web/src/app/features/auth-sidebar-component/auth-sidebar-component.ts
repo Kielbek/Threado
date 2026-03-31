@@ -11,19 +11,23 @@ import {KeycloakService} from '../../core/services/keycloak-service';
   styleUrl: './auth-sidebar-component.css',
 })
 export class AuthSidebarComponent implements OnInit {
-  private readonly ksService = inject(KeycloakService);
+  private readonly keycloakService = inject(KeycloakService);
 
   isLoggedIn = false;
 
   ngOnInit() {
-    this.isLoggedIn = this.ksService.isLoggedIn();
+    this.isLoggedIn = this.keycloakService.isLoggedIn();
   }
 
-  login() {
-    this.ksService.keycloak?.login();
+  async login() {
+    await this.keycloakService.login({
+      redirectUri: window.location.origin
+    });
   }
 
-  protected register() {
-    this.ksService.keycloak.register()
+  protected async register() {
+    await this.keycloakService.register({
+      redirectUri: window.location.origin
+    });
   }
 }
