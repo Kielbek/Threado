@@ -1,62 +1,204 @@
-<div class="flex flex-col font-sans pb-20 sm:pb-0 h-full">
+<app-page-header title="Account & Security" [showBackButton]="true"></app-page-header>
 
-  <app-page-header
-    title="Account & Security"
-    [showBackButton]="true">
-  </app-page-header>
+<main class="flex-1 w-full mx-auto p-4 max-w-2xl">
 
-  <main class="flex-1 w-full mx-auto p-4">
+  <div class="flex flex-col items-center justify-center py-8 text-center">
+    <div [class]="isEmailVerified()
+         ? 'w-16 h-16 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mb-4 transition-colors duration-500'
+         : 'w-16 h-16 bg-yellow-100 dark:bg-yellow-500/10 rounded-full flex items-center justify-center mb-4 transition-colors duration-500'">
 
-    <div class="flex flex-col items-center justify-center py-8 text-center">
-      <div class="w-16 h-16 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-        <lucide-icon [img]="ShieldCheckIcon" class="w-8 h-8 text-green-600 dark:text-green-500"></lucide-icon>
-      </div>
-      <h2 class="text-xl font-bold text-black dark:text-white">Twoje konto jest bezpieczne</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-sm leading-relaxed">
-        Zarządzanie hasłem, uwierzytelnianiem dwuetapowym (2FA) i aktywnymi sesjami odbywa się w zabezpieczonym panelu Keycloak.
-      </p>
+      <lucide-icon
+        [img]="isEmailVerified() ? ShieldCheckIcon : ShieldIcon"
+        [class]="isEmailVerified() ? 'w-8 h-8 text-green-600 dark:text-green-500' : 'w-8 h-8 text-yellow-600 dark:text-yellow-500'">
+      </lucide-icon>
     </div>
 
-    <div class="mt-6 flex flex-col gap-5">
-      <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">Dane logowania</h3>
+    <h2 class="text-xl font-bold text-black dark:text-white">
+      {{ isEmailVerified() ? 'Twoje konto jest bezpieczne' : 'Wymagana weryfikacja' }}
+    </h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-sm leading-relaxed">
+      {{ isEmailVerified()
+      ? 'Wszystkie systemy ochrony są aktywne. Możesz zarządzać logowaniem poniżej.'
+      : 'Zakończ weryfikację adresu e-mail, aby w pełni zabezpieczyć konto i odblokować 2FA.'
+      }}
+    </p>
+  </div>
 
+  <div class="mt-6 flex flex-col gap-8">
+
+    <div class="flex flex-col gap-4">
+      <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">Dane logowania i zabezpieczenia</h3>
       <div class="bg-zinc-50 dark:bg-zinc-900 border threado-border rounded-3xl p-5 flex flex-col gap-5">
 
-        <div class="flex items-center gap-4">
-          <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm">
-            <lucide-icon [img]="MailIcon" class="w-4 h-4 text-gray-500"></lucide-icon>
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm text-gray-500">
+              <lucide-icon [img]="MailIcon" class="w-4 h-4"></lucide-icon>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-xs text-gray-500 font-medium">Adres e-mail</span>
+              <div class="flex items-center gap-2">
+                @if (userEmail()) {
+                  <span class="text-sm font-bold text-black dark:text-white break-all">{{ userEmail() }}</span>
+                  <button (click)="copyEmail()" class="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-md transition-colors" title="Kopiuj adres email">
+                    <lucide-icon [img]="CopyIcon" class="w-3.5 h-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"></lucide-icon>
+                  </button>
+                } @else {
+                  <div class="h-4 w-32 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded mt-1"></div>
+                }
+              </div>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <span class="text-xs text-gray-500 font-medium">Adres email</span>
-            @if (userEmail()) {
-              <span class="text-sm font-bold text-black dark:text-white">{{ userEmail() }}</span>
-            } @else {
-              <span class="text-sm font-medium text-gray-400">Ładowanie...</span>
-            }
-          </div>
+          <span [class]="isEmailVerified() ? 'px-2 py-1 text-[10px] bg-green-500/10 text-green-500 rounded-lg font-bold' : 'px-2 py-1 text-[10px] bg-yellow-500/10 text-yellow-500 rounded-lg font-bold'">
+            {{ isEmailVerified() ? 'ZWERYFIKOWANY' : 'NIEZWERYFIKOWANY' }}
+          </span>
         </div>
+
+        @if (identityProvider()) {
+          <div class="flex items-center justify-between p-3 bg-white dark:bg-black rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm">
+            <div class="flex items-center gap-3">
+              @if (identityProvider() === 'google') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48">
+                  <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                  <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                  <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                  <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                </svg>
+              } @else {
+                <lucide-icon [img]="LinkIcon" class="w-4 h-4 text-gray-400"></lucide-icon>
+              }
+              <span class="text-xs font-bold text-black dark:text-white capitalize">Connected via {{ identityProvider() }}</span>
+            </div>
+            <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Provider</span>
+          </div>
+        }
 
         <hr class="threado-border">
 
-        <button
-          (click)="redirectToKeycloakAccount()"
-          class="group flex items-center justify-between p-2.5 -m-2.5 rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-left">
+        <div class="flex flex-col gap-2">
+          @if (!isEmailVerified()) {
+            <button (click)="onAction('VERIFY_EMAIL')" class="group flex items-center justify-between p-2.5 rounded-2xl hover:bg-yellow-50 dark:hover:bg-yellow-500/5 transition-colors cursor-pointer text-left">
+              <div class="flex items-center gap-4">
+                <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-yellow-200 dark:border-yellow-500/20 shadow-sm text-yellow-600">
+                  <lucide-icon [img]="MailIcon" class="w-4 h-4"></lucide-icon>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-black dark:text-white">Dokończ weryfikację</span>
+                  <span class="text-xs text-gray-500">Potwierdź swój e-mail poprzez link</span>
+                </div>
+              </div>
+              <lucide-icon [img]="ExternalLinkIcon" class="w-4 h-4 text-gray-400 group-hover:text-yellow-600 transition-colors"></lucide-icon>
+            </button>
+          }
 
-          <div class="flex items-center gap-4">
-            <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm group-hover:border-[var(--color-threado-accent)] transition-colors">
-              <lucide-icon [img]="KeyIcon" class="w-4 h-4 text-gray-500 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
+          <button (click)="onAction('UPDATE_PASSWORD')" class="group flex items-center justify-between p-2.5 rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-left">
+            <div class="flex items-center gap-4">
+              <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm group-hover:border-[var(--color-threado-accent)] transition-colors">
+                <lucide-icon [img]="KeyIcon" class="w-4 h-4 text-gray-500 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-black dark:text-white group-hover:text-[var(--color-threado-accent)] transition-colors">Zmień hasło</span>
+                <span class="text-xs text-gray-500">Zmień swoje hasło w Keycloak</span>
+              </div>
             </div>
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-black dark:text-white group-hover:text-[var(--color-threado-accent)] transition-colors">Zmień hasło i zabezpieczenia</span>
-              <span class="text-xs text-gray-500">Zarządzaj w panelu uwierzytelniania</span>
+            <lucide-icon [img]="ExternalLinkIcon" class="w-4 h-4 text-gray-400 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
+          </button>
+
+          <button (click)="onAction('CONFIGURE_TOTP')" class="group flex items-center justify-between p-2.5 rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-left">
+            <div class="flex items-center gap-4">
+              <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm group-hover:border-[var(--color-threado-accent)] transition-colors">
+                <lucide-icon [img]="SmartphoneIcon" class="w-4 h-4 text-gray-500 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-black dark:text-white group-hover:text-[var(--color-threado-accent)] transition-colors">
+                  Zarządzaj 2FA
+                </span>
+                  <span class="text-xs text-gray-500">
+                  Uwierzytelnianie dwuetapowe chroni Twoje konto
+                </span>
+              </div>
             </div>
-          </div>
-
-          <lucide-icon [img]="ExternalLinkIcon" class="w-4 h-4 text-gray-400 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
-        </button>
-
+            <lucide-icon [img]="ExternalLinkIcon" class="w-4 h-4 text-gray-400 group-hover:text-[var(--color-threado-accent)] transition-colors"></lucide-icon>
+          </button>
+        </div>
       </div>
     </div>
 
-  </main>
-</div>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">Aktywne urządzenia</h3>
+      <div class="bg-zinc-50 dark:bg-zinc-900 border threado-border rounded-3xl p-2 flex flex-col gap-1 overflow-hidden">
+
+        @for (session of activeSessions(); track session.id) {
+          <div class="flex items-center justify-between p-4 rounded-2xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+            <div class="flex items-center gap-4">
+              <div [class]="session.current ? 'p-2.5 bg-green-100 dark:bg-green-500/10 text-green-600 rounded-xl' : 'p-2.5 bg-white dark:bg-black border border-gray-200 dark:border-zinc-800 text-gray-400 rounded-xl shadow-sm'">
+                <lucide-icon [img]="MonitorIcon" class="w-4 h-4"></lucide-icon>
+              </div>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-bold text-black dark:text-white">{{ session.browser || 'Przeglądarka' }} • {{ session.os || 'OS' }}</span>
+                  @if (session.current) {
+                    <span class="px-2 py-0.5 text-[8px] bg-green-500/10 text-green-500 rounded-full font-bold tracking-wider">ACTIVE</span>
+                  }
+                </div>
+                <span class="text-[11px] text-gray-500">IP: {{ session.ipAddress }} • {{ session.lastAccess * 1000 | date:'dd MMM, HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="p-8 text-center text-xs text-gray-500 italic">Ładowanie sesji...</div>
+        }
+
+        <hr class="mx-4 threado-border my-2">
+
+        <button (click)="goToSessions()" class="group w-full flex items-center gap-4 p-4 hover:bg-red-500/5 rounded-2xl transition-colors text-left">
+          <div class="p-2.5 bg-red-50 dark:bg-red-500/10 rounded-xl border border-red-100 dark:border-red-500/20 shadow-sm group-hover:bg-red-500 transition-colors">
+            <lucide-icon [img]="LogOutIcon" class="w-4 h-4 text-red-500 group-hover:text-white transition-colors"></lucide-icon>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-red-500">Zarządzaj urządzeniami</span>
+            <span class="text-xs text-gray-400 dark:text-gray-500">Zakończ inne sesje w panelu Keycloak</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">Historia aktywności</h3>
+      <div class="bg-zinc-50 dark:bg-zinc-900 border threado-border rounded-3xl p-5">
+        <div class="flex items-center gap-4">
+          <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-zinc-800 shadow-sm text-gray-400">
+            <lucide-icon [img]="HistoryIcon" class="w-4 h-4"></lucide-icon>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[11px] text-gray-500 font-medium uppercase tracking-wide">Początek bieżącej sesji</span>
+            @if (lastLogin()) {
+              <span class="text-sm font-bold text-black dark:text-white">{{ lastLogin() }}</span>
+            } @else {
+              <div class="h-4 w-40 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded mt-1"></div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 mt-4">
+      <h3 class="text-xs font-bold text-red-500/60 uppercase tracking-wider px-2">Strefa niebezpieczna</h3>
+      <div class="border border-red-500/20 rounded-3xl p-5 bg-red-500/5">
+        <button (click)="goToAccountDeletion()" class="flex items-center justify-between w-full text-left group cursor-pointer">
+          <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-white dark:bg-black rounded-xl border border-red-200 dark:border-red-900/30 shadow-sm group-hover:border-red-500 transition-colors">
+              <lucide-icon [img]="TrashIcon" class="text-red-500 w-4 h-4 group-hover:text-red-600 transition-colors"></lucide-icon>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-bold text-red-500 group-hover:text-red-600 transition-colors">Trwale usuń konto</span>
+              <span class="text-xs text-red-500/70 dark:text-red-400/60">Zostaniesz poproszony o weryfikację w panelu</span>
+            </div>
+          </div>
+          <lucide-icon [img]="ExternalLinkIcon" class="w-4 h-4 text-red-500/50 group-hover:text-red-500 transition-colors"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</main>
